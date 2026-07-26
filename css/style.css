@@ -1,0 +1,62 @@
+:root{
+  --blue:#0066FF;
+  --black:#0A0A0F;
+  --white:#FFFFFF;
+  --gray:#F5F7FA;
+  --border:#E5E7EB;
+  --muted:#6B7280;
+  --discord:#5865F2;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0; font-family:Inter,Arial,sans-serif; background:var(--white); color:var(--black); line-height:1.6}
+nav{
+  position:sticky; top:0; z-index:100; height:64px; padding:0 4vw;
+  background:var(--black); display:flex; align-items:center; justify-content:space-between;
+  border-bottom:1px solid #1f1f1f;
+}
+nav .brand{display:flex; align-items:center; gap:10px}
+nav .brand img{height:32px}
+nav .brand strong{color:#fff; letter-spacing:.06em; font-weight:900}
+nav .links{display:flex; gap:1.2rem; align-items:center}
+nav .links a{color:#bbb; text-decoration:none; font-weight:700; font-size:.85rem; text-transform:uppercase}
+nav .links a:hover, nav .links a.active{color:#fff}
+.btn{border:0; border-radius:999px; padding:.6rem 1.1rem; font-weight:800; text-transform:uppercase; font-size:.8rem; cursor:pointer; text-decoration:none; display:inline-flex; align-items:center; gap:.4rem}
+.btn-blue{background:var(--blue); color:#fff}
+.btn-discord{background:var(--discord); color:#fff}
+.btn-white{background:#fff; color:var(--black); border:1px solid var(--border)}
+.btn-dark{background:var(--black); color:#fff}
+.container{width:min(1120px,92vw); margin:0 auto; padding:2rem 0}
+.hero{text-align:center; padding:3rem 0 1rem}
+.hero img{height:96px; margin-bottom:1rem}
+.hero h1{font-size:clamp(2rem,5vw,3.2rem); font-weight:900; line-height:.95; margin:.5rem 0}
+.hero p{color:var(--muted); max-width:640px; margin:0 auto 1.2rem}
+.badge{display:inline-block; padding:.3rem .6rem; background:var(--gray); border:1px solid var(--border); border-radius:999px; font-size:.7rem; font-weight:800; text-transform:uppercase}
+.live-section{margin-top:2rem; display:grid; grid-template-columns:1.5fr .8fr; gap:1rem; background:var(--black); padding:1rem; border-radius:16px}
+.player-box{aspect-ratio:16/9; background:#000; border-radius:12px; overflow:hidden; position:relative}
+.player-box iframe{position:absolute; inset:0; width:100%; height:100%; border:0}
+.chat-box{border-radius:12px; overflow:hidden; background:#111; min-height:320px}
+.live-badge{display:inline-flex; align-items:center; gap:.4rem; padding:.3rem .6rem; border-radius:999px; font-size:.7rem; font-weight:900; background:#111; color:#fff; border:1px solid #222}
+.live-badge.live{background:#ff0000; color:#fff}
+.live-badge.offline{background:#333; color:#aaa}
+.section{padding:2.5rem 0; border-top:1px solid var(--border)}
+.section h2{font-size:clamp(1.6rem,3vw,2.2rem); font-weight:900; margin:0 0 .6rem}
+.kicker{color:var(--blue); font-weight:900; font-size:.75rem; text-transform:uppercase; letter-spacing:.08em}
+.grid-3{display:grid; grid-template-columns:repeat(3,1fr); gap:1rem}
+.card{background:#fff; border:1px solid var(--border); border-radius:16px; padding:1.2rem; box-shadow:0 4px 20px rgba(0,0,0,.04)}
+.team-grid{display:grid; grid-template-columns:repeat(3,1fr); gap:1rem; margin-top:1rem}
+.team-card{background:#fff; border:1px solid var(--border); border-radius:16px; padding:1rem; text-align:center; cursor:pointer; transition:transform .15s, box-shadow .15s}
+.team-card:hover{transform:translateY(-3px); box-shadow:0 10px 30px rgba(0,0,0,.08)}
+.team-card.founder{grid-column:span 3; display:grid; grid-template-columns:120px 1fr; text-align:left; border:2px solid var(--blue); background:linear-gradient(90deg,#f0f6ff,#fff)}
+.team-card.empty{border:1.5px dashed var(--border); background:var(--gray); color:var(--muted)}
+.avatar{width:72px; height:72px; border-radius:50%; background:var(--black); color:#fff; display:grid; place-items:center; font-weight:900; font-size:1.4rem; margin:0 auto .6rem}
+.team-card.founder .avatar{width:96px; height:96px; margin:0}
+.modal{display:none; position:fixed; inset:0; z-index:200; background:rgba(0,0,0,.55); padding:2rem; overflow:auto}
+.modal.active{display:grid; place-items:center}
+.modal-box{background:#fff; border-radius:20px; width:min(640px,94vw); padding:1.5rem; position:relative}
+.modal-box .close{position:absolute; top:12px; right:12px; border:0; background:var(--gray); width:32px; height:32px; border-radius:50%; cursor:pointer}
+.tabs{display:flex; gap:.5rem; flex-wrap:wrap; margin:1rem 0}
+.tab-btn{padding:.5rem .9rem; border:1px solid var(--border); background:#fff; border-radius:999px; font-weight:700; cursor:pointer}
+.tab-btn.active{background:var(--black); color:#fff}
+.cta-box{background:var(--black); color:#fff; border-radius:20px; padding:2rem; text-align:center; margin-top:2rem}
+@media(max-width:900px){.live-section{grid-template-columns:1fr} .grid-3{grid-template-columns:1fr} .team-grid{grid-template-columns:1fr} .team-card.founder{grid-column:span 1; grid-template-columns:1fr; text-align:center}}
