@@ -1,114 +1,114 @@
-document.addEventListener("DOMContentLoaded",()=>{
-  initLive();
-  initTeamModal();
-  setActiveNav();
-});
+// Furioz Compagnie - script.js
+// Gère le player Twitch + les modales membres
 
-function setActiveNav(){
-  const links=document.querySelectorAll("nav .links a[href^='#']");
-  links.forEach(l=>l.addEventListener("click",()=>{
-    links.forEach(x=>x.classList.remove("active"));
-    l.classList.add("active");
-  }));
+const members = {
+  reddice: {
+    name: "RedDice_Geek",
+    role: "FONDATEUR",
+    badge: "Fondateur • Depuis Septembre 2022 • Stream depuis Août 2021",
+    joined: "Septembre 2022",
+    streamSince: "Août 2021",
+    twitch: "https://twitch.tv/reddice_geek",
+    youtube: "https://www.youtube.com/channel/UCxjKpjK-3DBR3HgmeRY7UMg",
+    desc: "Fondateur du collectif. Créateur gaming / cosplay / IRL. Objectif : entraide et progression sans perdre l'indépendance.",
+    tags: ["Gaming", "Cosplay", "IRL", "Fondateur"]
+  },
+  zafkiel: {
+    name: "Zafkiel / LePetoChard",
+    role: "MEMBRE",
+    badge: "Depuis 23 Novembre 2024",
+    joined: "23 Novembre 2024",
+    streamSince: "2023",
+    twitch: "https://www.twitch.tv/le_petochard",
+    desc: "LePetoChard, aussi connu sous Zafkiel. A rejoint la Furioz Compagnie le 23/11/2024 en tant que streameur. Ambiance chill et entraide.",
+    tags: ["Gaming", "Chill"]
+  },
+  foxysword: {
+    name: "Foxy Sword",
+    role: "DJ / MEMBRE",
+    badge: "Depuis 18 Août 2026 • Stream depuis 2025 • DJ",
+    joined: "18 Août 2026",
+    streamSince: "2025",
+    twitch: "https://www.twitch.tv/foxysword350",
+    desc: "DJ débutant, Foxy Sword nous a rejoint le 18 Août 2026. Il streame depuis 2025 et va proposer des lives musique avec ses mix. Ambiance chill, il débute et veut partager sa passion.",
+    tags: ["DJ", "Musique", "Mix", "Débutant", "Nouveau"]
+  }
+};
+
+// --- Twitch Live ---
+function initTwitch() {
+  const player = document.getElementById('twitch-player');
+  const chat = document.getElementById('twitch-chat');
+  const badge = document.getElementById('live-badge');
+  if (!player) return;
+
+  const channel = "furiozcompagnie";
+  const parent = window.location.hostname || "localhost";
+
+  player.src = `https://player.twitch.tv/?channel=${channel}&parent=${parent}&muted=true`;
+  if (chat) {
+    chat.src = `https://www.twitch.tv/embed/${channel}/chat?parent=${parent}&darkpopout`;
+  }
+  if (badge) {
+    badge.textContent = "HORS LIGNE";
+    badge.style.background = "#555";
+    // Optionnel : check API plus tard
+  }
 }
 
-function initLive(){
-  const player=document.getElementById("twitch-player");
-  const chat=document.getElementById("twitch-chat");
-  const badge=document.getElementById("live-badge");
-  const domain=window.location.hostname||"localhost";
-  // For localhost preview, Twitch requires localhost as parent. For Vercel, it needs your vercel domain.
-  // We set both localhost and vercel.app as parents
-  const parents=`&parent=localhost&parent=${domain}&parent=vercel.app&parent=www.furiozcompagnie.fr`;
-  if(player){
-    player.src=`https://player.twitch.tv/?channel=furiozcompagnie${parents}&muted=true`;
-  }
-  if(chat){
-    chat.src=`https://www.twitch.tv/embed/furiozcompagnie/chat?darkpopout${parents}`;
-  }
-  // Simulate live check (real check needs Twitch API token)
-  setTimeout(()=>{
-    if(badge){
-      badge.textContent="OFFLINE - Player chargé";
-      badge.className="live-badge offline";
-      // If you want to force LIVE for test: badge.textContent="● LIVE"; badge.className="live-badge live";
+// --- Modale membre ---
+function initModals() {
+  const modal = document.getElementById('member-modal');
+  const content = document.getElementById('modal-content');
+  if (!modal || !content) return;
+
+  function openMember(id) {
+    const m = members[id];
+    if (!m) {
+      content.innerHTML = `<h3>Membre introuvable</h3><p>Pas de données pour ${id}</p><button onclick="document.getElementById('member-modal').classList.remove('open')" class="btn btn-dark">Fermer</button>`;
+      modal.classList.add('open');
+      return;
     }
-  },2000);
-}
 
-const TEAM=[
-  {
-    id:"reddice",
-    name:"RedDice_Geek",
-    alias:"RedDice",
-    role:"Fondateur",
-    depuisCollectif:"Septembre 2022",
-    streamSince:"Août 2021",
-    twitch:"https://twitch.tv/reddice_stream",
-    tags:["Just Chatting","Gaming","Cosplay"],
-    bio:"Fondateur du collectif. Objectif: progresser ensemble sans perdre son indépendance.",
-    avatar:"R"
-  },
-  {
-    id:"zafkiel",
-    name:"Zafkiel",
-    alias:"LePetoChard",
-    role:"Streamer",
-    depuisCollectif:"23 Novembre 2024",
-    streamSince:"2023",
-    twitch:"https://www.twitch.tv/le_petochard",
-    tags:["Gaming","Events","Collabs"],
-    bio:"Membre pilier de la Stream Team [FZ]. A rejoint la Furioz en tant que streameur le 23/11/2024. Chaîne: le_petochard",
-    avatar:"Z"
-  },
-  {
-    id:"foxysword",
-    name:"Foxy Sword",
-    alias:"",
-    role:"Streamer",
-    depuisCollectif:"18 Août 2026",
-    streamSince:"2025",
-    twitch:"https://www.twitch.tv/foxysword350",
-    tags:["Gaming","Variety","Nouveau"],
-    bio:"Nouveau membre de la Stream Team [FZ]. Streame depuis 2025 et a rejoint la Furioz Compagnie le 18 Août 2026.",
-    avatar:"F"
-  }
-];
-
-function initTeamModal(){
-  const grid=document.getElementById("team-grid");
-  const modal=document.getElementById("member-modal");
-  const modalContent=document.getElementById("modal-content");
-  if(!grid||!modal) return;
-
-  grid.addEventListener("click",(e)=>{
-    const card=e.target.closest(".team-card[data-id]");
-    if(!card) return;
-    const id=card.dataset.id;
-    const m=TEAM.find(x=>x.id===id);
-    if(!m) return;
-    modalContent.innerHTML=`
-      <button class="close" onclick="document.getElementById('member-modal').classList.remove('active')">✕</button>
-      <div style="display:flex; gap:1rem; align-items:center; margin-bottom:1rem">
-        <div class="avatar" style="width:80px; height:80px; font-size:1.8rem">${m.avatar}</div>
+    content.innerHTML = `
+      <div style="display:flex; justify-content:space-between; align-items:start; gap:1rem">
         <div>
-          <h3 style="margin:0">${m.name} ${m.alias?`<small style='color:#666'>/ ${m.alias}</small>`:''}</h3>
-          <span class="badge">${m.role} • Depuis ${m.depuisCollectif}</span>
+          <h2 style="margin:0 0 .2rem">${m.name} ${m.role === 'FONDATEUR' ? '<span style="color:var(--blue); font-weight:400; font-size:.9rem">• FONDATEUR</span>' : ''}</h2>
+          <span class="badge">${m.badge}</span>
+        </div>
+        <button id="close-modal" style="background:none; border:0; font-size:1.6rem; cursor:pointer">✕</button>
+      </div>
+      <div style="margin-top:1rem; display:grid; gap:.8rem">
+        <p><strong>Stream depuis :</strong> ${m.streamSince} <br><strong>A rejoint la Furioz :</strong> ${m.joined}</p>
+        <p style="color:#444">${m.desc}</p>
+        <div style="display:flex; gap:.5rem; flex-wrap:wrap">
+          ${m.tags.map(t=>`<span class="badge" style="background:#eee; color:#333">${t}</span>`).join('')}
+        </div>
+        <div style="display:flex; gap:.6rem; flex-wrap:wrap; margin-top:.5rem">
+          <a href="${m.twitch}" target="_blank" class="btn btn-dark" style="background:#9146FF; color:#fff; padding:.6rem 1rem; border-radius:8px; text-decoration:none; font-weight:700">▶ Twitch</a>
+          ${m.youtube ? `<a href="${m.youtube}" target="_blank" class="btn btn-white" style="padding:.6rem 1rem; border-radius:8px; text-decoration:none; font-weight:700; border:1px solid #ddd">YouTube</a>` : ''}
+          <a href="https://discord.gg/nKj9NFDyxj" target="_blank" class="btn btn-discord" style="padding:.6rem 1rem; border-radius:8px; text-decoration:none; font-weight:700">Discord Furioz</a>
         </div>
       </div>
-      <p><strong>Stream depuis:</strong> ${m.streamSince}</p>
-      <p><strong>Rejoint le collectif:</strong> ${m.depuisCollectif}</p>
-      <p style="color:#666">${m.bio}</p>
-      <div style="display:flex; gap:.4rem; flex-wrap:wrap; margin:.8rem 0">
-        ${m.tags.map(t=>`<span class="badge">${t}</span>`).join("")}
-      </div>
-      <div style="display:flex; gap:.5rem; margin-top:1rem; flex-wrap:wrap">
-        <a href="${m.twitch}" target="_blank" class="btn btn-dark">Chaîne Twitch</a>
-        <a href="https://twitch.tv/furiozcompagnie" target="_blank" class="btn btn-white">Furioz Compagnie</a>
-        <a href="https://discord.gg/nKj9NFDyxj" target="_blank" class="btn btn-discord">Discord</a>
-      </div>
     `;
-    modal.classList.add("active");
+    modal.classList.add('open');
+    document.getElementById('close-modal').onclick = () => modal.classList.remove('open');
+  }
+
+  document.querySelectorAll('.team-card[data-id]').forEach(card => {
+    card.style.cursor = 'pointer';
+    card.addEventListener('click', () => {
+      const id = card.getAttribute('data-id');
+      openMember(id);
+    });
   });
-  modal.addEventListener("click",(e)=>{ if(e.target===modal) modal.classList.remove("active"); });
+
+  modal.addEventListener('click', (e) => {
+    if (e.target === modal) modal.classList.remove('open');
+  });
 }
+
+document.addEventListener('DOMContentLoaded', () => {
+  initTwitch();
+  initModals();
+});
