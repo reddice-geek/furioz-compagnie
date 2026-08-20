@@ -4,16 +4,17 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Furioz Compagnie - Team de streamers indépendants</title>
-<meta name="description" content="Structure de créateurs indépendants depuis 2022. 10 places max Stream Team [FZ]. Entraide, indépendance, convivialité.">
+<meta name="description" content="Bienvenue chez la Furioz Compagnie. Team de créateurs indépendants depuis 2022. 10 places max Stream Team [FZ]. Entraide, indépendance, convivialité.">
 <link rel="icon" href="img/logo.png">
 <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
-<nav>
-  <div class="brand">
+
+<nav id="main-nav">
+  <a href="#accueil" class="brand" id="logo-link" aria-label="Retour accueil">
     <img src="img/furioz-logo.png" alt="Furioz">
     <strong>FURIOZ</strong>
-  </div>
+  </a>
   <div class="links">
     <a href="#accueil" class="active">Accueil</a>
     <a href="#qui">Qui sommes-nous</a>
@@ -22,21 +23,24 @@
     <a href="https://discord.gg/nKj9NFDyxj" target="_blank" class="btn btn-discord">Discord</a>
   </div>
 </nav>
+
 <main class="container">
+
 <section id="accueil" class="hero">
-  <span class="badge">✦ Depuis Septembre 2022 • Par RedDice_Geek</span>
+  <span class="badge">✦ Depuis Septembre 2022 • Par RedDice_Geek • 3/10 membres</span>
   <img src="img/furioz-logo.png" alt="Furioz Compagnie" style="height:110px; object-fit:contain">
-  <h1>On n'est pas une usine à viewers.<br>On est une team.</h1>
-  <p>🔵 FURIOZ COMPAGNIE — Structure de créateurs indépendants. Tu cherches pas des viewers faciles, mais une vraie team pour progresser ? On est 10 en Stream Team [FZ], pas 100.</p>
-  <div style="display:flex; gap:.6rem; justify-content:center; flex-wrap:wrap; margin-top:1rem">
-    <a href="https://discord.gg/nKj9NFDyxj" target="_blank" class="btn btn-discord">💬 Rejoindre Discord</a>
-    <a href="https://forms.gle/7hA9ac26qJn7AHjc6" target="_blank" class="btn btn-white">📝 Formulaire candidature</a>
+  <h1>Bienvenue à la maison.<br>Tu es déjà des nôtres.</h1>
+  <p>Tu viens de découvrir la <strong>Furioz Compagnie</strong> ? On est une petite famille de créateurs indépendants qui s'est dit qu'on irait plus loin ensemble. Pas une usine à viewers, pas de chiffres qui tournent. Juste <strong>10 places max en Stream Team [FZ]</strong> pour s'entraider, se raider, créer des events et kiffer. Que tu sois gamer, DJ comme Foxy, artiste ou IRL, si tu cherches une vraie team chaleureuse, installe-toi.</p>
+  <div style="display:flex; gap:.6rem; justify-content:center; flex-wrap:wrap; margin-top:1.2rem">
+    <a href="https://discord.gg/nKj9NFDyxj" target="_blank" class="btn btn-discord">💬 Rejoindre le Discord</a>
+    <a href="#team" class="btn btn-white">👀 Découvrir la Team</a>
     <a href="https://twitch.tv/furiozcompagnie" target="_blank" class="btn btn-dark">Twitch Furioz</a>
   </div>
+
   <div class="live-section">
     <div>
       <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:.8rem">
-        <strong style="color:#fff; font-size:.9rem">Furioz Compagnie en live</strong>
+        <strong style="color:#fff; font-size:.9rem; letter-spacing:.02em">Furioz Compagnie en live</strong>
         <span id="live-badge" class="live-badge">VÉRIFICATION...</span>
       </div>
       <div class="player-box"><iframe id="twitch-player" allowfullscreen></iframe></div>
@@ -44,31 +48,54 @@
     <div class="chat-box"><iframe id="twitch-chat" style="width:100%; height:100%; min-height:420px; border:0"></iframe></div>
   </div>
 </section>
+
 <section id="qui" class="section">
-  <span class="kicker">Qui sommes-nous</span>
-  <h2>Une structure pour progresser ensemble</h2>
+  <span class="kicker">Qui sommes-nous • Depuis 2022</span>
+  <h2>On n'est pas une team. On est un boost commun.</h2>
+  <p style="color:var(--muted); max-width:720px; font-size:1.05rem; line-height:1.7; margin-bottom:1.5rem">Lis ça en 30 secondes et tu comprendras pourquoi on reste à 10 max. On veut que tu restes, pas que tu passes.</p>
   <div class="grid-3">
-    <div class="card"><h3>📖 Histoire</h3><p>Fondée par <strong>RedDice_Geek en septembre 2022</strong> pour rassembler des créateurs qui voulaient progresser ensemble sans perdre leur indépendance.</p></div>
-    <div class="card"><h3>🎯 Mission</h3><p><strong>Pas de fausses promesses de viewers.</strong> On est là pour s'entraider, organiser des events Twitch, des collabs et alimenter une régie clip commune YouTube / TikTok.</p></div>
-    <div class="card"><h3>✅ Ouvert à tous</h3><p>Gaming, IRL, art, musique, cosplay, DJ. Débutant accepté, on demande juste respect et 2 interactions / semaine.</p></div>
+    <div class="card">
+      <h3>📖 Une histoire vraie</h3>
+      <p><strong>Septembre 2022, RedDice_Geek</strong> en a marre de streamer seul. Il crée un petit Discord pour progresser à 3-4. Aujourd'hui, on est une structure communautaire reconnue, mais on a gardé l'esprit du début : on se connaît tous par nos prénoms.</p>
+    </div>
+    <div class="card" style="border:1px solid var(--blue); background:linear-gradient(135deg,#F0F6FF,#fff)">
+      <h3>🎯 Notre promesse, sans bullshit</h3>
+      <p><strong>On ne te vend pas de viewers.</strong> On t'apporte mieux : une entraide technique réelle, des events Twitch organisés, des collabs naturelles et une régie clip commune YouTube / TikTok qui met en avant TA chaîne. Tu gardes 100% de ton identité.</p>
+    </div>
+    <div class="card">
+      <h3>🌈 Ouvert à tous les talents</h3>
+      <p>Gaming, IRL, art, musique, cosplay, <strong>DJ comme Foxy Sword</strong> qui mixe et game avec nous. Débutant bienvenu. On demande une seule chose : le respect et <strong>2 interactions / semaine</strong>. Le reste, on t'aide à l'apprendre.</p>
+    </div>
   </div>
-  <div class="grid-3" style="margin-top:1rem">
-    <div class="card" style="border-left:4px solid var(--blue)"><h4>🤝 Entraide</h4><p>On partage nos astuces techniques, on se raid, on se conseille.</p></div>
-    <div class="card" style="border-left:4px solid var(--black)"><h4>🔓 Indépendance</h4><p>Tu restes 100% proprio de ton contenu. Les overlays sont optionnels.</p></div>
-    <div class="card" style="border-left:4px solid var(--discord)"><h4>☕ Convivialité</h4><p>Pas de pression, pas de quota de lurk. Juste 2 interactions / semaine et 1 event / mois.</p></div>
+
+  <div class="grid-3" style="margin-top:1.2rem">
+    <div class="card" style="border-left:4px solid var(--blue)">
+      <h4>🤝 Entraide concrète</h4>
+      <p>On debug ton OBS à 23h, on te raid quand tu as 2 viewers, on partage nos overlays et nos astuces. Personne ne perce seul ici.</p>
+    </div>
+    <div class="card" style="border-left:4px solid var(--black)">
+      <h4>🔓 100% Indépendant</h4>
+      <p>Ta chaîne reste à toi. Pas de contrat, pas de quota de lurk imposé, overlays Furioz optionnels. On booste ta liberté, on ne la vole pas.</p>
+    </div>
+    <div class="card" style="border-left:4px solid var(--discord)">
+      <h4>☕ Convivialité avant stats</h4>
+      <p>Pas de pression. 2 interactions / semaine + 1 event / mois, c'est tout. On veut des gens bien, pas des robots de chat.</p>
+    </div>
   </div>
 </section>
+
 <section id="team" class="section">
-  <span class="kicker">Stream Team [FZ] - 10 places max</span>
-  <h2>La Team actuelle (3/10)</h2>
-  <p style="color:var(--muted)">Clique sur une carte pour voir depuis quand ils streament, quand ils ont rejoint le collectif, leurs chaînes et ce qu'ils streament à la Furioz.</p>
+  <span class="kicker">Stream Team [FZ] - 10 places max • 3/10 actuellement</span>
+  <h2>Rencontre la famille</h2>
+  <p style="color:var(--muted)">Clique sur une carte. Tu verras depuis quand ils sont là, ce qu'ils streament vraiment et leurs liens. Pas de fiche LinkedIn, de vraies personnes.</p>
+  
   <div id="team-grid" class="team-grid">
     <div class="team-card founder" data-id="reddice">
       <div class="avatar">R</div>
       <div>
         <h3 style="margin:0">RedDice_Geek <span style="font-weight:400; color:var(--blue)">• FONDATEUR</span></h3>
         <span class="badge">Fondateur • Depuis Septembre 2022 • Stream depuis Août 2021</span>
-        <p style="margin:.5rem 0 0; color:#555">Fondateur du collectif. Click pour voir sa chaîne et ce qu'il stream à la Furioz.</p>
+        <p style="margin:.5rem 0 0; color:#555">Fondateur du collectif. Passionné gaming, cosplay et IRL. Il a créé la Furioz pour que personne ne stream seul.</p>
       </div>
     </div>
     <div class="team-card" data-id="zafkiel">
@@ -79,7 +106,7 @@
     <div class="team-card" data-id="foxysword">
       <div class="avatar">F</div>
       <h4 style="margin:.5rem 0 0">Foxy Sword</h4>
-      <small class="badge">Depuis 18 Août 2026 • DJ / Musique</small>
+      <small class="badge">Depuis 18 Août 2026 • Gaming • DJ</small>
     </div>
     <div class="team-card empty"><h4>Place libre</h4><small>7 places restantes</small><br><a href="https://forms.gle/7hA9ac26qJn7AHjc6" target="_blank" style="color:var(--blue); font-weight:800">Postuler →</a></div>
     <div class="team-card empty"><h4>Place libre</h4><small>Rejoins-nous</small></div>
@@ -90,26 +117,36 @@
     <div class="team-card empty"><h4>Place libre</h4><small>Rejoins-nous</small></div>
   </div>
 </section>
+
 <section id="rejoindre" class="section">
-  <span class="kicker">Recrutement</span>
-  <h2>Nous rejoindre - 2 étapes</h2>
+  <span class="kicker">Recrutement ouvert</span>
+  <h2>Ta place est peut-être ici. On t'attend.</h2>
   <div class="cta-box">
-    <h3 style="color:#fff; margin-top:0">🎯 10 places max en Stream Team [FZ]</h3>
-    <p style="color:#aaa; max-width:600px; margin:0 auto 1.2rem">Tu cherches pas une usine à viewers mais une vraie team pour progresser ? Entraide technique, events Twitch, régie clip YouTube/TikTok commune. Tu restes 100% proprio de ta chaîne.</p>
-    <div style="display:flex; gap:.8rem; justify-content:center; flex-wrap:wrap">
-      <a href="https://discord.gg/nKj9NFDyxj" target="_blank" class="btn btn-discord" style="padding:.9rem 1.6rem">1⃣ Rejoindre le Discord</a>
-      <a href="https://forms.gle/7hA9ac26qJn7AHjc6" target="_blank" class="btn btn-white" style="padding:.9rem 1.6rem">2⃣ Formulaire de candidature</a>
+    <h3 style="color:#fff; margin-top:0; font-size:1.8rem">🎯 On ne recrute pas des viewers. On accueille des humains.</h3>
+    <p style="color:#B0B3C5; max-width:680px; margin:0 auto 1.2rem; font-size:1.05rem; line-height:1.7">Tu en as marre de streamer dans le vide ? Tu veux des conseils honnêtes, des raids qui font plaisir et des collègues qui te soutiennent même à 3 viewers ? Si tu as l'esprit d'équipe, que tu respectes les autres et que tu as envie de progresser sans pression, tu as déjà le profil Furioz. <br><br><strong style="color:#fff">10 places max en Stream Team [FZ]</strong> pour garder une vraie proximité. Actuellement 3/10, il reste 7 places.</p>
+    <div style="display:flex; gap:.8rem; justify-content:center; flex-wrap:wrap; margin-top:1.2rem">
+      <a href="https://discord.gg/nKj9NFDyxj" target="_blank" class="btn btn-discord" style="padding:1rem 1.8rem; font-size:.85rem">1⃣ Rejoindre le Discord d'abord</a>
+      <a href="https://forms.gle/7hA9ac26qJn7AHjc6" target="_blank" class="btn btn-white" style="padding:1rem 1.8rem; font-size:.85rem">2⃣ Remplir la candidature (2 min)</a>
     </div>
-    <p style="color:#777; font-size:.8rem; margin-top:1rem">Critères: respect + 2 interactions / semaine + 1 event / mois. Ouvert gaming, IRL, art, musique, cosplay, DJ.</p>
+    <div style="margin-top:1.8rem; display:flex; gap:1rem; justify-content:center; flex-wrap:wrap; color:#8B8FA8; font-size:.85rem">
+      <span>✓ Gaming, IRL, art, musique, cosplay, DJ</span>
+      <span>✓ Débutant accepté</span>
+      <span>✓ 0 quota de lurk</span>
+    </div>
+    <p style="color:#6B6F8A; font-size:.8rem; margin-top:1.2rem">Critères: respect + 2 interactions / semaine + 1 event / mois. Tu restes 100% proprio de ta chaîne.</p>
   </div>
 </section>
+
 </main>
+
 <div id="member-modal" class="modal"><div id="modal-content" class="modal-box"></div></div>
+
 <footer class="container" style="text-align:center; color:var(--muted); font-size:.85rem; padding:2rem 0">
   <img src="img/furioz-logo.png" alt="" style="height:32px; opacity:.6"><br>
   Furioz Compagnie • Depuis 2022 • Par RedDice_Geek<br>
   <a href="https://discord.gg/nKj9NFDyxj" target="_blank">Discord</a> • <a href="https://twitch.tv/furiozcompagnie" target="_blank">Twitch</a> • <a href="https://www.youtube.com/channel/UCxjKpjK-3DBR3HgmeRY7UMg" target="_blank">YouTube</a> • <a href="https://forms.gle/7hA9ac26qJn7AHjc6" target="_blank">Candidature</a>
 </footer>
+
 <script src="js/script.js"></script>
 </body>
 </html>
