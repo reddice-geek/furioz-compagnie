@@ -36,7 +36,7 @@ const members = {
     role: "MODO / WEBMASTER • 🇫🇷 France",
     badge: "Depuis 20 Aout 2026 • Modo / Webmaster • Avali VRChat • 🇫🇷 France",
     joined: "20 Aout 2026",
-    streamSince: "Occasionnel",
+    streamSince: "2023",
     twitch: "https://twitch.tv/furiozcompagnie",
     desc: "Avali de VRChat, Quentin Pierrot nous a rejoint le 20 Aout 2026 principalement en tant que modo, webmaster du site et gestion du Discord. Il s'occupe aussi des clips et stream parfois sur la chaine Twitch Furioz Compagnie. 🇫🇷 Vient de France.",
     tags: ["Modo", "Webmaster", "VRChat", "Avali", "🇫🇷 France", "Clips", "Discord"]
