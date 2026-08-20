@@ -1,112 +1,258 @@
-document.addEventListener("DOMContentLoaded",()=>{
-  initLive();
-  initTeamModal();
-  setActiveNav();
-});
 
-function setActiveNav(){
-  const links=document.querySelectorAll("nav .links a[href^='#']");
-  links.forEach(l=>l.addEventListener("click",()=>{
-    links.forEach(x=>x.classList.remove("active"));
-    l.classList.add("active");
-  }));
+:root{
+  --blue:#0066FF;
+  --blue-2:#4F46E5;
+  --black:#0A0A0F;
+  --white:#FFFFFF;
+  --gray:#F5F7FA;
+  --gray-2:#EEF2FF;
+  --border:#E5E7EB;
+  --border-strong:#D1D5DB;
+  --muted:#6B7280;
+  --muted-2:#9CA3AF;
+  --discord:#5865F2;
+  --success:#10B981;
+  --radius:16px;
+  --radius-lg:20px;
+  --radius-full:999px;
+  --shadow-sm:0 2px 8px rgba(10,10,15,.06);
+  --shadow-md:0 8px 24px rgba(10,10,15,.08);
+  --shadow-lg:0 20px 40px rgba(10,10,15,.12);
+  --glow:0 0 0 1px rgba(0,102,255,.15), 0 8px 32px rgba(0,102,255,.2);
 }
 
-function initLive(){
-  const player=document.getElementById("twitch-player");
-  const chat=document.getElementById("twitch-chat");
-  const badge=document.getElementById("live-badge");
-  const domain=window.location.hostname||"localhost";
-  const parents=`&parent=localhost&parent=${domain}&parent=vercel.app&parent=www.furiozcompagnie.fr&parent=furioz.fr`;
-  if(player){
-    player.src=`https://player.twitch.tv/?channel=furiozcompagnie${parents}&muted=true`;
-  }
-  if(chat){
-    chat.src=`https://www.twitch.tv/embed/furiozcompagnie/chat?darkpopout${parents}`;
-  }
-  setTimeout(()=>{
-    if(badge){
-      badge.textContent="OFFLINE - Player chargé";
-      badge.className="live-badge offline";
-    }
-  },2000);
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{
+  margin:0; 
+  font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif; 
+  background:radial-gradient(1200px 600px at 20% -10%, #E0E7FF 0%, transparent 60%),
+             radial-gradient(1000px 500px at 90% 0%, #DBEAFE 0%, transparent 50%),
+             var(--white);
+  color:var(--black); 
+  line-height:1.6;
+  -webkit-font-smoothing:antialiased;
 }
 
-const TEAM=[
-  {
-    id:"reddice",
-    name:"RedDice_Geek",
-    alias:"RedDice",
-    role:"Fondateur",
-    depuisCollectif:"Septembre 2022",
-    streamSince:"Août 2021",
-    twitch:"https://twitch.tv/reddice_stream",
-    youtube:"https://www.youtube.com/channel/UCxjKpjK-3DBR3HgmeRY7UMg",
-    tags:["Just Chatting","Gaming","Cosplay"],
-    bio:"Fondateur du collectif. Objectif: progresser ensemble sans perdre son indépendance.",
-    avatar:"R"
-  },
-  {
-    id:"zafkiel",
-    name:"Zafkiel",
-    alias:"LePetoChard",
-    role:"Streamer",
-    depuisCollectif:"23 Novembre 2024",
-    streamSince:"2023",
-    twitch:"https://www.twitch.tv/le_petochard",
-    tags:["Gaming","Events","Collabs"],
-    bio:"Membre pilier de la Stream Team [FZ]. A rejoint la Furioz en tant que streameur le 23/11/2024. Ambiance chill et entraide.",
-    avatar:"Z"
-  },
-  {
-    id:"foxysword",
-    name:"Foxy Sword",
-    alias:"DJ",
-    role:"Streamer / DJ",
-    depuisCollectif:"18 Août 2026",
-    streamSince:"2025",
-    twitch:"https://www.twitch.tv/foxysword350",
-    tags:["DJ","Musique","Mix","Débutant","Nouveau"],
-    bio:"DJ débutant, Foxy Sword nous a rejoint le 18 Août 2026. Il streame depuis 2025 et va proposer des lives musique avec ses mix. Ambiance chill, il débute et veut partager sa passion.",
-    avatar:"F"
-  }
-];
 
-function initTeamModal(){
-  const grid=document.getElementById("team-grid");
-  const modal=document.getElementById("member-modal");
-  const modalContent=document.getElementById("modal-content");
-  if(!grid||!modal) return;
-  grid.addEventListener("click",(e)=>{
-    const card=e.target.closest(".team-card[data-id]");
-    if(!card) return;
-    const id=card.dataset.id;
-    const m=TEAM.find(x=>x.id===id);
-    if(!m) return;
-    modalContent.innerHTML=`
-      <button class="close" onclick="document.getElementById('member-modal').classList.remove('active')">✕</button>
-      <div style="display:flex; gap:1rem; align-items:center; margin-bottom:1rem">
-        <div class="avatar" style="width:80px; height:80px; font-size:1.8rem">${m.avatar}</div>
-        <div>
-          <h3 style="margin:0">${m.name} ${m.alias?`<small style='color:#666'>/ ${m.alias}</small>`:''}</h3>
-          <span class="badge">${m.role} • Depuis ${m.depuisCollectif}</span>
-        </div>
-      </div>
-      <p><strong>Stream depuis:</strong> ${m.streamSince}</p>
-      <p><strong>Rejoint le collectif:</strong> ${m.depuisCollectif}</p>
-      <p style="color:#666; line-height:1.6">${m.bio}</p>
-      <div style="display:flex; gap:.4rem; flex-wrap:wrap; margin:.8rem 0">
-        ${m.tags.map(t=>`<span class="badge">${t}</span>`).join("")}
-      </div>
-      <div style="display:flex; gap:.5rem; margin-top:1.2rem; flex-wrap:wrap">
-        <a href="${m.twitch}" target="_blank" class="btn btn-dark" style="background:#9146FF">▶ Twitch</a>
-        ${m.youtube?`<a href="${m.youtube}" target="_blank" class="btn btn-white">YouTube</a>`:''}
-        <a href="https://twitch.tv/furiozcompagnie" target="_blank" class="btn btn-white">Furioz</a>
-        <a href="https://discord.gg/nKj9NFDyxj" target="_blank" class="btn btn-discord">Discord</a>
-      </div>
-    `;
-    modal.classList.add("active");
-  });
-  modal.addEventListener("click",(e)=>{ if(e.target===modal) modal.classList.remove("active"); });
-  document.addEventListener('keydown',(e)=>{ if(e.key==='Escape') modal.classList.remove('active'); });
+/* NAV - glassmorphism ultra stylé et fluide */
+nav{
+  position:sticky; top:0; z-index:100; height:72px; padding:0 4vw;
+  background:rgba(10,10,15,.78);
+  backdrop-filter:blur(20px) saturate(180%);
+  -webkit-backdrop-filter:blur(20px) saturate(180%);
+  display:flex; align-items:center; justify-content:space-between;
+  border-bottom:1px solid rgba(255,255,255,.08);
+  transition:all .4s cubic-bezier(.16,1,.3,1);
+}
+nav.scrolled{
+  height:64px;
+  background:rgba(10,10,15,.92);
+  box-shadow:0 8px 32px rgba(0,0,0,.25), inset 0 1px 0 rgba(255,255,255,.06);
+}
+nav .brand{
+  display:flex; align-items:center; gap:12px;
+  text-decoration:none; cursor:pointer;
+  transition:transform .2s cubic-bezier(.16,1,.3,1);
+}
+nav .brand:hover{transform:scale(1.03)}
+nav .brand:active{transform:scale(.98)}
+nav .brand img{height:34px; filter:drop-shadow(0 2px 8px rgba(0,102,255,.3)); transition:filter .3s}
+nav .brand:hover img{filter:drop-shadow(0 4px 16px rgba(0,102,255,.5))}
+nav .brand strong{color:#fff; letter-spacing:.06em; font-weight:900; font-size:1.1rem}
+nav .links{display:flex; gap:.6rem; align-items:center}
+nav .links a{
+  color:#9CA3AF; text-decoration:none; font-weight:700; font-size:.82rem; 
+  text-transform:uppercase; letter-spacing:.04em; 
+  transition:all .3s cubic-bezier(.16,1,.3,1);
+  position:relative; padding:.5rem .9rem; border-radius:999px;
+}
+nav .links a::after{
+  content:''; position:absolute; bottom:2px; left:50%; width:0; height:2px;
+  background:linear-gradient(90deg, var(--blue), #8B5CF6);
+  border-radius:2px; transition:all .3s cubic-bezier(.16,1,.3,1);
+  transform:translateX(-50%);
+}
+nav .links a:hover{color:#fff; background:rgba(255,255,255,.06)}
+nav .links a:hover::after{width:60%}
+nav .links a.active{color:#fff; background:rgba(255,255,255,.1); box-shadow:inset 0 1px 0 rgba(255,255,255,.1)}
+nav .links a.active::after{width:60%; background:#fff}
+nav .links a.btn-discord::after{display:none}
+
+
+/* BUTTONS - modern */
+.btn{
+  border:0; border-radius:var(--radius-full); padding:.7rem 1.25rem; 
+  font-weight:800; text-transform:uppercase; font-size:.78rem; cursor:pointer; 
+  text-decoration:none; display:inline-flex; align-items:center; gap:.5rem;
+  transition:all .2s cubic-bezier(.4,0,.2,1);
+  position:relative; overflow:hidden;
+}
+.btn:hover{transform:translateY(-1px)}
+.btn:active{transform:translateY(0)}
+.btn-blue{background:linear-gradient(135deg,var(--blue),var(--blue-2)); color:#fff; box-shadow:var(--glow)}
+.btn-discord{background:var(--discord); color:#fff; box-shadow:0 4px 16px rgba(88,101,242,.3)}
+.btn-discord:hover{box-shadow:0 8px 24px rgba(88,101,242,.4)}
+.btn-white{background:#fff; color:var(--black); border:1px solid var(--border); box-shadow:var(--shadow-sm)}
+.btn-white:hover{border-color:var(--border-strong); box-shadow:var(--shadow-md)}
+.btn-dark{background:var(--black); color:#fff; box-shadow:var(--shadow-md)}
+.btn-dark:hover{background:#1A1A23}
+
+/* CONTAINER */
+.container{width:min(1160px,92vw); margin:0 auto; padding:2rem 0}
+
+/* HERO - modern gradient */
+.hero{text-align:center; padding:4rem 0 1.5rem; position:relative}
+.hero::before{
+  content:''; position:absolute; inset:-2rem 0 0 0;
+  background:radial-gradient(600px 300px at 50% 0%, rgba(0,102,255,.08), transparent);
+  pointer-events:none;
+}
+.hero img{height:112px; margin-bottom:1.2rem; filter:drop-shadow(0 8px 24px rgba(0,102,255,.15))}
+.hero h1{
+  font-size:clamp(2.2rem,5.5vw,3.6rem); font-weight:900; line-height:.95; 
+  margin:.6rem 0 1rem;
+  letter-spacing:-.02em;
+  background:linear-gradient(180deg, #0A0A0F 0%, #3A3A4A 100%);
+  -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text;
+}
+.hero p{color:var(--muted); max-width:680px; margin:0 auto 1.4rem; font-size:1.05rem; line-height:1.7}
+
+.badge{
+  display:inline-flex; align-items:center; gap:.4rem;
+  padding:.35rem .75rem; 
+  background:linear-gradient(135deg, #F5F7FA, #EEF2FF); 
+  border:1px solid var(--border); border-radius:var(--radius-full); 
+  font-size:.68rem; font-weight:800; text-transform:uppercase; letter-spacing:.06em;
+  color:var(--black);
+}
+
+/* LIVE SECTION - premium */
+.live-section{
+  margin-top:2.5rem; display:grid; grid-template-columns:1.6fr .9fr; gap:1.2rem; 
+  background:linear-gradient(180deg, #0A0A0F 0%, #111119 100%);
+  padding:1.2rem; border-radius:var(--radius-lg);
+  box-shadow:0 20px 60px rgba(0,0,0,.25), inset 0 1px 0 rgba(255,255,255,.08);
+  border:1px solid rgba(255,255,255,.08);
+  position:relative; overflow:hidden;
+}
+.live-section::before{
+  content:''; position:absolute; top:0; left:0; right:0; height:1px;
+  background:linear-gradient(90deg, transparent, rgba(0,102,255,.5), transparent);
+}
+.player-box{aspect-ratio:16/9; background:#000; border-radius:12px; overflow:hidden; position:relative; box-shadow:inset 0 0 0 1px rgba(255,255,255,.08)}
+.player-box iframe{position:absolute; inset:0; width:100%; height:100%; border:0}
+.chat-box{border-radius:12px; overflow:hidden; background:#0F0F14; min-height:380px; border:1px solid rgba(255,255,255,.06)}
+.live-badge{
+  display:inline-flex; align-items:center; gap:.45rem; padding:.35rem .7rem; border-radius:var(--radius-full); 
+  font-size:.68rem; font-weight:900; letter-spacing:.04em;
+  background:rgba(255,255,255,.08); color:#fff; border:1px solid rgba(255,255,255,.12);
+  backdrop-filter:blur(8px);
+}
+.live-badge.live{background:linear-gradient(135deg,#FF0000,#CC0000); color:#fff; box-shadow:0 0 16px rgba(255,0,0,.4); animation:pulse 2s infinite}
+.live-badge.offline{background:rgba(255,255,255,.08); color:#9CA3AF}
+@keyframes pulse{0%,100%{box-shadow:0 0 16px rgba(255,0,0,.4)} 50%{box-shadow:0 0 24px rgba(255,0,0,.6)}}
+
+/* SECTION */
+.section{padding:3rem 0; border-top:1px solid var(--border); position:relative}
+.section h2{font-size:clamp(1.7rem,3vw,2.4rem); font-weight:900; margin:0 0 .7rem; letter-spacing:-.02em}
+.kicker{
+  color:var(--blue); font-weight:900; font-size:.72rem; text-transform:uppercase; 
+  letter-spacing:.1em; display:inline-flex; align-items:center; gap:.5rem;
+}
+.kicker::before{content:''; width:20px; height:2px; background:var(--blue); border-radius:2px}
+
+/* CARDS */
+.grid-3{display:grid; grid-template-columns:repeat(3,1fr); gap:1.2rem}
+.card{
+  background:rgba(255,255,255,.9); backdrop-filter:blur(12px);
+  border:1px solid var(--border); border-radius:var(--radius); 
+  padding:1.4rem; box-shadow:var(--shadow-sm);
+  transition:all .25s cubic-bezier(.4,0,.2,1);
+}
+.card:hover{transform:translateY(-2px); box-shadow:var(--shadow-md); border-color:var(--border-strong)}
+
+/* TEAM GRID - modern */
+.team-grid{display:grid; grid-template-columns:repeat(3,1fr); gap:1.2rem; margin-top:1.2rem}
+.team-card{
+  background:#fff; border:1px solid var(--border); border-radius:var(--radius); 
+  padding:1.2rem; text-align:center; cursor:pointer; 
+  transition:all .25s cubic-bezier(.4,0,.2,1);
+  position:relative; overflow:hidden;
+}
+.team-card::before{
+  content:''; position:absolute; inset:0; 
+  background:linear-gradient(135deg, transparent, rgba(0,102,255,.03));
+  opacity:0; transition:opacity .25s;
+}
+.team-card:hover{transform:translateY(-4px); box-shadow:var(--shadow-lg); border-color:var(--blue); }
+.team-card:hover::before{opacity:1}
+.team-card.founder{
+  grid-column:span 3; display:grid; grid-template-columns:120px 1fr; text-align:left; 
+  border:2px solid transparent;
+  background:linear-gradient(#fff,#fff) padding-box, linear-gradient(135deg, var(--blue), #8B5CF6) border-box;
+  box-shadow:var(--glow);
+}
+.team-card.empty{
+  border:1.5px dashed var(--border); background:linear-gradient(135deg, var(--gray), #FAFBFF); 
+  color:var(--muted); position:relative;
+}
+.team-card.empty:hover{border-color:var(--blue); color:var(--blue); background:linear-gradient(135deg, #EEF2FF, #F5F3FF)}
+.avatar{
+  width:76px; height:76px; border-radius:50%; 
+  background:linear-gradient(135deg, var(--black), #2A2A3A); 
+  color:#fff; display:grid; place-items:center; font-weight:900; font-size:1.5rem; 
+  margin:0 auto .7rem; box-shadow:var(--shadow-md);
+  position:relative; z-index:1;
+}
+.team-card.founder .avatar{width:96px; height:96px; margin:0; font-size:2rem}
+.team-card[data-id="foxysword"] .avatar{
+  background:linear-gradient(135deg, #8B5CF6, #EC4899);
+}
+
+/* MODAL - glass */
+.modal{
+  display:none; position:fixed; inset:0; z-index:200; 
+  background:rgba(10,10,15,.6); backdrop-filter:blur(12px);
+  padding:2rem; overflow:auto;
+  opacity:0; transition:opacity .2s;
+}
+.modal.active{display:grid; place-items:center; opacity:1; animation:fadeIn .2s ease}
+.modal-box{
+  background:rgba(255,255,255,.98); backdrop-filter:blur(24px);
+  border-radius:24px; width:min(640px,94vw); padding:1.8rem; position:relative;
+  box-shadow:0 24px 64px rgba(0,0,0,.2), inset 0 1px 0 rgba(255,255,255,.8);
+  border:1px solid rgba(255,255,255,.6);
+  transform:scale(.96) translateY(8px); animation:modalIn .3s cubic-bezier(.16,1,.3,1) forwards;
+}
+@keyframes fadeIn{from{opacity:0} to{opacity:1}}
+@keyframes modalIn{to{transform:scale(1) translateY(0)}}
+.modal-box .close{
+  position:absolute; top:14px; right:14px; border:0; 
+  background:var(--gray); width:36px; height:36px; border-radius:50%; 
+  cursor:pointer; display:grid; place-items:center; font-size:1.1rem;
+  transition:all .2s;
+}
+.modal-box .close:hover{background:var(--black); color:#fff}
+
+/* CTA */
+.cta-box{
+  background:linear-gradient(135deg, #0A0A0F 0%, #1A1A2E 100%); 
+  color:#fff; border-radius:24px; padding:2.5rem; text-align:center; margin-top:2.5rem;
+  position:relative; overflow:hidden; border:1px solid rgba(255,255,255,.08);
+  box-shadow:0 20px 60px rgba(0,0,0,.3);
+}
+.cta-box::before{
+  content:''; position:absolute; inset:0;
+  background:radial-gradient(600px 300px at 50% -20%, rgba(0,102,255,.15), transparent);
+  pointer-events:none;
+}
+
+@media(max-width:900px){
+  .live-section{grid-template-columns:1fr} 
+  .grid-3{grid-template-columns:1fr} 
+  .team-grid{grid-template-columns:1fr} 
+  .team-card.founder{grid-column:span 1; grid-template-columns:1fr; text-align:center}
+  .team-card.founder .avatar{margin:0 auto .7rem}
+  nav .links a:not(.btn){display:none}
 }
