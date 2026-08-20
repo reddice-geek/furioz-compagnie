@@ -17,7 +17,7 @@ function initLive(){
   const chat=document.getElementById("twitch-chat");
   const badge=document.getElementById("live-badge");
   const domain=window.location.hostname||"localhost";
-  const parents=`&parent=localhost&parent=${domain}&parent=vercel.app&parent=www.furiozcompagnie.fr`;
+  const parents=`&parent=localhost&parent=${domain}&parent=vercel.app&parent=www.furiozcompagnie.fr&parent=furioz.fr`;
   if(player){
     player.src=`https://player.twitch.tv/?channel=furiozcompagnie${parents}&muted=true`;
   }
@@ -41,6 +41,7 @@ const TEAM=[
     depuisCollectif:"Septembre 2022",
     streamSince:"Août 2021",
     twitch:"https://twitch.tv/reddice_stream",
+    youtube:"https://www.youtube.com/channel/UCxjKpjK-3DBR3HgmeRY7UMg",
     tags:["Just Chatting","Gaming","Cosplay"],
     bio:"Fondateur du collectif. Objectif: progresser ensemble sans perdre son indépendance.",
     avatar:"R"
@@ -76,7 +77,6 @@ function initTeamModal(){
   const modal=document.getElementById("member-modal");
   const modalContent=document.getElementById("modal-content");
   if(!grid||!modal) return;
-
   grid.addEventListener("click",(e)=>{
     const card=e.target.closest(".team-card[data-id]");
     if(!card) return;
@@ -94,17 +94,19 @@ function initTeamModal(){
       </div>
       <p><strong>Stream depuis:</strong> ${m.streamSince}</p>
       <p><strong>Rejoint le collectif:</strong> ${m.depuisCollectif}</p>
-      <p style="color:#666">${m.bio}</p>
+      <p style="color:#666; line-height:1.6">${m.bio}</p>
       <div style="display:flex; gap:.4rem; flex-wrap:wrap; margin:.8rem 0">
         ${m.tags.map(t=>`<span class="badge">${t}</span>`).join("")}
       </div>
-      <div style="display:flex; gap:.5rem; margin-top:1rem; flex-wrap:wrap">
-        <a href="${m.twitch}" target="_blank" class="btn btn-dark">Chaîne Twitch</a>
-        <a href="https://twitch.tv/furiozcompagnie" target="_blank" class="btn btn-white">Furioz Compagnie</a>
+      <div style="display:flex; gap:.5rem; margin-top:1.2rem; flex-wrap:wrap">
+        <a href="${m.twitch}" target="_blank" class="btn btn-dark" style="background:#9146FF">▶ Twitch</a>
+        ${m.youtube?`<a href="${m.youtube}" target="_blank" class="btn btn-white">YouTube</a>`:''}
+        <a href="https://twitch.tv/furiozcompagnie" target="_blank" class="btn btn-white">Furioz</a>
         <a href="https://discord.gg/nKj9NFDyxj" target="_blank" class="btn btn-discord">Discord</a>
       </div>
     `;
     modal.classList.add("active");
   });
   modal.addEventListener("click",(e)=>{ if(e.target===modal) modal.classList.remove("active"); });
+  document.addEventListener('keydown',(e)=>{ if(e.key==='Escape') modal.classList.remove('active'); });
 }
