@@ -1,23 +1,27 @@
 
+@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;700&family=Syne:wght@600;800&family=Inter:wght@400;700;800;900&display=swap');
+
 :root{
   --blue:#0066FF;
   --blue-2:#4F46E5;
-  --black:#0A0A0F;
-  --white:#FFFFFF;
-  --gray:#F5F7FA;
-  --gray-2:#EEF2FF;
-  --border:#E5E7EB;
-  --border-strong:#D1D5DB;
-  --muted:#6B7280;
-  --muted-2:#9CA3AF;
+  --black:#1A1A1F;
+  --white:#F8F6F1;
+  --white-soft:#F3F0E9;
+  --bg-main:#EDE8DF;
+  --gray:#F5F3EF;
+  --gray-2:#E8E2D9;
+  --border:#E2DDD4;
+  --border-strong:#D1C9B8;
+  --muted:#6B6A68;
+  --muted-2:#9A9996;
   --discord:#5865F2;
   --success:#10B981;
   --radius:16px;
   --radius-lg:20px;
   --radius-full:999px;
-  --shadow-sm:0 2px 8px rgba(10,10,15,.06);
-  --shadow-md:0 8px 24px rgba(10,10,15,.08);
-  --shadow-lg:0 20px 40px rgba(10,10,15,.12);
+  --shadow-sm:0 2px 8px rgba(26,26,31,.06);
+  --shadow-md:0 8px 24px rgba(26,26,31,.08);
+  --shadow-lg:0 20px 40px rgba(26,26,31,.12);
   --glow:0 0 0 1px rgba(0,102,255,.15), 0 8px 32px rgba(0,102,255,.2);
 }
 
@@ -26,19 +30,18 @@ html{scroll-behavior:smooth}
 body{
   margin:0; 
   font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif; 
-  background:radial-gradient(1200px 600px at 20% -10%, #E0E7FF 0%, transparent 60%),
-             radial-gradient(1000px 500px at 90% 0%, #DBEAFE 0%, transparent 50%),
-             var(--white);
+  background:radial-gradient(1200px 600px at 20% -10%, #E8E2D9 0%, transparent 60%),
+             radial-gradient(1000px 500px at 90% 0%, #DDD8CE 0%, transparent 50%),
+             var(--white-soft);
   color:var(--black); 
   line-height:1.6;
   -webkit-font-smoothing:antialiased;
 }
 
-
-/* NAV - glassmorphism ultra stylé et fluide */
+/* NAV FUTURISTE */
 nav{
   position:sticky; top:0; z-index:100; height:72px; padding:0 4vw;
-  background:rgba(10,10,15,.78);
+  background:rgba(26,26,31,.82);
   backdrop-filter:blur(20px) saturate(180%);
   -webkit-backdrop-filter:blur(20px) saturate(180%);
   display:flex; align-items:center; justify-content:space-between;
@@ -47,7 +50,7 @@ nav{
 }
 nav.scrolled{
   height:64px;
-  background:rgba(10,10,15,.92);
+  background:rgba(26,26,31,.92);
   box-shadow:0 8px 32px rgba(0,0,0,.25), inset 0 1px 0 rgba(255,255,255,.06);
 }
 nav .brand{
@@ -59,11 +62,19 @@ nav .brand:hover{transform:scale(1.03)}
 nav .brand:active{transform:scale(.98)}
 nav .brand img{height:34px; filter:drop-shadow(0 2px 8px rgba(0,102,255,.3)); transition:filter .3s}
 nav .brand:hover img{filter:drop-shadow(0 4px 16px rgba(0,102,255,.5))}
-nav .brand strong{color:#fff; letter-spacing:.06em; font-weight:900; font-size:1.1rem}
+nav .brand strong{
+  color:#fff; 
+  letter-spacing:.08em; 
+  font-weight:800; 
+  font-size:1.15rem;
+  font-family:'Syne', 'Space Grotesk', sans-serif;
+  text-transform:uppercase;
+}
 nav .links{display:flex; gap:.6rem; align-items:center}
 nav .links a{
-  color:#9CA3AF; text-decoration:none; font-weight:700; font-size:.82rem; 
-  text-transform:uppercase; letter-spacing:.04em; 
+  color:#9CA3AF; text-decoration:none; font-weight:800; font-size:.78rem; 
+  text-transform:uppercase; letter-spacing:.14em; 
+  font-family:'Syne', sans-serif;
   transition:all .3s cubic-bezier(.16,1,.3,1);
   position:relative; padding:.5rem .9rem; border-radius:999px;
 }
@@ -79,29 +90,27 @@ nav .links a.active{color:#fff; background:rgba(255,255,255,.1); box-shadow:inse
 nav .links a.active::after{width:60%; background:#fff}
 nav .links a.btn-discord::after{display:none}
 
-
-/* BUTTONS - modern */
+/* BUTTONS */
 .btn{
   border:0; border-radius:var(--radius-full); padding:.7rem 1.25rem; 
   font-weight:800; text-transform:uppercase; font-size:.78rem; cursor:pointer; 
   text-decoration:none; display:inline-flex; align-items:center; gap:.5rem;
   transition:all .2s cubic-bezier(.4,0,.2,1);
   position:relative; overflow:hidden;
+  font-family:'Syne', sans-serif;
 }
 .btn:hover{transform:translateY(-1px)}
 .btn:active{transform:translateY(0)}
 .btn-blue{background:linear-gradient(135deg,var(--blue),var(--blue-2)); color:#fff; box-shadow:var(--glow)}
 .btn-discord{background:var(--discord); color:#fff; box-shadow:0 4px 16px rgba(88,101,242,.3)}
 .btn-discord:hover{box-shadow:0 8px 24px rgba(88,101,242,.4)}
-.btn-white{background:#fff; color:var(--black); border:1px solid var(--border); box-shadow:var(--shadow-sm)}
+.btn-white{background:#FAF8F5; color:var(--black); border:1px solid var(--border); box-shadow:var(--shadow-sm)}
 .btn-white:hover{border-color:var(--border-strong); box-shadow:var(--shadow-md)}
 .btn-dark{background:var(--black); color:#fff; box-shadow:var(--shadow-md)}
-.btn-dark:hover{background:#1A1A23}
+.btn-dark:hover{background:#2A2A33}
 
-/* CONTAINER */
 .container{width:min(1160px,92vw); margin:0 auto; padding:2rem 0}
 
-/* HERO - modern gradient */
 .hero{
   text-align:center; 
   padding:3rem 0 1.5rem; 
@@ -112,7 +121,7 @@ nav .links a.btn-discord::after{display:none}
 }
 .hero::before{
   content:''; position:absolute; inset:-2rem 0 0 0;
-  background:radial-gradient(600px 300px at 50% 0%, rgba(0,102,255,.08), transparent);
+  background:radial-gradient(600px 300px at 50% 0%, rgba(0,102,255,.06), transparent);
   pointer-events:none;
 }
 .hero .hero-logo{
@@ -120,33 +129,34 @@ nav .links a.btn-discord::after{display:none}
   height:96px;
   width:auto;
   margin:0 auto 1.2rem;
-  filter:drop-shadow(0 8px 24px rgba(0,102,255,.15));
+  filter:drop-shadow(0 8px 24px rgba(0,102,255,.12));
   object-fit:contain;
 }
-.hero img:not(.hero-logo){height:112px; margin-bottom:1.2rem; filter:drop-shadow(0 8px 24px rgba(0,102,255,.15))}
 .hero h1{
-  font-size:clamp(2.2rem,5.5vw,3.6rem); font-weight:900; line-height:.95; 
+  font-family:'Space Grotesk', sans-serif;
+  font-size:clamp(2.2rem,5.5vw,3.6rem); font-weight:700; line-height:.95; 
   margin:.6rem 0 1rem;
-  letter-spacing:-.02em;
-  background:linear-gradient(180deg, #0A0A0F 0%, #3A3A4A 100%);
+  letter-spacing:-.03em;
+  background:linear-gradient(180deg, #1A1A1F 0%, #4A4A55 100%);
   -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text;
 }
 .hero p{color:var(--muted); max-width:680px; margin:0 auto 1.4rem; font-size:1.05rem; line-height:1.7}
 
-.badge{ /* centered */
+.badge{
   margin:0 auto;
   display:inline-flex; align-items:center; gap:.4rem;
   padding:.35rem .75rem; 
-  background:linear-gradient(135deg, #F5F7FA, #EEF2FF); 
-  border:1px solid var(--border); border-radius:var(--radius-full); 
+  background:linear-gradient(135deg, #F0EBE3, #E8E2D9); 
+  border:1px solid #D8D0C2; border-radius:var(--radius-full); 
   font-size:.68rem; font-weight:800; text-transform:uppercase; letter-spacing:.06em;
   color:var(--black);
+  font-family:'Syne', sans-serif;
 }
 
-/* LIVE SECTION - premium */
+/* LIVE SECTION */
 .live-section{
   margin-top:2.5rem; display:grid; grid-template-columns:1.6fr .9fr; gap:1.2rem; 
-  background:linear-gradient(180deg, #0A0A0F 0%, #111119 100%);
+  background:linear-gradient(180deg, #1A1A1F 0%, #22222A 100%);
   padding:1.2rem; border-radius:var(--radius-lg);
   box-shadow:0 20px 60px rgba(0,0,0,.25), inset 0 1px 0 rgba(255,255,255,.08);
   border:1px solid rgba(255,255,255,.08);
@@ -164,34 +174,33 @@ nav .links a.btn-discord::after{display:none}
   font-size:.68rem; font-weight:900; letter-spacing:.04em;
   background:rgba(255,255,255,.08); color:#fff; border:1px solid rgba(255,255,255,.12);
   backdrop-filter:blur(8px);
+  font-family:'Syne', sans-serif;
 }
 .live-badge.live{background:linear-gradient(135deg,#FF0000,#CC0000); color:#fff; box-shadow:0 0 16px rgba(255,0,0,.4); animation:pulse 2s infinite}
 .live-badge.offline{background:rgba(255,255,255,.08); color:#9CA3AF}
 @keyframes pulse{0%,100%{box-shadow:0 0 16px rgba(255,0,0,.4)} 50%{box-shadow:0 0 24px rgba(255,0,0,.6)}}
 
-/* SECTION */
 .section{padding:3rem 0; border-top:1px solid var(--border); position:relative}
-.section h2{font-size:clamp(1.7rem,3vw,2.4rem); font-weight:900; margin:0 0 .7rem; letter-spacing:-.02em}
+.section h2{font-family:'Space Grotesk', sans-serif; font-size:clamp(1.7rem,3vw,2.4rem); font-weight:700; margin:0 0 .7rem; letter-spacing:-.02em}
 .kicker{
-  color:var(--blue); font-weight:900; font-size:.72rem; text-transform:uppercase; 
-  letter-spacing:.1em; display:inline-flex; align-items:center; gap:.5rem;
+  color:var(--blue); font-weight:800; font-size:.72rem; text-transform:uppercase; 
+  letter-spacing:.14em; display:inline-flex; align-items:center; gap:.5rem;
+  font-family:'Syne', sans-serif;
 }
 .kicker::before{content:''; width:20px; height:2px; background:var(--blue); border-radius:2px}
 
-/* CARDS */
 .grid-3{display:grid; grid-template-columns:repeat(3,1fr); gap:1.2rem}
 .card{
-  background:rgba(255,255,255,.9); backdrop-filter:blur(12px);
+  background:rgba(250,248,244,.92); backdrop-filter:blur(12px);
   border:1px solid var(--border); border-radius:var(--radius); 
   padding:1.4rem; box-shadow:var(--shadow-sm);
   transition:all .25s cubic-bezier(.4,0,.2,1);
 }
 .card:hover{transform:translateY(-2px); box-shadow:var(--shadow-md); border-color:var(--border-strong)}
 
-/* TEAM GRID - modern */
 .team-grid{display:grid; grid-template-columns:repeat(3,1fr); gap:1.2rem; margin-top:1.2rem}
 .team-card{
-  background:#fff; border:1px solid var(--border); border-radius:var(--radius); 
+  background:#FAF7F2; border:1px solid var(--border); border-radius:var(--radius); 
   padding:1.2rem; text-align:center; cursor:pointer; 
   transition:all .25s cubic-bezier(.4,0,.2,1);
   position:relative; overflow:hidden;
@@ -206,36 +215,36 @@ nav .links a.btn-discord::after{display:none}
 .team-card.founder{
   grid-column:span 3; display:grid; grid-template-columns:120px 1fr; text-align:left; 
   border:2px solid transparent;
-  background:linear-gradient(#fff,#fff) padding-box, linear-gradient(135deg, var(--blue), #8B5CF6) border-box;
+  background:linear-gradient(#FAF7F2,#FAF7F2) padding-box, linear-gradient(135deg, var(--blue), #8B5CF6) border-box;
   box-shadow:var(--glow);
 }
 .team-card.empty{
   border:1.5px dashed var(--border); background:linear-gradient(135deg, var(--gray), #FAFBFF); 
   color:var(--muted); position:relative;
 }
-.team-card.empty:hover{border-color:var(--blue); color:var(--blue); background:linear-gradient(135deg, #EEF2FF, #F5F3FF)}
+.team-card.empty:hover{border-color:var(--blue); color:var(--blue); background:linear-gradient(135deg, #E8E2D9, #F0EBE3)}
 .avatar{
   width:76px; height:76px; border-radius:50%; 
-  background:linear-gradient(135deg, var(--black), #2A2A3A); 
+  background:linear-gradient(135deg, var(--black), #2A2A33); 
   color:#fff; display:grid; place-items:center; font-weight:900; font-size:1.5rem; 
   margin:0 auto .7rem; box-shadow:var(--shadow-md);
   position:relative; z-index:1;
+  font-family:'Space Grotesk', sans-serif;
 }
 .team-card.founder .avatar{width:96px; height:96px; margin:0; font-size:2rem}
 .team-card[data-id="foxysword"] .avatar{
   background:linear-gradient(135deg, #8B5CF6, #EC4899);
 }
 
-/* MODAL - glass */
 .modal{
   display:none; position:fixed; inset:0; z-index:200; 
-  background:rgba(10,10,15,.6); backdrop-filter:blur(12px);
+  background:rgba(26,26,31,.6); backdrop-filter:blur(12px);
   padding:2rem; overflow:auto;
   opacity:0; transition:opacity .2s;
 }
 .modal.active{display:grid; place-items:center; opacity:1; animation:fadeIn .2s ease}
 .modal-box{
-  background:rgba(255,255,255,.98); backdrop-filter:blur(24px);
+  background:rgba(251,249,245,.98); backdrop-filter:blur(24px);
   border-radius:24px; width:min(640px,94vw); padding:1.8rem; position:relative;
   box-shadow:0 24px 64px rgba(0,0,0,.2), inset 0 1px 0 rgba(255,255,255,.8);
   border:1px solid rgba(255,255,255,.6);
@@ -251,9 +260,8 @@ nav .links a.btn-discord::after{display:none}
 }
 .modal-box .close:hover{background:var(--black); color:#fff}
 
-/* CTA */
 .cta-box{
-  background:linear-gradient(135deg, #0A0A0F 0%, #1A1A2E 100%); 
+  background:linear-gradient(135deg, #1A1A1F 0%, #25252E 100%); 
   color:#fff; border-radius:24px; padding:2.5rem; text-align:center; margin-top:2.5rem;
   position:relative; overflow:hidden; border:1px solid rgba(255,255,255,.08);
   box-shadow:0 20px 60px rgba(0,0,0,.3);
@@ -263,6 +271,7 @@ nav .links a.btn-discord::after{display:none}
   background:radial-gradient(600px 300px at 50% -20%, rgba(0,102,255,.15), transparent);
   pointer-events:none;
 }
+.cta-box h2, .cta-box h3{font-family:'Space Grotesk', sans-serif;}
 
 @media(max-width:900px){
   .live-section{grid-template-columns:1fr} 
