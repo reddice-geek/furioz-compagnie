@@ -1,4 +1,4 @@
-// Furioz Compagnie - SYSTEME CARTES INCASSABLE - 4 membres avec drapeaux + Quentin 20 Aout 2026
+// Furioz Compagnie - SYSTEME CARTES INCASSABLE + Copyright auto
 const members = {
   reddice: {
     name: "RedDice_Geek",
@@ -94,7 +94,7 @@ function initModals() {
         <p><strong>Stream depuis :</strong> ${m.streamSince} <br><strong>A rejoint la Furioz :</strong> ${m.joined}</p>
         <p style="color:#444; line-height:1.6">${m.desc}</p>
         <div style="display:flex; gap:.5rem; flex-wrap:wrap">
-          ${m.tags.map(t=>`<span class="badge" style="background:#EEF2FF; color:#1E293B; border-color:#C7D2FE">${t}</span>`).join('')}
+          ${m.tags.map(t=>`<span class="badge" style="background:#E8E2D9; color:#1E293B; border-color:#D1C9B8">${t}</span>`).join('')}
         </div>
         <div style="display:flex; gap:.6rem; flex-wrap:wrap; margin-top:.5rem">
           <a href="${m.twitch}" target="_blank" class="btn btn-dark" style="background:#9146FF; color:#fff; padding:.6rem 1rem; border-radius:8px; text-decoration:none; font-weight:700">Twitch</a>
@@ -111,4 +111,8 @@ function initModals() {
   modal.addEventListener('click', (e) => { if (e.target === modal) closeModal(); });
   document.addEventListener('keydown', (e)=>{ if(e.key === 'Escape') closeModal(); });
 }
-document.addEventListener('DOMContentLoaded', () => { initTwitch(); initNav(); initModals(); });
+function initCopyright(){
+  const yearEl = document.getElementById('current-year');
+  if(yearEl){ yearEl.textContent = new Date().getFullYear(); }
+}
+document.addEventListener('DOMContentLoaded', () => { initTwitch(); initNav(); initModals(); initCopyright(); });
