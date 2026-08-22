@@ -59,7 +59,7 @@ nav .brand{
 }
 nav .brand:hover{transform:scale(1.03)}
 nav .brand:active{transform:scale(.98)}
-nav .brand img{height:34px; filter:drop-shadow(0 2px 8px rgba(0,102,255,.3)); transition:filter .3s}
+nav .brand img{height:48px; filter:drop-shadow(0 2px 8px rgba(0,102,255,.3)); transition:filter .3s}
 nav .brand:hover img{filter:drop-shadow(0 4px 16px rgba(0,102,255,.5))}
 nav .brand strong{
   color:#fff; 
@@ -125,7 +125,8 @@ nav .links a.btn-discord::after{display:none}
 }
 .hero .hero-logo{
   display:block;
-  height:96px;
+  height:145px;
+  max-width:min(88vw, 620px);
   width:auto;
   margin:0 auto 1.2rem;
   filter:drop-shadow(0 8px 24px rgba(0,102,255,.12));
@@ -273,6 +274,8 @@ nav .links a.btn-discord::after{display:none}
 .cta-box h2, .cta-box h3{font-family:'Space Grotesk', sans-serif;}
 
 @media(max-width:900px){
+  .hero .hero-logo{height:122px;max-width:88vw}
+  nav .brand img{height:38px}
   .live-section{grid-template-columns:1fr} 
   .grid-3{grid-template-columns:1fr} 
   .team-grid{grid-template-columns:1fr} 
