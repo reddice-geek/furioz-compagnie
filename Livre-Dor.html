@@ -1,0 +1,69 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Livre d'or - Furioz Compagnie</title>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@600;700&family=Inter:wght@400;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/style.css">
+<style>main{max-width:820px;margin:0 auto;padding:1.5rem 1rem 6rem} .aero-window{margin-bottom:1.2rem} .form-card{background:linear-gradient(180deg, rgba(255,255,255,.85), rgba(240,248,255,.7)); backdrop-filter:blur(12px); border:1px solid rgba(255,255,255,.7); border-radius:10px; padding:1.2rem} input,textarea{width:100%; padding:.6rem .8rem; border-radius:10px; border:1px solid #D1D9E8; background:rgba(255,255,255,.8); font-family:Inter} .stars{display:flex; gap:.3rem; font-size:1.4rem; cursor:pointer} .star{opacity:.3; transition:.2s} .star.active{opacity:1; color:#F59E0B}</style>
+</head>
+<body>
+<nav id="main-nav"><a href="index.html#accueil" class="brand"><img src="img/furioz-logo.png" alt=""><strong>FURIOZ COMPAGNIE</strong></a><div class="links"><a href="index.html">Accueil</a><a href="livre-dor.html" class="active">Livre d'or</a><a href="admin.html">Admin</a></div></nav>
+<main>
+<div class="aero-window">
+  <div class="aero-titlebar"><div class="title">📖 Livre d'or - Furioz Compagnie</div><div class="aero-controls"><div class="aero-btn close">✕</div></div></div>
+  <div class="aero-content">
+    <h1 style="font-family:'Space Grotesk';font-size:1.6rem;margin:.2rem 0">Livre d'or</h1>
+    <p style="color:var(--muted);font-size:.9rem">Avis auto-postés, gérés par le site + panel admin. Partage ton expérience Furioz !</p>
+    <div class="form-card" style="margin-top:1rem">
+      <div style="display:grid; gap:.8rem">
+        <input id="name" placeholder="Ton pseudo (2-30 chars)" maxlength="30">
+        <textarea id="message" placeholder="Ton message (10-500 chars)" rows="4" maxlength="500"></textarea>
+        <div><label style="font-size:.8rem;font-weight:600">Note :</label><div class="stars" id="stars"><span class="star active" data-v="1">⭐</span><span class="star active" data-v="2">⭐</span><span class="star active" data-v="3">⭐</span><span class="star active" data-v="4">⭐</span><span class="star active" data-v="5">⭐</span></div></div>
+        <button id="send" class="btn btn-dark" style="width:fit-content">Envoyer l'avis</button>
+        <div id="status" style="font-size:.85rem"></div>
+      </div>
+    </div>
+    <div id="list" style="margin-top:1.5rem; display:grid; gap:.8rem"></div>
+  </div>
+</div>
+</main>
+<footer class="container" style="text-align:center;color:var(--muted);font-size:.8rem;padding:1rem 0"><strong>© Furioz-Compagnie 2022-<span id="year">2026</span></strong> • <a href="index.html">Accueil</a> • <a href="admin.html">Admin</a></footer>
+<script src="js/security.js"></script>
+<script>
+let rating=5;
+document.querySelectorAll('.star').forEach(s=>s.addEventListener('click',()=>{
+  rating=parseInt(s.dataset.v);
+  document.querySelectorAll('.star').forEach((x,i)=>x.classList.toggle('active', i<rating));
+}));
+async function load(){
+  try{
+    const r=await fetch('/api/guestbook'); const data=await r.json();
+    document.getElementById('list').innerHTML=data.map(g=>`
+      <div style="background:rgba(255,255,255,.7); border:1px solid rgba(255,255,255,.6); border-radius:10px; padding:.9rem">
+        <div style="display:flex; justify-content:space-between; align-items:center"><strong>${g.name}</strong><span>${'⭐'.repeat(g.rating)} • ${g.date} ${g.verified?'✅':''}</span></div>
+        <p style="margin:.4rem 0 0; color:#2D3748; font-size:.9rem; line-height:1.5">${g.message.replace(/</g,'&lt;')}</p>
+      </div>
+    `).join('') || '<p>Aucun avis encore, sois le premier !</p>';
+  }catch{ document.getElementById('list').innerHTML='<p>Erreur chargement</p>'; }
+}
+document.getElementById('send').onclick=async()=>{
+  const name=document.getElementById('name').value.trim();
+  const message=document.getElementById('message').value.trim();
+  const status=document.getElementById('status');
+  if(name.length<2||message.length<10){ status.textContent='Pseudo 2-30, message 10-500 requis'; status.style.color='red'; return; }
+  status.textContent='Envoi...';
+  try{
+    const r=await fetch('/api/guestbook',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({name,message,rating})});
+    const j=await r.json();
+    if(!r.ok){ status.textContent=j.error||'Erreur'; status.style.color='red'; return; }
+    status.textContent='Avis posté ! Merci ❤️'; status.style.color='green';
+    document.getElementById('name').value=''; document.getElementById('message').value='';
+    load();
+  }catch{ status.textContent='Erreur réseau'; }
+};
+load();
+document.getElementById('year').textContent=new Date().getFullYear();
+</script>
+</body>
+</html>
