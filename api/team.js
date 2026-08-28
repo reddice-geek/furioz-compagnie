@@ -29,8 +29,8 @@ let members = [
       "https://www.youtube.com/channel/UCxjKpjK-3DBR3HgmeRY7UMg",
     discord: "",
     initial: "R",
-    color: "#151519",
-    color2: "#7A00B8",
+    color: "#6A00FF",
+    color2: "#D000FF",
     visible: true
   },
 
@@ -55,8 +55,8 @@ let members = [
     youtube: "",
     discord: "",
     initial: "Z",
-    color: "#151519",
-    color2: "#0A86B8",
+    color: "#00B8D9",
+    color2: "#00A86B",
     visible: true
   },
 
@@ -82,8 +82,8 @@ let members = [
     youtube: "",
     discord: "",
     initial: "F",
-    color: "#151519",
-    color2: "#3F22D8",
+    color: "#001AFF",
+    color2: "#7A00FF",
     visible: true
   },
 
@@ -110,8 +110,8 @@ let members = [
     youtube: "",
     discord: "",
     initial: "Q",
-    color: "#16C7B7",
-    color2: "#FF4B00",
+    color: "#FF0000",
+    color2: "#FF8A00",
     visible: true
   }
 ];
