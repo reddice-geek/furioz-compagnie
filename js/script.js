@@ -1,24 +1,99 @@
-/* =========================================================
-   FURIOZ COMPAGNIE
-   script.js
-   Gestion dynamique de la Team
-   ========================================================= */
+// =========================================================
+// FURIOZ COMPAGNIE
+// script.js
+// Team locale + Team API Admin
+// =========================================================
+
+const fallbackMembers = [
+  {
+    id: "reddice",
+    name: "RedDice_Geek",
+    status: "FONDATEUR",
+    country: "France",
+    countryFlag: "🇫🇷",
+    joined: "Septembre 2022",
+    streamSince: "Aout 2021",
+    role: "Fondateur",
+    category: "Gaming • Cosplay • IRL",
+    description: "Fondateur de la Furioz Compagnie en septembre 2022. Projet pense pour durer : entraide, independance et progression durable.",
+    tags: ["Fondateur", "Gaming", "Cosplay", "IRL", "🇫🇷 France"],
+    twitch: "https://twitch.tv/reddice_geek",
+    youtube: "https://www.youtube.com/channel/UCxjKpjK-3DBR3HgmeRY7UMg",
+    discord: "",
+    initial: "R",
+    color: "#151519",
+    visible: true
+  },
+
+  {
+    id: "zafkiel",
+    name: "Zafkiel / LePetoChard",
+    status: "MEMBRE",
+    country: "France",
+    countryFlag: "🇫🇷",
+    joined: "23 Novembre 2024",
+    streamSince: "2023",
+    role: "Streamer",
+    category: "Gaming • Events",
+    description: "LePetoChard, aussi connu sous Zafkiel. A rejoint la Furioz Compagnie le 23/11/2024 en tant que streameur. Ambiance chill et entraide.",
+    tags: ["Gaming", "Events", "🇫🇷 France"],
+    twitch: "https://www.twitch.tv/le_petochard",
+    youtube: "",
+    discord: "",
+    initial: "Z",
+    color: "#151519",
+    visible: true
+  },
+
+  {
+    id: "foxysword",
+    name: "Foxy Sword",
+    status: "MEMBRE",
+    country: "Canada",
+    countryFlag: "🇨🇦",
+    joined: "18 Aout 2026",
+    streamSince: "2025",
+    role: "Streamer / DJ",
+    category: "Gaming • DJ",
+    description: "DJ debutant et gamer passionne. A rejoint la Furioz le 18/08/2026.",
+    tags: ["Gaming", "DJ", "Musique", "🇨🇦 Canada"],
+    twitch: "https://www.twitch.tv/foxysword350",
+    youtube: "",
+    discord: "",
+    initial: "F",
+    color: "#151519",
+    visible: true
+  },
+
+  {
+    id: "quentin",
+    name: "Quentin Pierrot",
+    status: "MODO / WEBMASTER",
+    country: "France",
+    countryFlag: "🇫🇷",
+    joined: "20 Aout 2026",
+    streamSince: "2023",
+    role: "Modo / Webmaster",
+    category: "Avali VRChat",
+    description: "Modo, webmaster du site et gestion du Discord.",
+    tags: ["Modo", "Webmaster", "VRChat", "Avali", "🇫🇷 France"],
+    twitch: "https://twitch.tv/furiozcompagnie",
+    youtube: "",
+    discord: "",
+    initial: "Q",
+    color: "#16C7B7",
+    visible: true
+  }
+];
+
 
 document.addEventListener("DOMContentLoaded", () => {
   loadTeam();
 });
 
 
-/* =========================================================
-   SÉCURITÉ HTML
-   ========================================================= */
-
 function escapeHTML(value) {
-  if (value === null || value === undefined) {
-    return "";
-  }
-
-  return String(value)
+  return String(value ?? "")
     .replaceAll("&", "&amp;")
     .replaceAll("<", "&lt;")
     .replaceAll(">", "&gt;")
@@ -27,101 +102,138 @@ function escapeHTML(value) {
 }
 
 
-/* =========================================================
-   CHARGEMENT DE L'ÉQUIPE
-   ========================================================= */
-
 async function loadTeam() {
 
-  const container = document.querySelector("#team-grid");
+  const container =
+    document.querySelector("#team-grid");
 
   if (!container) {
     return;
   }
 
-  container.innerHTML = `
-    <div class="team-card empty">
-      <h3>Chargement...</h3>
-    </div>
-  `;
+  // Affichage immédiat des membres existants
+  renderTeam(fallbackMembers);
 
   try {
 
-    const response = await fetch("/api/team", {
-      method: "GET",
-      headers: {
-        "Accept": "application/json"
-      },
-      cache: "no-store"
-    });
+    const response =
+      await fetch("/api/team", {
+        method: "GET",
+        headers: {
+          "Accept": "application/json"
+        },
+        cache: "no-store"
+      });
 
     if (!response.ok) {
-      throw new Error(
-        "Erreur API : " + response.status
+      console.warn(
+        "API Team indisponible :",
+        response.status
       );
+
+      // On garde fallbackMembers
+      return;
     }
 
     const contentType =
-      response.headers.get("content-type") || "";
+      response.headers.get(
+        "content-type"
+      ) || "";
 
-    if (!contentType.includes("application/json")) {
-      throw new Error(
-        "L'API /api/team ne renvoie pas du JSON."
+    if (
+      !contentType.includes(
+        "application/json"
+      )
+    ) {
+
+      console.warn(
+        "L'API Team ne renvoie pas du JSON."
       );
-    }
-
-    const data = await response.json();
-
-    let members = [];
-
-    if (Array.isArray(data)) {
-      members = data;
-    }
-
-    else if (Array.isArray(data.members)) {
-      members = data.members;
-    }
-
-    else if (Array.isArray(data.team)) {
-      members = data.team;
-    }
-
-    if (members.length === 0) {
-
-      container.innerHTML = `
-        <div class="team-card empty">
-          <h3>Aucun membre</h3>
-          <p>L'équipe est actuellement vide.</p>
-        </div>
-      `;
 
       return;
     }
 
-    renderTeam(members);
+    const data =
+      await response.json();
+
+    let apiMembers = [];
+
+    if (Array.isArray(data)) {
+      apiMembers = data;
+    }
+
+    else if (
+      Array.isArray(data.members)
+    ) {
+      apiMembers = data.members;
+    }
+
+    else if (
+      Array.isArray(data.team)
+    ) {
+      apiMembers = data.team;
+    }
+
+    if (!apiMembers.length) {
+      return;
+    }
+
+
+    // Fusion :
+    // même ID = modification
+    // nouvel ID = ajout
+    const map =
+      new Map(
+        fallbackMembers.map(
+          member => [
+            member.id,
+            member
+          ]
+        )
+      );
+
+    apiMembers.forEach(
+      member => {
+
+        if (!member?.id) {
+          return;
+        }
+
+        const old =
+          map.get(member.id) || {};
+
+        map.set(
+          member.id,
+          {
+            ...old,
+            ...member
+          }
+        );
+      }
+    );
+
+
+    const finalMembers =
+      Array.from(
+        map.values()
+      );
+
+    renderTeam(finalMembers);
 
   }
 
   catch (error) {
 
-    console.error(
-      "Erreur chargement équipe :",
+    console.warn(
+      "Impossible de charger /api/team :",
       error
     );
 
-    container.innerHTML = `
-      <div class="team-card empty">
-        <h3>Équipe indisponible</h3>
-        <p>Réessaie plus tard</p>
-      </div>
-    `;
+    // Important :
+    // on garde les membres existants
   }
 }
 
-
-/* =========================================================
-   AFFICHAGE DE L'ÉQUIPE
-   ========================================================= */
 
 function renderTeam(members) {
 
@@ -132,60 +244,101 @@ function renderTeam(members) {
     return;
   }
 
+
+  const visibleMembers =
+    members.filter(
+      member =>
+        member.visible !== false
+    );
+
+
   container.innerHTML = "";
 
-  members.forEach(member => {
 
-    const wrapper =
-      document.createElement("div");
+  visibleMembers.forEach(
+    member => {
 
-    wrapper.innerHTML =
-      buildCard(member).trim();
+      const wrapper =
+        document.createElement(
+          "div"
+        );
 
-    const card =
-      wrapper.firstElementChild;
 
-    if (!card) {
-      return;
+      wrapper.innerHTML =
+        buildCard(member).trim();
+
+
+      const card =
+        wrapper.firstElementChild;
+
+
+      if (!card) {
+        return;
+      }
+
+
+      card.addEventListener(
+        "click",
+        () => {
+          openMemberModal(
+            member
+          );
+        }
+      );
+
+
+      container.appendChild(
+        card
+      );
     }
-
-    card.addEventListener("click", () => {
-      openMemberModal(member);
-    });
-
-    container.appendChild(card);
-  });
+  );
 
 
-  /* ==========================================
-     PLACES LIBRES
-     Maximum : 10 membres
-     ========================================== */
-
+  // Maximum 10 membres
   const maximum = 10;
 
   const remaining =
-    Math.max(0, maximum - members.length);
+    Math.max(
+      0,
+      maximum -
+      visibleMembers.length
+    );
 
-  for (let i = 0; i < remaining; i++) {
+
+  for (
+    let i = 0;
+    i < remaining;
+    i++
+  ) {
 
     const freeCard =
-      document.createElement("div");
+      document.createElement(
+        "div"
+      );
+
 
     freeCard.className =
       "team-card free-place";
 
+
     if (i === 0) {
 
       freeCard.innerHTML = `
-        <h3>Place libre</h3>
+
+        <h3>
+          Place libre
+        </h3>
 
         <p>
-          ${remaining} place${remaining > 1 ? "s" : ""}
+          ${remaining}
+          place${remaining > 1 ? "s" : ""}
           restante${remaining > 1 ? "s" : ""}
         </p>
 
-        <a href="#postuler">
+        <a
+          href="https://forms.gle/7hA9ac26qJn7AHjc6"
+          target="_blank"
+        >
           Postuler
         </a>
       `;
@@ -194,19 +347,24 @@ function renderTeam(members) {
     else {
 
       freeCard.innerHTML = `
-        <h3>Place libre</h3>
-        <p>Rejoins-nous</p>
+
+        <h3>
+          Place libre
+        </h3>
+
+        <p>
+          Rejoins-nous
+        </p>
       `;
     }
 
-    container.appendChild(freeCard);
+
+    container.appendChild(
+      freeCard
+    );
   }
 }
 
-
-/* =========================================================
-   CRÉATION D'UNE CARTE
-   ========================================================= */
 
 function buildCard(m) {
 
@@ -215,9 +373,13 @@ function buildCard(m) {
     m.pseudo ||
     "Membre";
 
+
   const initial =
     m.initial ||
-    name.charAt(0).toUpperCase();
+    name
+      .charAt(0)
+      .toUpperCase();
+
 
   const status =
     String(
@@ -227,46 +389,60 @@ function buildCard(m) {
     ).toUpperCase();
 
 
-  /* -----------------------------------------
-     Informations du badge
-     ----------------------------------------- */
-
   const badgeParts = [];
 
+
   if (m.joined) {
+
     badgeParts.push(
       `Depuis ${m.joined}`
     );
   }
 
+
   if (m.category) {
-    badgeParts.push(m.category);
+
+    badgeParts.push(
+      m.category
+    );
   }
+
 
   if (
     m.role &&
-    String(m.role).toUpperCase() !== "FONDATEUR"
+    String(m.role)
+      .toUpperCase() !==
+      "FONDATEUR"
   ) {
-    badgeParts.push(m.role);
+
+    badgeParts.push(
+      m.role
+    );
   }
+
 
   if (m.country) {
 
-    const countryText =
-      `${m.countryFlag || ""} ${m.country}`
-        .trim();
-
-    badgeParts.push(countryText);
+    badgeParts.push(
+      `${
+        m.countryFlag || ""
+      } ${
+        m.country
+      }`.trim()
+    );
   }
+
 
   const badge =
     m.badge ||
-    badgeParts.join(" • ");
+    badgeParts
+      .filter(Boolean)
+      .join(" • ");
 
 
-  /* =====================================================
-     CARTE DU FONDATEUR
-     ===================================================== */
+  // =========================
+  // FONDATEUR
+  // =========================
 
   if (
     status === "FONDATEUR" ||
@@ -274,69 +450,76 @@ function buildCard(m) {
   ) {
 
     return `
+
       <article
         class="team-card founder"
-        data-id="${escapeHTML(m.id || "")}"
+        data-id="${escapeHTML(
+          m.id || ""
+        )}"
       >
 
         <div
           class="avatar"
+
           style="
             background:${escapeHTML(
-              m.color || "#151519"
+              m.color ||
+              "#151519"
             )}
           "
         >
-          ${escapeHTML(initial)}
+          ${escapeHTML(
+            initial
+          )}
         </div>
 
 
-        <div class="member-info">
+        <div
+          class="member-info"
+        >
 
-          <h3 class="member-name">
+          <h3
+            class="member-name"
+          >
 
-            ${escapeHTML(name)}
+            ${escapeHTML(
+              name
+            )}
 
-            <span class="member-status">
+            <span
+              class="member-status"
+            >
               • FONDATEUR
             </span>
 
           </h3>
 
 
-          ${
-            badge
-              ? `
-                <div class="badge">
-                  ${escapeHTML(badge)}
-                </div>
-              `
-              : ""
-          }
+          <div
+            class="badge"
+          >
+            ${escapeHTML(
+              badge
+            )}
+          </div>
 
 
           ${
-            m.streamSince
-              ? `
-                <p class="member-small">
-                  <strong>Stream depuis :</strong>
-                  ${escapeHTML(m.streamSince)}
-                </p>
-              `
-              : ""
-          }
+            m.description
 
-
-          ${
-            m.description || m.desc
               ? `
-                <p class="member-description">
+
+                <p
+                  class="
+                    member-description
+                  "
+                >
                   ${escapeHTML(
-                    m.description ||
-                    m.desc
+                    m.description
                   )}
                 </p>
               `
+
               : ""
           }
 
@@ -347,204 +530,308 @@ function buildCard(m) {
   }
 
 
-  /* =====================================================
-     CARTES NORMALES
-     ===================================================== */
+  // =========================
+  // MEMBRES NORMAUX
+  // =========================
 
   return `
+
     <article
       class="team-card"
-      data-id="${escapeHTML(m.id || "")}"
+
+      data-id="${escapeHTML(
+        m.id || ""
+      )}"
     >
 
       <div
         class="avatar"
+
         style="
           background:${escapeHTML(
-            m.color || "#151519"
+            m.color ||
+            "#151519"
           )}
         "
       >
-        ${escapeHTML(initial)}
+
+        ${escapeHTML(
+          initial
+        )}
+
       </div>
 
 
-      <h3 class="member-name">
-        ${escapeHTML(name)}
+      <h3
+        class="member-name"
+      >
+
+        ${escapeHTML(
+          name
+        )}
+
       </h3>
 
 
-      ${
-        badge
-          ? `
-            <div class="badge">
-              ${escapeHTML(badge)}
-            </div>
-          `
-          : ""
-      }
+      <div
+        class="badge"
+      >
+
+        ${escapeHTML(
+          badge
+        )}
+
+      </div>
 
     </article>
   `;
 }
 
 
-/* =========================================================
-   FENÊTRE D'INFORMATION DU MEMBRE
-   ========================================================= */
-
 function openMemberModal(member) {
 
   closeMemberModal();
 
+
   const name =
     member.name ||
-    member.pseudo ||
     "Membre";
+
 
   const status =
     member.status ||
     member.role ||
     "MEMBRE";
 
-  const modal =
-    document.createElement("div");
 
-  modal.id = "member-modal";
+  const modal =
+    document.createElement(
+      "div"
+    );
+
+
+  modal.id =
+    "member-modal";
+
 
   modal.className =
     "member-modal-overlay";
 
 
   modal.innerHTML = `
-    <div class="member-modal">
+
+    <div
+      class="member-modal"
+    >
 
       <button
         type="button"
         class="member-modal-close"
-        aria-label="Fermer"
       >
         ×
       </button>
 
 
       <h2>
-        ${escapeHTML(name)}
+
+        ${escapeHTML(
+          name
+        )}
 
         <small>
-          • ${escapeHTML(status)}
+
+          • ${escapeHTML(
+            status
+          )}
+
         </small>
+
       </h2>
 
 
       ${
-        member.joined
+        member.streamSince
+
           ? `
+
             <p>
+
               <strong>
-                A rejoint la Furioz :
+                Stream depuis :
               </strong>
 
-              ${escapeHTML(member.joined)}
+              ${escapeHTML(
+                member.streamSince
+              )}
+
             </p>
           `
+
           : ""
       }
 
 
       ${
-        member.streamSince
+        member.joined
+
           ? `
+
             <p>
+
               <strong>
-                Stream depuis :
+                A rejoint la Furioz :
               </strong>
 
-              ${escapeHTML(member.streamSince)}
+              ${escapeHTML(
+                member.joined
+              )}
+
             </p>
           `
+
           : ""
       }
 
 
       ${
         member.country
+
           ? `
+
             <p>
-              <strong>Pays :</strong>
+
+              <strong>
+                Pays :
+              </strong>
 
               ${escapeHTML(
-                `${member.countryFlag || ""} ${member.country}`.trim()
+                `${
+                  member.countryFlag ||
+                  ""
+                } ${
+                  member.country
+                }`.trim()
               )}
+
             </p>
           `
+
           : ""
       }
 
 
       ${
-        member.description ||
-        member.desc
+        member.description
+
           ? `
-            <p class="member-modal-description">
+
+            <p
+              class="
+                member-modal-description
+              "
+            >
+
               ${escapeHTML(
-                member.description ||
-                member.desc
+                member.description
               )}
+
             </p>
           `
+
           : ""
       }
 
 
       ${
-        Array.isArray(member.tags) &&
-        member.tags.length > 0
-          ? `
-            <div class="member-tags">
+        Array.isArray(
+          member.tags
+        )
 
-              ${member.tags.map(tag => `
-                <span>
-                  ${escapeHTML(tag)}
-                </span>
-              `).join("")}
+          ? `
+
+            <div
+              class="
+                member-tags
+              "
+            >
+
+              ${member.tags
+                .map(
+                  tag => `
+
+                    <span>
+                      ${escapeHTML(
+                        tag
+                      )}
+                    </span>
+                  `
+                )
+                .join("")}
 
             </div>
           `
+
           : ""
       }
 
 
-      <div class="member-links">
+      <div
+        class="
+          member-links
+        "
+      >
+
 
         ${
           member.twitch
+
             ? `
+
               <a
-                href="${escapeHTML(member.twitch)}"
+                href="${escapeHTML(
+                  member.twitch
+                )}"
+
                 target="_blank"
-                rel="noopener noreferrer"
               >
                 Twitch
               </a>
             `
+
             : ""
         }
 
 
         ${
-          member.discord
+          member.youtube
+
             ? `
+
               <a
-                href="${escapeHTML(member.discord)}"
+                href="${escapeHTML(
+                  member.youtube
+                )}"
+
                 target="_blank"
-                rel="noopener noreferrer"
               >
-                Discord Furioz
+                YouTube
               </a>
             `
+
             : ""
         }
+
+
+        <a
+          href="${escapeHTML(
+            member.discord ||
+            "https://discord.gg/nKj9NFDyxj"
+          )}"
+
+          target="_blank"
+        >
+          Discord Furioz
+        </a>
 
       </div>
 
@@ -552,36 +839,42 @@ function openMemberModal(member) {
   `;
 
 
-  document.body.appendChild(modal);
+  document.body
+    .appendChild(
+      modal
+    );
 
 
-  const closeButton =
+  const close =
     modal.querySelector(
       ".member-modal-close"
     );
 
-  closeButton.addEventListener(
-    "click",
-    closeMemberModal
-  );
+
+  if (close) {
+
+    close.addEventListener(
+      "click",
+      closeMemberModal
+    );
+  }
 
 
   modal.addEventListener(
     "click",
     event => {
 
-      if (event.target === modal) {
+      if (
+        event.target ===
+        modal
+      ) {
+
         closeMemberModal();
       }
-
     }
   );
 }
 
-
-/* =========================================================
-   FERMETURE MODALE
-   ========================================================= */
 
 function closeMemberModal() {
 
@@ -590,23 +883,24 @@ function closeMemberModal() {
       "#member-modal"
     );
 
+
   if (modal) {
+
     modal.remove();
   }
 }
 
 
-/* =========================================================
-   TOUCHE ÉCHAP
-   ========================================================= */
-
 document.addEventListener(
   "keydown",
   event => {
 
-    if (event.key === "Escape") {
+    if (
+      event.key ===
+      "Escape"
+    ) {
+
       closeMemberModal();
     }
-
   }
 );
