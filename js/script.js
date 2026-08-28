@@ -45,8 +45,8 @@ const fallbackMembers = [
     discord: "",
 
     initial: "R",
-    color: "#151519",
-    color2: "#7A00B8",
+    color: "#6A00FF",
+    color2: "#D000FF",
 
     visible: true
   },
@@ -82,8 +82,8 @@ const fallbackMembers = [
     discord: "",
 
     initial: "Z",
-    color: "#151519",
-    color2: "#0A86B8",
+    color: "#00B8D9",
+    color2: "#00A86B",
 
     visible: true
   },
@@ -120,8 +120,8 @@ const fallbackMembers = [
     discord: "",
 
     initial: "F",
-    color: "#151519",
-    color2: "#3F22D8",
+    color: "#001AFF",
+    color2: "#7A00FF",
 
     visible: true
   },
@@ -159,8 +159,8 @@ const fallbackMembers = [
     discord: "",
 
     initial: "Q",
-    color: "#16C7B7",
-    color2: "#FF4B00",
+    color: "#FF0000",
+    color2: "#FF8A00",
 
     visible: true
   }
@@ -833,12 +833,21 @@ function buildCard(member) {
                 ${escapeHTML(
                   member.color ||
                   "#151519"
-                )},
+                )} 0%,
+                ${escapeHTML(
+                  member.color ||
+                  "#151519"
+                )} 32%,
                 ${escapeHTML(
                   member.color2 ||
                   member.color ||
                   "#151519"
-                )}
+                )} 68%,
+                ${escapeHTML(
+                  member.color2 ||
+                  member.color ||
+                  "#151519"
+                )} 100%
               )
           "
         >
@@ -934,12 +943,21 @@ function buildCard(member) {
                 ${escapeHTML(
                   member.color ||
                   "#151519"
-                )},
+                )} 0%,
+                ${escapeHTML(
+                  member.color ||
+                  "#151519"
+                )} 32%,
                 ${escapeHTML(
                   member.color2 ||
                   member.color ||
                   "#151519"
-                )}
+                )} 68%,
+                ${escapeHTML(
+                  member.color2 ||
+                  member.color ||
+                  "#151519"
+                )} 100%
               )
         "
       >
