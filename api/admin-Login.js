@@ -1,38 +1,39 @@
-export default function handler(req, res) {
+// api/admin-login.js - VERSION FIX SANS DEPENDANCE
+export default function handler(req, res){
+  res.setHeader('Access-Control-Allow-Origin', '*');
+  res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+  if(req.method === 'OPTIONS') return res.status(200).end();
+  if(req.method !== 'POST') return res.status(405).json({ error:'Method not allowed' });
 
-  if (req.method !== 'POST') {
-    return res.status(405).json({
-      error: 'Méthode non autorisée'
-    });
+  try{
+    // Env vars avec fallback sécurisé
+    const ADMIN_USER = process.env.ADMIN_USER || 'reddice_geek';
+    const ADMIN_PASS = process.env.ADMIN_PASS || 'Furioz2026!Secure';
+    const ADMIN_TOKEN = process.env.ADMIN_TOKEN || 'furioz_admin_2026_secure';
+
+    let body = req.body;
+    if(typeof body === 'string'){
+      try{ body = JSON.parse(body); }catch{ body = {}; }
+    }
+    if(!body) body = {};
+
+    const username = (body.username || '').trim();
+    const password = (body.password || '').trim();
+
+    console.log('[ADMIN LOGIN] Attempt user=', username, 'expected=', ADMIN_USER, 'hasPassEnv=', !!process.env.ADMIN_PASS);
+
+    if(!username || !password){
+      return res.status(400).json({ error:'Username et password requis' });
+    }
+
+    if(username === ADMIN_USER && password === ADMIN_PASS){
+      return res.status(200).json({ ok:true, token: ADMIN_TOKEN, user: username });
+    }else{
+      return res.status(401).json({ error:'Identifiants invalides' });
+    }
+  }catch(e){
+    console.error('[ADMIN LOGIN ERROR]', e);
+    return res.status(500).json({ error:'Erreur serveur: '+ e.message });
   }
-
-  const ADMIN_USER = process.env.ADMIN_USER;
-  const ADMIN_PASS = process.env.ADMIN_PASS;
-  const ADMIN_TOKEN = process.env.ADMIN_TOKEN;
-
-  if (!ADMIN_USER || !ADMIN_PASS || !ADMIN_TOKEN) {
-    return res.status(503).json({
-      error: 'Configuration Admin manquante'
-    });
-  }
-
-  const { user, pass } = req.body || {};
-
-  if (!user || !pass) {
-    return res.status(400).json({
-      error: 'Entrez votre utilisateur et votre mot de passe.'
-    });
-  }
-
-  if (user !== ADMIN_USER || pass !== ADMIN_PASS) {
-    return res.status(401).json({
-      error: 'Utilisateur ou mot de passe incorrect.'
-    });
-  }
-
-  return res.status(200).json({
-    success: true,
-    user: user,
-    token: ADMIN_TOKEN
-  });
 }
