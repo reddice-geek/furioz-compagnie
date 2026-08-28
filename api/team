@@ -1,38 +1,22 @@
 // ============================================================
 // FURIOZ COMPAGNIE
 // api/team.js
-// Gestion des membres de l'équipe
-// ============================================================
-
-
-// ============================================================
-// MEMBRES PAR DÉFAUT
+// API complète de gestion de l'équipe
 // ============================================================
 
 let members = [
-
   {
     id: "reddice",
-
     name: "RedDice_Geek",
-
     status: "FONDATEUR",
-
     country: "France",
-
     countryFlag: "🇫🇷",
-
     joined: "Septembre 2022",
-
     streamSince: "Aout 2021",
-
     role: "Fondateur",
-
     category: "Gaming • Cosplay • IRL",
-
     description:
       "Fondateur de la Furioz Compagnie en septembre 2022. Projet pense pour durer : entraide, independance et progression durable.",
-
     tags: [
       "Fondateur",
       "Gaming",
@@ -40,164 +24,78 @@ let members = [
       "IRL",
       "🇫🇷 France"
     ],
-
-    twitch:
-      "https://twitch.tv/reddice_geek",
-
+    twitch: "https://twitch.tv/reddice_geek",
     youtube:
       "https://www.youtube.com/channel/UCxjKpjK-3DBR3HgmeRY7UMg",
-
     discord: "",
-
     initial: "R",
-
     color: "#151519",
-
     visible: true
   },
 
-
   {
     id: "zafkiel",
-
-    name:
-      "Zafkiel / LePetoChard",
-
-    status:
-      "MEMBRE",
-
-    country:
-      "France",
-
-    countryFlag:
-      "🇫🇷",
-
-    joined:
-      "23 Novembre 2024",
-
-    streamSince:
-      "2023",
-
-    role:
-      "Streamer",
-
-    category:
-      "Gaming • Events",
-
+    name: "Zafkiel / LePetoChard",
+    status: "MEMBRE",
+    country: "France",
+    countryFlag: "🇫🇷",
+    joined: "23 Novembre 2024",
+    streamSince: "2023",
+    role: "Streamer",
+    category: "Gaming • Events",
     description:
       "LePetoChard, aussi connu sous Zafkiel. A rejoint la Furioz Compagnie le 23/11/2024 en tant que streameur. Ambiance chill et entraide.",
-
     tags: [
       "Gaming",
       "Events",
       "🇫🇷 France"
     ],
-
-    twitch:
-      "https://www.twitch.tv/le_petochard",
-
+    twitch: "https://www.twitch.tv/le_petochard",
     youtube: "",
-
     discord: "",
-
-    initial:
-      "Z",
-
-    color:
-      "#151519",
-
-    visible:
-      true
+    initial: "Z",
+    color: "#151519",
+    visible: true
   },
 
-
   {
-    id:
-      "foxysword",
-
-    name:
-      "Foxy Sword",
-
-    status:
-      "MEMBRE",
-
-    country:
-      "Canada",
-
-    countryFlag:
-      "🇨🇦",
-
-    joined:
-      "18 Aout 2026",
-
-    streamSince:
-      "2025",
-
-    role:
-      "Streamer / DJ",
-
-    category:
-      "Gaming • DJ",
-
+    id: "foxysword",
+    name: "Foxy Sword",
+    status: "MEMBRE",
+    country: "Canada",
+    countryFlag: "🇨🇦",
+    joined: "18 Aout 2026",
+    streamSince: "2025",
+    role: "Streamer / DJ",
+    category: "Gaming • DJ",
     description:
       "DJ debutant et gamer passionne. A rejoint la Furioz le 18/08/2026.",
-
     tags: [
       "Gaming",
       "DJ",
       "Musique",
       "🇨🇦 Canada"
     ],
-
-    twitch:
-      "https://www.twitch.tv/foxysword350",
-
+    twitch: "https://www.twitch.tv/foxysword350",
     youtube: "",
-
     discord: "",
-
-    initial:
-      "F",
-
-    color:
-      "#151519",
-
-    visible:
-      true
+    initial: "F",
+    color: "#151519",
+    visible: true
   },
 
-
   {
-    id:
-      "quentin",
-
-    name:
-      "Quentin Pierrot",
-
-    status:
-      "MODO / WEBMASTER",
-
-    country:
-      "France",
-
-    countryFlag:
-      "🇫🇷",
-
-    joined:
-      "20 Aout 2026",
-
-    streamSince:
-      "2023",
-
-    role:
-      "Modo / Webmaster",
-
-    category:
-      "Avali VRChat",
-
+    id: "quentin",
+    name: "Quentin Pierrot",
+    status: "MODO / WEBMASTER",
+    country: "France",
+    countryFlag: "🇫🇷",
+    joined: "20 Aout 2026",
+    streamSince: "2023",
+    role: "Modo / Webmaster",
+    category: "Avali VRChat",
     description:
       "Modo, webmaster du site et gestion du Discord.",
-
     tags: [
       "Modo",
       "Webmaster",
@@ -205,242 +103,109 @@ let members = [
       "Avali",
       "🇫🇷 France"
     ],
-
-    twitch:
-      "https://twitch.tv/furiozcompagnie",
-
+    twitch: "https://twitch.tv/furiozcompagnie",
     youtube: "",
-
     discord: "",
-
-    initial:
-      "Q",
-
-    color:
-      "#16C7B7",
-
-    visible:
-      true
+    initial: "Q",
+    color: "#16C7B7",
+    visible: true
   }
-
 ];
 
 
 // ============================================================
-// NETTOYAGE TEXTE
+// OUTILS
 // ============================================================
 
-function cleanText(
-  value,
-  max = 500
-) {
-
-  return String(
-    value ?? ""
-  )
+function cleanText(value, max = 500) {
+  return String(value ?? "")
     .trim()
-    .slice(
-      0,
-      max
-    );
+    .slice(0, max);
 }
 
 
-// ============================================================
-// CRÉATION IDENTIFIANT
-// ============================================================
-
-function makeId(
-  value
-) {
-
-  return cleanText(
-    value,
-    80
-  )
-
+function makeId(value) {
+  return cleanText(value, 80)
     .toLowerCase()
-
-    .normalize(
-      "NFD"
-    )
-
-    .replace(
-      /[\u0300-\u036f]/g,
-      ""
-    )
-
-    .replace(
-      /[^a-z0-9_-]+/g,
-      "-"
-    )
-
-    .replace(
-      /^-+|-+$/g,
-      ""
-    );
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .replace(/[^a-z0-9_-]+/g, "-")
+    .replace(/^-+|-+$/g, "");
 }
 
-
-// ============================================================
-// RÉCUPÉRER LE BODY
-// ============================================================
 
 function getBody(req) {
-
-  if (
-    !req.body
-  ) {
-
+  if (!req.body) {
     return {};
   }
 
-
-  if (
-    typeof req.body ===
-    "object"
-  ) {
-
+  if (typeof req.body === "object") {
     return req.body;
   }
 
-
   try {
-
-    return JSON.parse(
-      req.body
-    );
-
-  }
-
-  catch {
-
+    return JSON.parse(req.body);
+  } catch {
     return {};
   }
 }
 
 
-// ============================================================
-// VÉRIFICATION ADMIN
-// ============================================================
-
 function isAdmin(req) {
+  const token = process.env.ADMIN_TOKEN;
 
-  const adminToken =
-    process.env.ADMIN_TOKEN;
-
-
-  if (
-    !adminToken
-  ) {
-
+  if (!token) {
     return false;
   }
 
-
   const authorization =
-    req.headers.authorization ||
-    "";
+    req.headers.authorization || "";
 
-
-  return (
-    authorization ===
-    `Bearer ${adminToken}`
-  );
+  return authorization === `Bearer ${token}`;
 }
 
 
-// ============================================================
-// CRÉER UN MEMBRE PROPRE
-// ============================================================
-
-function createMember(
-  body,
-  existing = {}
-) {
-
+function buildMember(body, oldMember = {}) {
   const name =
     cleanText(
-      body.name ??
-      existing.name,
+      body.name ?? oldMember.name,
       80
     );
 
-
   const initial =
     cleanText(
-      body.initial ??
-      existing.initial,
+      body.initial ?? oldMember.initial,
       3
     );
 
-
   const color =
     cleanText(
-      body.color ??
-      existing.color,
+      body.color ?? oldMember.color,
       7
     );
 
-
   let tags = [];
 
-
-  if (
-    Array.isArray(
-      body.tags
-    )
-  ) {
-
-    tags =
-      body.tags
-
-        .map(
-          tag =>
-            cleanText(
-              tag,
-              40
-            )
-        )
-
-        .filter(
-          Boolean
-        )
-
-        .slice(
-          0,
-          20
-        );
-
+  if (Array.isArray(body.tags)) {
+    tags = body.tags
+      .map(tag => cleanText(tag, 40))
+      .filter(Boolean)
+      .slice(0, 20);
+  } else if (Array.isArray(oldMember.tags)) {
+    tags = oldMember.tags;
   }
-
-  else if (
-    Array.isArray(
-      existing.tags
-    )
-  ) {
-
-    tags =
-      existing.tags;
-  }
-
 
   return {
-
     id:
-      existing.id ||
-      makeId(
-        body.id ||
-        name
-      ),
+      oldMember.id ||
+      makeId(body.id || name),
 
-    name:
-      name,
+    name,
 
     status:
       cleanText(
         body.status ??
-        existing.status ??
+        oldMember.status ??
         "MEMBRE",
         50
       ),
@@ -448,73 +213,72 @@ function createMember(
     country:
       cleanText(
         body.country ??
-        existing.country,
+        oldMember.country,
         50
       ),
 
     countryFlag:
       cleanText(
         body.countryFlag ??
-        existing.countryFlag,
+        oldMember.countryFlag,
         10
       ),
 
     joined:
       cleanText(
         body.joined ??
-        existing.joined,
+        oldMember.joined,
         60
       ),
 
     streamSince:
       cleanText(
         body.streamSince ??
-        existing.streamSince,
+        oldMember.streamSince,
         60
       ),
 
     role:
       cleanText(
         body.role ??
-        existing.role,
+        oldMember.role,
         100
       ),
 
     category:
       cleanText(
         body.category ??
-        existing.category,
+        oldMember.category,
         150
       ),
 
     description:
       cleanText(
         body.description ??
-        existing.description,
+        oldMember.description,
         1500
       ),
 
-    tags:
-      tags,
+    tags,
 
     twitch:
       cleanText(
         body.twitch ??
-        existing.twitch,
+        oldMember.twitch,
         300
       ),
 
     youtube:
       cleanText(
         body.youtube ??
-        existing.youtube,
+        oldMember.youtube,
         300
       ),
 
     discord:
       cleanText(
         body.discord ??
-        existing.discord,
+        oldMember.discord,
         300
       ),
 
@@ -526,200 +290,124 @@ function createMember(
       ).toUpperCase(),
 
     color:
-      /^#[0-9a-f]{6}$/i.test(
-        color
-      )
+      /^#[0-9a-f]{6}$/i.test(color)
         ? color
         : "#151519",
 
     visible:
       body.visible !== undefined
         ? body.visible !== false
-        : existing.visible !== false
+        : oldMember.visible !== false
   };
 }
 
 
 // ============================================================
-// API
+// API VERCEL
 // ============================================================
 
-export default function handler(
-  req,
-  res
-) {
+export default function handler(req, res) {
 
-  // Empêche la mise en cache
   res.setHeader(
     "Cache-Control",
-    "no-store, no-cache, must-revalidate"
+    "no-store"
   );
 
-
-  // ========================================================
+  // =========================================================
   // GET
-  // Lire les membres
-  // ========================================================
+  // =========================================================
 
-  if (
-    req.method ===
-    "GET"
-  ) {
-
-    return res
-      .status(200)
-      .json(
-        members
-      );
+  if (req.method === "GET") {
+    return res.status(200).json(members);
   }
 
 
-  // ========================================================
-  // ADMIN obligatoire
-  // ========================================================
+  // =========================================================
+  // ADMIN TOKEN
+  // =========================================================
 
-  if (
-    !process.env.ADMIN_TOKEN
-  ) {
-
-    return res
-      .status(503)
-      .json({
-        error:
-          "ADMIN_TOKEN n'est pas configuré sur Vercel."
-      });
+  if (!process.env.ADMIN_TOKEN) {
+    return res.status(503).json({
+      error:
+        "ADMIN_TOKEN n'est pas configuré sur Vercel."
+    });
   }
 
 
-  if (
-    !isAdmin(req)
-  ) {
-
-    return res
-      .status(401)
-      .json({
-        error:
-          "Non autorisé"
-      });
+  if (!isAdmin(req)) {
+    return res.status(401).json({
+      error: "Non autorisé"
+    });
   }
 
 
-  // ========================================================
-  // POST
-  // Ajouter
-  // ========================================================
+  // =========================================================
+  // POST = AJOUTER
+  // =========================================================
 
-  if (
-    req.method ===
-    "POST"
-  ) {
+  if (req.method === "POST") {
 
-    const body =
-      getBody(req);
-
+    const body = getBody(req);
 
     const name =
-      cleanText(
-        body.name,
-        80
-      );
+      cleanText(body.name, 80);
 
-
-    if (
-      !name
-    ) {
-
-      return res
-        .status(400)
-        .json({
-          error:
-            "Le nom est obligatoire."
-        });
+    if (!name) {
+      return res.status(400).json({
+        error: "Nom obligatoire"
+      });
     }
-
 
     const id =
       makeId(
-        body.id ||
-        name
+        body.id || name
       );
 
-
-    if (
-      !id
-    ) {
-
-      return res
-        .status(400)
-        .json({
-          error:
-            "Identifiant invalide."
-        });
+    if (!id) {
+      return res.status(400).json({
+        error:
+          "Identifiant invalide"
+      });
     }
-
 
     const exists =
       members.some(
         member =>
-          member.id ===
-          id
+          member.id === id
       );
 
-
-    if (
-      exists
-    ) {
-
-      return res
-        .status(409)
-        .json({
-          error:
-            "Ce membre existe déjà."
-        });
+    if (exists) {
+      return res.status(409).json({
+        error:
+          "Ce membre existe déjà"
+      });
     }
 
-
     const member =
-      createMember({
+      buildMember({
         ...body,
         id
       });
 
+    members.push(member);
 
-    members.push(
+    return res.status(201).json({
+      ok: true,
+      message:
+        "Membre ajouté",
       member
-    );
-
-
-    return res
-      .status(201)
-      .json({
-
-        ok:
-          true,
-
-        message:
-          "Membre ajouté.",
-
-        member:
-          member
-      });
+    });
   }
 
 
-  // ========================================================
-  // PUT
-  // Modifier
-  // ========================================================
+  // =========================================================
+  // PUT = MODIFIER
+  // =========================================================
 
-  if (
-    req.method ===
-    "PUT"
-  ) {
+  if (req.method === "PUT") {
 
     const body =
       getBody(req);
-
 
     const id =
       cleanText(
@@ -727,85 +415,56 @@ export default function handler(
         80
       );
 
-
-    if (
-      !id
-    ) {
-
-      return res
-        .status(400)
-        .json({
-          error:
-            "Identifiant du membre manquant."
-        });
+    if (!id) {
+      return res.status(400).json({
+        error:
+          "Identifiant manquant"
+      });
     }
-
 
     const index =
       members.findIndex(
         member =>
-          member.id ===
-          id
+          member.id === id
       );
 
-
-    if (
-      index === -1
-    ) {
-
-      return res
-        .status(404)
-        .json({
-          error:
-            "Membre introuvable."
-        });
+    if (index === -1) {
+      return res.status(404).json({
+        error:
+          "Membre introuvable"
+      });
     }
-
 
     const oldMember =
       members[index];
 
-
     const updatedMember =
-      createMember(
+      buildMember(
         body,
         oldMember
       );
 
-
     updatedMember.id =
       oldMember.id;
-
 
     members[index] =
       updatedMember;
 
-
-    return res
-      .status(200)
-      .json({
-
-        ok:
-          true,
-
-        message:
-          "Membre modifié.",
-
-        member:
-          updatedMember
-      });
+    return res.status(200).json({
+      ok: true,
+      message:
+        "Membre modifié",
+      member:
+        updatedMember
+    });
   }
 
 
-  // ========================================================
-  // DELETE
-  // Supprimer
-  // ========================================================
+  // =========================================================
+  // DELETE = SUPPRIMER
+  // =========================================================
 
-  if (
-    req.method ===
-    "DELETE"
-  ) {
+  if (req.method === "DELETE") {
 
     const id =
       cleanText(
@@ -813,79 +472,52 @@ export default function handler(
         80
       );
 
-
-    if (
-      !id
-    ) {
-
-      return res
-        .status(400)
-        .json({
-          error:
-            "Identifiant du membre manquant."
-        });
+    if (!id) {
+      return res.status(400).json({
+        error:
+          "Identifiant manquant"
+      });
     }
 
-
-    const member =
-      members.find(
-        item =>
-          item.id ===
-          id
+    const exists =
+      members.some(
+        member =>
+          member.id === id
       );
 
-
-    if (
-      !member
-    ) {
-
-      return res
-        .status(404)
-        .json({
-          error:
-            "Membre introuvable."
-        });
+    if (!exists) {
+      return res.status(404).json({
+        error:
+          "Membre introuvable"
+      });
     }
-
 
     members =
       members.filter(
-        item =>
-          item.id !==
-          id
+        member =>
+          member.id !== id
       );
 
-
-    return res
-      .status(200)
-      .json({
-
-        ok:
-          true,
-
-        message:
-          "Membre supprimé.",
-
-        deleted:
-          id
-      });
+    return res.status(200).json({
+      ok: true,
+      message:
+        "Membre supprimé",
+      deleted: id
+    });
   }
 
 
-  // ========================================================
-  // AUTRE
-  // ========================================================
+  // =========================================================
+  // AUTRE MÉTHODE
+  // =========================================================
 
   res.setHeader(
     "Allow",
     "GET, POST, PUT, DELETE"
   );
 
-
-  return res
-    .status(405)
-    .json({
-      error:
-        "Méthode non autorisée."
-    });
+  return res.status(405).json({
+    error:
+      "Méthode non autorisée"
+  });
 }
