@@ -1,8 +1,11 @@
 import { getIP, rateLimit, logIntrusion } from './_utils.js';
-const ADMIN_USER = process.env.ADMIN_USER || 'reddice_geek';
-const ADMIN_PASS = process.env.ADMIN_PASS || 'Furioz2026!Secure';
-const ADMIN_TOKEN = process.env.ADMIN_TOKEN || 'furioz_admin_2026_secure';
+const ADMIN_USER = process.env.ADMIN_USER;
+const ADMIN_PASS = process.env.ADMIN_PASS;
+const ADMIN_TOKEN = process.env.ADMIN_TOKEN;
 export default function handler(req, res){
+  if(!ADMIN_USER || !ADMIN_PASS || !ADMIN_TOKEN){
+    return res.status(503).json({error:'Configuration serveur incomplète'});
+  }
   if(req.method!=='POST') return res.status(405).json({error:'Method not allowed'});
   const ip=getIP(req);
   const rl=rateLimit(ip,'login');
