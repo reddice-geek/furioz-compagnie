@@ -30,6 +30,7 @@ let members = [
     discord: "",
     initial: "R",
     color: "#151519",
+    color2: "#7A00B8",
     visible: true
   },
 
@@ -55,6 +56,7 @@ let members = [
     discord: "",
     initial: "Z",
     color: "#151519",
+    color2: "#0A86B8",
     visible: true
   },
 
@@ -81,6 +83,7 @@ let members = [
     discord: "",
     initial: "F",
     color: "#151519",
+    color2: "#3F22D8",
     visible: true
   },
 
@@ -108,6 +111,7 @@ let members = [
     discord: "",
     initial: "Q",
     color: "#16C7B7",
+    color2: "#FF4B00",
     visible: true
   }
 ];
@@ -181,6 +185,12 @@ function buildMember(body, oldMember = {}) {
   const color =
     cleanText(
       body.color ?? oldMember.color,
+      7
+    );
+
+  const color2 =
+    cleanText(
+      body.color2 ?? oldMember.color2 ?? oldMember.color,
       7
     );
 
@@ -293,6 +303,15 @@ function buildMember(body, oldMember = {}) {
       /^#[0-9a-f]{6}$/i.test(color)
         ? color
         : "#151519",
+
+    color2:
+      /^#[0-9a-f]{6}$/i.test(color2)
+        ? color2
+        : (
+            /^#[0-9a-f]{6}$/i.test(color)
+              ? color
+              : "#151519"
+          ),
 
     visible:
       body.visible !== undefined
