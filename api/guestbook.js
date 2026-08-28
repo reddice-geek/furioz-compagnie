@@ -1,7 +1,7 @@
 import { getIP, rateLimit, logVisit, logIntrusion } from './_utils.js';
 let guestbook = [
-  { id:'1', name:'Zafkiel', message:"Meilleure team depuis 2024, entraide de fou ! 🔥", rating:5, date:'2024-11-25', verified:true, ip:'hidden' },
-  { id:'2', name:'FoxySword', message:"Rejoins depuis Canada, ambiance incroyable", rating:5, date:'2026-08-18', verified:true, ip:'hidden' },
+  { id:'1', name:'Zafkiel', message:"Meilleure team depuis 2024, entraide de fou ! 🔥", rating:5, date:'25/11/2024', verified:true, ip:'hidden' },
+  { id:'2', name:'FoxySword', message:"Rejoins depuis Canada, ambiance incroyable", rating:5, date:'18/08/2026', verified:true, ip:'hidden' },
 ];
 export default function handler(req, res){
   const ip = getIP(req);
