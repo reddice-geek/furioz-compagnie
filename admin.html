@@ -22,7 +22,7 @@
 body{
   margin:0;
   font-family:Inter,system-ui,sans-serif;
-  background:#F8FAFC;
+  background:#F3F0E9;
   color:#0F172A;
 }
 
@@ -35,14 +35,15 @@ body{
   display:grid;
   place-items:center;
   padding:1rem;
+  background:#F3F0E9;
 }
 
 .card{
   background:#fff;
-  border:1px solid #E2E8F0;
-  border-radius:12px;
+  border:1px solid #DDD8CF;
+  border-radius:14px;
   padding:1.5rem;
-  box-shadow:0 1px 3px rgba(0,0,0,.05);
+  box-shadow:0 2px 8px rgba(0,0,0,.05);
   width:min(380px,92vw);
 }
 
@@ -58,17 +59,25 @@ body{
 
 input{
   width:100%;
-  padding:.6rem .8rem;
+  padding:.7rem .8rem;
   border:1px solid #CBD5E1;
   border-radius:10px;
   font-size:.9rem;
   margin-top:.4rem;
+  background:#fff;
+  color:#0F172A;
+}
+
+input:focus{
+  outline:none;
+  border-color:#94A3B8;
+  box-shadow:0 0 0 3px rgba(148,163,184,.15);
 }
 
 .btn{
   border:0;
   border-radius:10px;
-  padding:.6rem 1rem;
+  padding:.7rem 1rem;
   font-weight:600;
   cursor:pointer;
   font-size:.9rem;
@@ -86,10 +95,15 @@ input{
    PANEL
 ========================= */
 
+#dash{
+  min-height:100vh;
+  background:#F3F0E9;
+}
+
 .header{
   height:56px;
   background:#fff;
-  border-bottom:1px solid #E2E8F0;
+  border-bottom:1px solid #DDD8CF;
   display:flex;
   align-items:center;
   justify-content:space-between;
@@ -108,7 +122,7 @@ input{
 
 .stat{
   background:#fff;
-  border:1px solid #E2E8F0;
+  border:1px solid #DDD8CF;
   border-radius:12px;
   padding:1rem;
 }
@@ -128,7 +142,7 @@ input{
 .tab{
   padding:.4rem .8rem;
   border-radius:999px;
-  border:1px solid #E2E8F0;
+  border:1px solid #DDD8CF;
   background:#fff;
   cursor:pointer;
   font-weight:600;
@@ -143,7 +157,7 @@ input{
 
 .table-wrap{
   background:#fff;
-  border:1px solid #E2E8F0;
+  border:1px solid #DDD8CF;
   border-radius:12px;
   overflow:hidden;
 }
@@ -157,8 +171,8 @@ table{
 th{
   text-align:left;
   padding:.6rem;
-  background:#F8FAFC;
-  border-bottom:1px solid #E2E8F0;
+  background:#F8F6F1;
+  border-bottom:1px solid #E8E2D9;
   font-size:.7rem;
   text-transform:uppercase;
   letter-spacing:.05em;
@@ -166,7 +180,7 @@ th{
 
 td{
   padding:.6rem;
-  border-bottom:1px solid #F1F5F9;
+  border-bottom:1px solid #F1EDE7;
   vertical-align:top;
 }
 
@@ -280,11 +294,6 @@ td{
 
 <body>
 
-
-<!-- =========================
-     MENU
-========================= -->
-
 <nav id="main-nav">
 
   <a href="index.html#accueil" class="brand" id="logo-link">
@@ -339,11 +348,6 @@ td{
 
 </nav>
 
-
-<!-- =========================
-     CONNEXION
-========================= -->
-
 <div id="login" class="login-wrap">
 
   <div class="card">
@@ -371,7 +375,6 @@ td{
 
     </div>
 
-
     <div style="margin-top:.6rem">
 
       <label
@@ -389,7 +392,6 @@ td{
 
     </div>
 
-
     <button
       class="btn"
       id="loginBtn"
@@ -397,7 +399,6 @@ td{
     >
       Se connecter
     </button>
-
 
     <div
       id="loginMsg"
@@ -408,26 +409,13 @@ td{
 
 </div>
 
-
-<!-- =========================
-     TABLEAU DE BORD
-========================= -->
-
 <div id="dash" style="display:none">
 
   <div class="header">
 
-    <div
-      style="
-      display:flex;
-      align-items:center;
-      gap:.6rem
-      "
-    >
+    <div style="display:flex;align-items:center;gap:.6rem">
 
-      <strong>
-        Panel Admin
-      </strong>
+      <strong>Panel Admin</strong>
 
       <span
         id="userInfo"
@@ -449,13 +437,7 @@ td{
 
     </div>
 
-
-    <div
-      style="
-      display:flex;
-      gap:.5rem
-      "
-    >
+    <div style="display:flex;gap:.5rem">
 
       <a
         href="index.html"
@@ -463,7 +445,7 @@ td{
         text-decoration:none;
         font-size:.8rem;
         padding:.4rem .7rem;
-        border:1px solid #E2E8F0;
+        border:1px solid #DDD8CF;
         border-radius:999px;
         background:#fff;
         color:#0F172A
@@ -472,13 +454,12 @@ td{
         Retour site
       </a>
 
-
       <button
         id="logout"
         style="
         font-size:.8rem;
         padding:.4rem .7rem;
-        border:1px solid #E2E8F0;
+        border:1px solid #DDD8CF;
         border-radius:999px;
         background:#fff;
         cursor:pointer
@@ -491,7 +472,6 @@ td{
 
   </div>
 
-
   <div
     style="
     width:min(1100px,94vw);
@@ -500,19 +480,9 @@ td{
     "
   >
 
-    <div
-      class="stats"
-      id="stats"
-    ></div>
+    <div class="stats" id="stats"></div>
 
-
-    <div
-      style="
-      display:flex;
-      gap:.5rem;
-      margin-bottom:.5rem
-      "
-    >
+    <div style="display:flex;gap:.5rem;margin-bottom:.5rem">
 
       <button
         class="btn"
@@ -524,39 +494,25 @@ td{
 
     </div>
 
-
     <div class="tabs">
 
-      <div
-        class="tab active"
-        data-t="visits"
-      >
+      <div class="tab active" data-t="visits">
         Visites
       </div>
 
-      <div
-        class="tab"
-        data-t="intrusions"
-      >
+      <div class="tab" data-t="intrusions">
         Intrusions (hackers)
       </div>
 
-      <div
-        class="tab"
-        data-t="guestbook"
-      >
+      <div class="tab" data-t="guestbook">
         Livre d'or
       </div>
 
-      <div
-        class="tab"
-        data-t="countries"
-      >
+      <div class="tab" data-t="countries">
         Pays
       </div>
 
     </div>
-
 
     <div id="content"></div>
 
@@ -564,55 +520,35 @@ td{
 
 </div>
 
-
 <script>
-
-/* =========================
-   API
-========================= */
 
 const API_LOGIN='/api/admin-login';
 const API_STATS='/api/admin-stats';
 const API_GB='/api/guestbook';
 
-
 let token=localStorage.getItem('furioz_token');
-
-
-/* =========================
-   AFFICHAGE
-========================= */
 
 function showLogin(){
 
   document.getElementById('login').style.display='grid';
-
   document.getElementById('dash').style.display='none';
 
 }
 
-
 function showDash(){
 
   document.getElementById('login').style.display='none';
-
   document.getElementById('dash').style.display='block';
 
   loadStats();
 
 }
 
-
 if(token){
   showDash();
 }else{
   showLogin();
 }
-
-
-/* =========================
-   CONNEXION ADMIN
-========================= */
 
 async function loginAdmin(){
 
@@ -625,7 +561,6 @@ async function loginAdmin(){
   const msg=
     document.getElementById('loginMsg');
 
-
   if(!user || !pass){
 
     msg.style.color='#DC2626';
@@ -636,11 +571,8 @@ async function loginAdmin(){
     return;
   }
 
-
   msg.style.color='#64748B';
-
   msg.textContent='Connexion...';
-
 
   try{
 
@@ -653,18 +585,13 @@ async function loginAdmin(){
       },
 
       body:JSON.stringify({
-
         user:user,
-
         pass:pass
-
       })
 
     });
 
-
     let data;
-
 
     try{
 
@@ -678,9 +605,7 @@ async function loginAdmin(){
         'Réponse incorrecte du serveur.';
 
       return;
-
     }
-
 
     if(!response.ok){
 
@@ -691,9 +616,7 @@ async function loginAdmin(){
         'Utilisateur ou mot de passe incorrect.';
 
       return;
-
     }
-
 
     if(!data.token){
 
@@ -703,37 +626,27 @@ async function loginAdmin(){
         'Aucun jeton de connexion reçu.';
 
       return;
-
     }
 
-
     token=data.token;
-
 
     localStorage.setItem(
       'furioz_token',
       data.token
     );
 
-
     localStorage.setItem(
       'furioz_user',
       data.user || user
     );
 
-
     msg.textContent='';
-
 
     showDash();
 
   }catch(error){
 
-    console.error(
-      'Erreur connexion Admin :',
-      error
-    );
-
+    console.error(error);
 
     msg.style.color='#DC2626';
 
@@ -744,18 +657,12 @@ async function loginAdmin(){
 
 }
 
-
-/* bouton */
-
 document
 .getElementById('loginBtn')
 .addEventListener(
   'click',
   loginAdmin
 );
-
-
-/* touche Entrée */
 
 document
 .getElementById('pass')
@@ -772,22 +679,12 @@ document
   }
 );
 
-
-/* =========================
-   DÉCONNEXION
-========================= */
-
 document
 .getElementById('logout')
 .onclick=()=>{
 
-  localStorage.removeItem(
-    'furioz_token'
-  );
-
-  localStorage.removeItem(
-    'furioz_user'
-  );
+  localStorage.removeItem('furioz_token');
+  localStorage.removeItem('furioz_user');
 
   token=null;
 
@@ -795,15 +692,8 @@ document
 
 };
 
-
-/* =========================
-   ONGLETS
-========================= */
-
 let currentTab='visits';
-
 let cache=null;
-
 
 document
 .querySelectorAll('.tab')
@@ -817,13 +707,10 @@ document
       x.classList.remove('active')
     );
 
-
     tab.classList.add('active');
-
 
     currentTab=
       tab.dataset.t;
-
 
     render();
 
@@ -831,15 +718,9 @@ document
 
 });
 
-
 document
 .getElementById('refresh')
 .onclick=loadStats;
-
-
-/* =========================
-   STATISTIQUES
-========================= */
 
 async function loadStats(){
 
@@ -855,7 +736,6 @@ async function loadStats(){
           }
         }
       );
-
 
     if(
       response.status===401 ||
@@ -874,7 +754,6 @@ async function loadStats(){
 
     }
 
-
     if(!response.ok){
 
       console.error(
@@ -886,13 +765,10 @@ async function loadStats(){
 
     }
 
-
     const data=
       await response.json();
 
-
     cache=data;
-
 
     document
     .getElementById('userInfo')
@@ -900,7 +776,6 @@ async function loadStats(){
       localStorage.getItem(
         'furioz_user'
       ) || 'admin';
-
 
     if(data.serverTime){
 
@@ -915,119 +790,60 @@ async function loadStats(){
 
     }
 
-
     const stats=
       data.stats || {};
-
 
     document
     .getElementById('stats')
     .innerHTML=`
 
       <div class="stat">
-
-        <span
-          class="muted"
-          style="font-size:.7rem"
-        >
+        <span class="muted" style="font-size:.7rem">
           TOTAL VISITES
         </span>
-
-        <b>
-          ${stats.totalVisits ?? 0}
-        </b>
-
-        <span
-          class="muted"
-          style="font-size:.7rem"
-        >
-          Logs en mémoire (max 1000)
-        </span>
-
+        <b>${stats.totalVisits ?? 0}</b>
       </div>
 
-
       <div class="stat">
-
-        <span
-          class="muted"
-          style="font-size:.7rem"
-        >
+        <span class="muted" style="font-size:.7rem">
           VISITES 24H
         </span>
-
-        <b>
-          ${stats.visits24h ?? 0}
-        </b>
-
+        <b>${stats.visits24h ?? 0}</b>
       </div>
 
-
       <div class="stat">
-
-        <span
-          class="muted"
-          style="font-size:.7rem"
-        >
+        <span class="muted" style="font-size:.7rem">
           VISITEURS UNIQUES
         </span>
-
-        <b>
-          ${stats.uniqueVisitors ?? 0}
-        </b>
-
+        <b>${stats.uniqueVisitors ?? 0}</b>
       </div>
 
-
       <div class="stat">
-
-        <span
-          class="muted"
-          style="font-size:.7rem"
-        >
+        <span class="muted" style="font-size:.7rem">
           INTRUSIONS TOTAL
         </span>
-
         <b style="color:#DC2626">
           ${stats.totalIntrusions ?? 0}
         </b>
-
       </div>
 
-
       <div class="stat">
-
-        <span
-          class="muted"
-          style="font-size:.7rem"
-        >
+        <span class="muted" style="font-size:.7rem">
           BLOQUÉS (IP)
         </span>
-
-        <b>
-          ${stats.blockedIPs ?? 0}
-        </b>
-
+        <b>${stats.blockedIPs ?? 0}</b>
       </div>
 
-
       <div class="stat">
-
-        <span
-          class="muted"
-          style="font-size:.7rem"
-        >
+        <span class="muted" style="font-size:.7rem">
           INTRUSIONS 24H
         </span>
-
         <b style="color:#DC2626">
           ${stats.intrusionLast24h ?? 0}
         </b>
-
       </div>
 
     `;
-
 
     render();
 
@@ -1042,31 +858,17 @@ async function loadStats(){
 
 }
 
-
-/* =========================
-   ÉCHAPPEMENT HTML
-========================= */
-
 function escapeHTML(value){
 
   return String(value ?? '')
 
     .replaceAll('&','&amp;')
-
     .replaceAll('<','&lt;')
-
     .replaceAll('>','&gt;')
-
     .replaceAll('"','&quot;')
-
     .replaceAll("'","&#039;");
 
 }
-
-
-/* =========================
-   CONTENU
-========================= */
 
 function render(){
 
@@ -1074,16 +876,13 @@ function render(){
     return;
   }
 
-
   const content=
     document.getElementById('content');
-
 
   if(currentTab==='visits'){
 
     const visits=
       cache.recentVisits || [];
-
 
     content.innerHTML=`
 
@@ -1122,26 +921,14 @@ function render(){
                 ${escapeHTML(v.city)}
               </td>
 
-              <td
-                style="
-                max-width:180px;
-                overflow:hidden;
-                text-overflow:ellipsis
-                "
-              >
+              <td>
                 ${escapeHTML(
                   String(v.page || '')
                   .substring(0,60)
                 )}
               </td>
 
-              <td
-                style="
-                max-width:150px;
-                overflow:hidden;
-                text-overflow:ellipsis
-                "
-              >
+              <td>
                 ${escapeHTML(
                   String(v.ua || '')
                   .substring(0,50)
@@ -1160,14 +947,10 @@ function render(){
 
   }
 
-
-  else if(
-    currentTab==='intrusions'
-  ){
+  else if(currentTab==='intrusions'){
 
     const intrusions=
       cache.recentIntrusions || [];
-
 
     content.innerHTML=`
 
@@ -1198,21 +981,12 @@ function render(){
               </td>
 
               <td>
-
-                <span
-                  class="badge badge-red"
-                >
+                <span class="badge badge-red">
                   ${escapeHTML(i.type)}
                 </span>
-
               </td>
 
-              <td
-                style="
-                max-width:280px;
-                word-break:break-all
-                "
-              >
+              <td>
                 ${escapeHTML(i.details)}
               </td>
 
@@ -1228,10 +1002,7 @@ function render(){
 
   }
 
-
-  else if(
-    currentTab==='guestbook'
-  ){
+  else if(currentTab==='guestbook'){
 
     content.innerHTML=`
 
@@ -1244,7 +1015,6 @@ function render(){
 
     `;
 
-
     fetch(API_GB)
 
     .then(r=>r.json())
@@ -1255,7 +1025,6 @@ function render(){
         list=[];
       }
 
-
       document
       .getElementById('gbList')
       .innerHTML=
@@ -1265,7 +1034,7 @@ function render(){
           <div
             style="
             background:#fff;
-            border:1px solid #E2E8F0;
+            border:1px solid #DDD8CF;
             border-radius:12px;
             padding:.9rem;
             display:flex;
@@ -1288,11 +1057,9 @@ function render(){
                   : 'badge-blue'}
                 "
               >
-
                 ${g.verified
                   ? 'vérifié'
                   : 'en attente'}
-
               </span>
 
               ${'⭐'.repeat(
@@ -1319,7 +1086,6 @@ function render(){
               </span>
 
             </div>
-
 
             <button
               onclick="del('${escapeHTML(g.id)}')"
@@ -1356,14 +1122,10 @@ function render(){
 
   }
 
-
-  else if(
-    currentTab==='countries'
-  ){
+  else if(currentTab==='countries'){
 
     const countries=
       cache.topCountries || [];
-
 
     content.innerHTML=`
 
@@ -1402,21 +1164,11 @@ function render(){
 
 }
 
-
-/* =========================
-   SUPPRIMER AVIS
-========================= */
-
 async function del(id){
 
-  if(
-    !confirm(
-      'Supprimer cet avis ?'
-    )
-  ){
+  if(!confirm('Supprimer cet avis ?')){
     return;
   }
-
 
   try{
 
@@ -1432,7 +1184,6 @@ async function del(id){
           }
         }
       );
-
 
     if(response.ok){
 
