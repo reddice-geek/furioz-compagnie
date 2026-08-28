@@ -1,413 +1,3402 @@
 <!doctype html>
 <html lang="fr">
+
 <head>
-<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+
 <title>Admin - Furioz Compagnie</title>
+
 <meta name="robots" content="noindex, nofollow">
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-<style>
-*{box-sizing:border-box} body{margin:0; font-family:Inter,system-ui,sans-serif; background:#F3F0E9; color:#0F172A}
-.login-wrap{min-height:100vh; display:grid; place-items:center; padding:1rem}
-.card{background:#fff; border:1px solid #E2E8F0; border-radius:12px; padding:1.5rem; box-shadow:0 1px 3px rgba(0,0,0,.05); width:min(380px,92vw)}
-.card h1{margin:0 0 .2rem; font-size:1.2rem} .muted{color:#64748B; font-size:.85rem}
-input{width:100%; padding:.6rem .8rem; border:1px solid #CBD5E1; border-radius:10px; font-size:.9rem; margin-top:.4rem}
-.btn{border:0; border-radius:10px; padding:.6rem 1rem; font-weight:600; cursor:pointer; font-size:.9rem; background:#0F172A; color:#fff; width:100%; margin-top:.8rem}
-.btn:hover{background:#1E293B}
-.header{height:56px; background:#fff; border-bottom:1px solid #E2E8F0; display:flex; align-items:center; justify-content:space-between; padding:0 1.2rem; position:sticky; top:0; z-index:10}
-.stats{display:grid; grid-template-columns:repeat(3,1fr); gap:.8rem; margin:1rem 0}
-.stat{background:#fff; border:1px solid #E2E8F0; border-radius:12px; padding:1rem}
-.stat b{font-size:1.4rem; display:block}
-.tabs{display:flex; gap:.4rem; margin:1rem 0; flex-wrap:wrap}
-.tab{padding:.4rem .8rem; border-radius:999px; border:1px solid #E2E8F0; background:#fff; cursor:pointer; font-weight:600; font-size:.8rem}
-.tab.active{background:#0F172A; color:#fff; border-color:#0F172A}
-.table-wrap{background:#fff; border:1px solid #E2E8F0; border-radius:12px; overflow:hidden}
-table{width:100%; border-collapse:collapse; font-size:.8rem} th{text-align:left; padding:.6rem; background:#F8FAFC; border-bottom:1px solid #E2E8F0; font-size:.7rem; text-transform:uppercase; letter-spacing:.05em} td{padding:.6rem; border-bottom:1px solid #F1F5F9; vertical-align:top}
-.badge{display:inline-flex; padding:.15rem .4rem; border-radius:999px; font-size:.65rem; font-weight:700}
-.badge-red{background:#FEE2E2; color:#991B1B} .badge-blue{background:#DBEAFE; color:#1E40AF} .badge-green{background:#DCFCE7; color:#166534}
-@media(max-width:900px){.stats{grid-template-columns:1fr 1fr}}
 
-.team-admin-box{background:#fff;border:1px solid #E2E8F0;border-radius:12px;padding:1rem}
-.team-form-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:.7rem}
-.team-form-grid label{font-size:.75rem;font-weight:700;color:#334155}
-.team-form-grid input,.team-form-grid textarea,.team-form-grid select{width:100%;padding:.58rem .7rem;border:1px solid #CBD5E1;border-radius:9px;font:inherit;background:#fff}
-.team-form-grid textarea{min-height:100px;resize:vertical}
-.team-form-full{grid-column:1/-1}
-.team-admin-list{display:grid;gap:.6rem;margin-top:1rem}
-.team-admin-row{display:flex;justify-content:space-between;gap:1rem;align-items:center;border:1px solid #E2E8F0;border-radius:10px;padding:.7rem;background:#fff}
-.team-admin-actions{display:flex;gap:.4rem;flex-wrap:wrap}
-.mini-btn{border:1px solid #CBD5E1;background:#fff;border-radius:8px;padding:.35rem .55rem;cursor:pointer;font-weight:600}
-.mini-btn.danger{border-color:#FECACA;background:#FEF2F2;color:#991B1B}
-@media(max-width:700px){.team-form-grid{grid-template-columns:1fr}.team-form-full{grid-column:auto}.team-admin-row{align-items:flex-start;flex-direction:column}}
+<link
+  href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap"
+  rel="stylesheet"
+>
 
-</style>
 <link rel="stylesheet" href="css/style.css">
 
+<style>
+
+/* =========================================================
+   BASE ADMIN
+   ========================================================= */
+
+*{
+  box-sizing:border-box;
+}
+
+body{
+  margin:0;
+  font-family:Inter,system-ui,sans-serif;
+  background:#F3F0E9;
+  color:#0F172A;
+}
+
+.login-wrap{
+  min-height:100vh;
+  display:grid;
+  place-items:center;
+  padding:1rem;
+}
+
+.card{
+  background:#fff;
+  border:1px solid #E2E8F0;
+  border-radius:12px;
+  padding:1.5rem;
+  box-shadow:0 1px 3px rgba(0,0,0,.05);
+  width:min(380px,92vw);
+}
+
+.card h1{
+  margin:0 0 .2rem;
+  font-size:1.2rem;
+}
+
+.muted{
+  color:#64748B;
+  font-size:.85rem;
+}
 
 
+/* =========================================================
+   CHAMPS
+   CORRECTION TEXTE INVISIBLE
+   ========================================================= */
+
+input,
+textarea,
+select{
+  color:#111827 !important;
+  -webkit-text-fill-color:#111827 !important;
+
+  background:#fff !important;
+
+  border:1px solid #CBD5E1;
+  border-radius:10px;
+
+  font-family:Inter,system-ui,sans-serif;
+  font-size:.9rem;
+
+  box-sizing:border-box;
+}
+
+input{
+  width:100%;
+  padding:.6rem .8rem;
+  margin-top:.4rem;
+}
+
+textarea,
+select{
+  width:100%;
+}
+
+input::placeholder,
+textarea::placeholder{
+  color:#94A3B8 !important;
+  -webkit-text-fill-color:#94A3B8 !important;
+  opacity:1;
+}
+
+input:focus,
+textarea:focus,
+select:focus{
+  color:#111827 !important;
+  -webkit-text-fill-color:#111827 !important;
+  background:#fff !important;
+
+  border-color:#2563EB !important;
+  outline:2px solid rgba(37,99,235,.14);
+}
+
+input:-webkit-autofill,
+input:-webkit-autofill:hover,
+input:-webkit-autofill:focus{
+  -webkit-text-fill-color:#111827 !important;
+  box-shadow:0 0 0 1000px #fff inset !important;
+}
 
 
+/* =========================================================
+   BOUTONS
+   ========================================================= */
+
+.btn{
+  border:0;
+  border-radius:10px;
+
+  padding:.6rem 1rem;
+
+  font-weight:600;
+  cursor:pointer;
+  font-size:.9rem;
+
+  background:#0F172A;
+  color:#fff !important;
+
+  width:100%;
+  margin-top:.8rem;
+
+  -webkit-text-fill-color:#fff !important;
+}
+
+.btn:hover{
+  background:#1E293B;
+}
 
 
-<style id="main-nav-final-fix">
-/* Correctif définitif du vrai menu #main-nav */
+/* =========================================================
+   HEADER ADMIN
+   ========================================================= */
+
+.header{
+  height:56px;
+
+  background:#fff;
+  border-bottom:1px solid #E2E8F0;
+
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+
+  padding:0 1.2rem;
+
+  position:sticky;
+  top:0;
+  z-index:10;
+}
+
+
+/* =========================================================
+   STATISTIQUES
+   ========================================================= */
+
+.stats{
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+
+  gap:.8rem;
+  margin:1rem 0;
+}
+
+.stat{
+  background:#fff;
+
+  border:1px solid #E2E8F0;
+  border-radius:12px;
+
+  padding:1rem;
+}
+
+.stat b{
+  font-size:1.4rem;
+  display:block;
+}
+
+
+/* =========================================================
+   ONGLETS
+   ========================================================= */
+
+.tabs{
+  display:flex;
+  gap:.4rem;
+
+  margin:1rem 0;
+
+  flex-wrap:wrap;
+}
+
+.tab{
+  padding:.4rem .8rem;
+
+  border-radius:999px;
+  border:1px solid #E2E8F0;
+
+  background:#fff;
+
+  cursor:pointer;
+
+  font-weight:600;
+  font-size:.8rem;
+
+  color:#0F172A;
+}
+
+.tab.active{
+  background:#0F172A;
+  color:#fff;
+  border-color:#0F172A;
+}
+
+
+/* =========================================================
+   TABLEAUX
+   ========================================================= */
+
+.table-wrap{
+  background:#fff;
+
+  border:1px solid #E2E8F0;
+  border-radius:12px;
+
+  overflow:hidden;
+}
+
+table{
+  width:100%;
+  border-collapse:collapse;
+  font-size:.8rem;
+}
+
+th{
+  text-align:left;
+
+  padding:.6rem;
+
+  background:#F8FAFC;
+
+  border-bottom:1px solid #E2E8F0;
+
+  font-size:.7rem;
+
+  text-transform:uppercase;
+  letter-spacing:.05em;
+}
+
+td{
+  padding:.6rem;
+
+  border-bottom:1px solid #F1F5F9;
+
+  vertical-align:top;
+}
+
+
+/* =========================================================
+   BADGES
+   ========================================================= */
+
+.badge{
+  display:inline-flex;
+
+  padding:.15rem .4rem;
+
+  border-radius:999px;
+
+  font-size:.65rem;
+  font-weight:700;
+}
+
+.badge-red{
+  background:#FEE2E2;
+  color:#991B1B;
+}
+
+.badge-blue{
+  background:#DBEAFE;
+  color:#1E40AF;
+}
+
+.badge-green{
+  background:#DCFCE7;
+  color:#166534;
+}
+
+
+/* =========================================================
+   ÉQUIPE ADMIN
+   ========================================================= */
+
+.team-admin-box{
+  background:#fff;
+
+  border:1px solid #E2E8F0;
+  border-radius:12px;
+
+  padding:1rem;
+}
+
+.team-form-grid{
+  display:grid;
+
+  grid-template-columns:
+    repeat(2,minmax(0,1fr));
+
+  gap:.8rem;
+}
+
+.team-form-grid label{
+  display:flex;
+  flex-direction:column;
+
+  gap:.35rem;
+
+  font-size:.75rem;
+  font-weight:700;
+
+  color:#334155 !important;
+
+  -webkit-text-fill-color:#334155 !important;
+}
+
+
+/* TOUS LES CHAMPS TEAM */
+
+.team-form-grid input:not([type="checkbox"]):not([type="color"]),
+.team-form-grid textarea,
+.team-form-grid select{
+  width:100%;
+
+  min-height:42px;
+
+  padding:.58rem .7rem;
+
+  margin:0;
+
+  border:1px solid #CBD5E1;
+  border-radius:9px;
+
+  font:inherit;
+
+  color:#111827 !important;
+  -webkit-text-fill-color:#111827 !important;
+
+  background:#fff !important;
+}
+
+
+/* SELECT */
+
+.team-form-grid select{
+  appearance:auto;
+}
+
+
+/* OPTIONS */
+
+.team-form-grid option{
+  color:#111827;
+  background:#fff;
+}
+
+
+/* TEXTAREA */
+
+.team-form-grid textarea{
+  min-height:110px;
+  resize:vertical;
+}
+
+
+/* GRANDE LIGNE */
+
+.team-form-full{
+  grid-column:1/-1;
+}
+
+
+/* =========================================================
+   COULEUR AVATAR
+   ========================================================= */
+
+.team-color-row{
+  display:flex;
+
+  align-items:center;
+
+  gap:.6rem;
+}
+
+#tm-color{
+  width:58px !important;
+  min-width:58px !important;
+
+  height:42px;
+
+  margin:0;
+
+  padding:3px;
+
+  border:1px solid #CBD5E1;
+
+  border-radius:9px;
+
+  background:#fff !important;
+
+  cursor:pointer;
+}
+
+#tm-color-text{
+  flex:1;
+
+  margin:0;
+
+  color:#111827 !important;
+  -webkit-text-fill-color:#111827 !important;
+
+  background:#fff !important;
+}
+
+
+/* =========================================================
+   CHECKBOX
+   ========================================================= */
+
+.team-visible-label{
+  display:flex !important;
+
+  flex-direction:row !important;
+
+  align-items:center !important;
+
+  gap:.5rem !important;
+}
+
+#tm-visible{
+  width:18px !important;
+  height:18px !important;
+
+  min-height:auto !important;
+
+  padding:0 !important;
+  margin:0 !important;
+
+  accent-color:#2563EB;
+}
+
+
+/* =========================================================
+   LISTE MEMBRES ADMIN
+   ========================================================= */
+
+.team-admin-list{
+  display:grid;
+
+  gap:.6rem;
+
+  margin-top:1rem;
+}
+
+.team-admin-row{
+  display:flex;
+
+  justify-content:space-between;
+
+  gap:1rem;
+
+  align-items:center;
+
+  border:1px solid #E2E8F0;
+  border-radius:10px;
+
+  padding:.7rem;
+
+  background:#fff;
+}
+
+.team-admin-actions{
+  display:flex;
+
+  gap:.4rem;
+
+  flex-wrap:wrap;
+}
+
+.mini-btn{
+  border:1px solid #CBD5E1;
+
+  background:#fff;
+
+  color:#111827;
+
+  border-radius:8px;
+
+  padding:.35rem .55rem;
+
+  cursor:pointer;
+
+  font-weight:600;
+}
+
+.mini-btn.danger{
+  border-color:#FECACA;
+
+  background:#FEF2F2;
+
+  color:#991B1B;
+}
+
+
+/* =========================================================
+   MENU PRINCIPAL
+   ========================================================= */
+
 #main-nav{
   display:flex !important;
+
   align-items:center !important;
+
   justify-content:space-between !important;
+
   flex-wrap:nowrap !important;
+
   gap:18px !important;
 }
 
 #main-nav .brand{
   flex:0 0 auto !important;
+
   white-space:nowrap !important;
 }
 
 #main-nav .links{
   display:flex !important;
+
   align-items:center !important;
+
   justify-content:flex-end !important;
+
   flex-wrap:nowrap !important;
+
   gap:.3rem !important;
+
   min-width:0 !important;
 }
 
 #main-nav .links a{
   flex:0 0 auto !important;
+
   white-space:nowrap !important;
+
   word-break:keep-all !important;
+
   overflow-wrap:normal !important;
+
   writing-mode:horizontal-tb !important;
+
   width:auto !important;
+
   min-width:auto !important;
   max-width:none !important;
+
   margin-top:0 !important;
+
   line-height:1.2 !important;
 }
 
-/* Le CSS du formulaire Admin mettait .btn à width:100%.
-   On l'annule uniquement dans le menu. */
 #main-nav .links .btn,
 #main-nav .links .btn-discord{
   width:auto !important;
+
   min-width:auto !important;
+
   display:inline-flex !important;
+
   padding:.6rem 1.1rem !important;
+
   margin:0 !important;
 }
 
+
+/* =========================================================
+   RESPONSIVE
+   ========================================================= */
+
 @media(max-width:1100px) and (min-width:901px){
-  #main-nav{padding-left:2vw !important;padding-right:2vw !important;gap:10px !important}
-  #main-nav .links{gap:.12rem !important}
-  #main-nav .links a{padding:.4rem .55rem !important;font-size:.8rem !important}
-  #main-nav .brand strong{font-size:.9rem !important}
+
+  #main-nav{
+    padding-left:2vw !important;
+    padding-right:2vw !important;
+
+    gap:10px !important;
+  }
+
+  #main-nav .links{
+    gap:.12rem !important;
+  }
+
+  #main-nav .links a{
+    padding:.4rem .55rem !important;
+
+    font-size:.8rem !important;
+  }
+
+  #main-nav .brand strong{
+    font-size:.9rem !important;
+  }
 }
 
 @media(max-width:900px){
-  /* Conserver le comportement mobile existant du site */
-  #main-nav .links a:not(.btn){display:none !important}
+
+  .stats{
+    grid-template-columns:1fr 1fr;
+  }
+
+  #main-nav .links a:not(.btn){
+    display:none !important;
+  }
 }
+
+@media(max-width:700px){
+
+  .team-form-grid{
+    grid-template-columns:1fr;
+  }
+
+  .team-form-full{
+    grid-column:auto;
+  }
+
+  .team-admin-row{
+    align-items:flex-start;
+
+    flex-direction:column;
+  }
+}
+
 </style>
 
 </head>
+
+
 <body>
+
+
+<!-- ======================================================
+     MENU
+     ====================================================== -->
+
 <nav id="main-nav">
-  <a href="index.html#accueil" class="brand" id="logo-link">
-    <img src="img/furioz-logo.png" alt="Furioz">
-    <strong>FURIOZ COMPAGNIE</strong>
+
+  <a
+    href="index.html#accueil"
+    class="brand"
+    id="logo-link"
+  >
+
+    <img
+      src="img/furioz-logo.png"
+      alt="Furioz"
+    >
+
+    <strong>
+      FURIOZ COMPAGNIE
+    </strong>
+
   </a>
+
+
   <div class="links">
-    <a href="index.html#accueil" class="">Accueil</a>
-    <a href="index.html#qui">Le projet</a>
-    <a href="index.html#team">Équipe</a>
-    <a href="index.html#rejoindre">Rejoindre</a>
-    <a href="livre-dor.html">Livre d’or</a>
-          <a href="admin.html" class="nav-link admin-link active">Admin</a>
-      <a href="https://discord.gg/nKj9NFDyxj" target="_blank" class="btn btn-discord">Discord</a>
+
+    <a href="index.html#accueil">
+      Accueil
+    </a>
+
+    <a href="index.html#qui">
+      Le projet
+    </a>
+
+    <a href="index.html#team">
+      Équipe
+    </a>
+
+    <a href="index.html#rejoindre">
+      Rejoindre
+    </a>
+
+    <a href="livre-dor.html">
+      Livre d’or
+    </a>
+
+    <a
+      href="admin.html"
+      class="nav-link admin-link active"
+    >
+      Admin
+    </a>
+
+    <a
+      href="https://discord.gg/nKj9NFDyxj"
+      target="_blank"
+      class="btn btn-discord"
+    >
+      Discord
+    </a>
+
   </div>
+
 </nav>
 
 
+<!-- ======================================================
+     CONNEXION
+     ====================================================== -->
 
-<div id="login" class="login-wrap">
+<div
+  id="login"
+  class="login-wrap"
+>
+
   <div class="card">
-    <h1>Panel Admin</h1><p class="muted">Furioz-Compagnie • Accès sécurisé</p>
-    <div style="margin-top:1rem"><label style="font-size:.8rem;font-weight:600">Utilisateur</label><input id="user"></div>
-    <div style="margin-top:.6rem"><label style="font-size:.8rem;font-weight:600">Mot de passe</label><input id="pass" type="password"></div>
-    <button class="btn" id="loginBtn">Se connecter</button>
-    <div id="loginMsg" style="margin-top:.6rem; font-size:.8rem"></div>
-    
+
+    <h1>
+      Panel Admin
+    </h1>
+
+    <p class="muted">
+      Furioz-Compagnie • Accès sécurisé
+    </p>
+
+
+    <div style="margin-top:1rem">
+
+      <label
+        style="
+          font-size:.8rem;
+          font-weight:600
+        "
+      >
+        Utilisateur
+      </label>
+
+      <input
+        id="user"
+        type="text"
+        autocomplete="username"
+      >
+
+    </div>
+
+
+    <div style="margin-top:.6rem">
+
+      <label
+        style="
+          font-size:.8rem;
+          font-weight:600
+        "
+      >
+        Mot de passe
+      </label>
+
+      <input
+        id="pass"
+        type="password"
+        autocomplete="current-password"
+      >
+
+    </div>
+
+
+    <button
+      class="btn"
+      id="loginBtn"
+    >
+      Se connecter
+    </button>
+
+
+    <div
+      id="loginMsg"
+
+      style="
+        margin-top:.6rem;
+        font-size:.8rem
+      "
+    ></div>
+
   </div>
+
 </div>
-<div id="dash" style="display:none">
+
+
+<!-- ======================================================
+     DASHBOARD
+     ====================================================== -->
+
+<div
+  id="dash"
+  style="display:none"
+>
+
   <div class="header">
-    <div style="display:flex; align-items:center; gap:.6rem"><strong>Panel Admin</strong><span style="font-size:.75rem; background:#F1F5F9; padding:.2rem .5rem; border-radius:999px" id="userInfo"></span><span style="font-size:.7rem; color:#64748B" id="serverTime"></span></div>
-    <div style="display:flex; gap:.5rem"><a href="index.html" style="text-decoration:none; font-size:.8rem; padding:.4rem .7rem; border:1px solid #E2E8F0; border-radius:999px; background:#fff; color:#0F172A">Retour site</a><button id="logout" style="font-size:.8rem; padding:.4rem .7rem; border:1px solid #E2E8F0; border-radius:999px; background:#fff; cursor:pointer">Déconnexion</button></div>
+
+    <div
+      style="
+        display:flex;
+        align-items:center;
+        gap:.6rem
+      "
+    >
+
+      <strong>
+        Panel Admin
+      </strong>
+
+      <span
+        id="userInfo"
+
+        style="
+          font-size:.75rem;
+          background:#F1F5F9;
+          padding:.2rem .5rem;
+          border-radius:999px
+        "
+      ></span>
+
+      <span
+        id="serverTime"
+
+        style="
+          font-size:.7rem;
+          color:#64748B
+        "
+      ></span>
+
+    </div>
+
+
+    <div
+      style="
+        display:flex;
+        gap:.5rem
+      "
+    >
+
+      <a
+        href="index.html"
+
+        style="
+          text-decoration:none;
+          font-size:.8rem;
+          padding:.4rem .7rem;
+          border:1px solid #E2E8F0;
+          border-radius:999px;
+          background:#fff;
+          color:#0F172A
+        "
+      >
+        Retour site
+      </a>
+
+
+      <button
+        id="logout"
+
+        style="
+          font-size:.8rem;
+          padding:.4rem .7rem;
+          border:1px solid #E2E8F0;
+          border-radius:999px;
+          background:#fff;
+          cursor:pointer
+        "
+      >
+        Déconnexion
+      </button>
+
+    </div>
+
   </div>
-  <div style="width:min(1100px,94vw); margin:0 auto; padding:1rem 0 3rem">
-    <div class="stats" id="stats"></div>
-    <div style="display:flex; gap:.5rem; margin-bottom:.5rem"><button class="btn" style="width:auto" id="refresh">Rafraîchir</button></div>
-    <div class="tabs"><div class="tab active" data-t="visits">Visites</div><div class="tab" data-t="intrusions">Intrusions (hackers)</div><div class="tab" data-t="guestbook">Livre d'or</div><div class="tab" data-t="countries">Pays</div><div class="tab" data-t="team">Équipe</div></div>
+
+
+  <div
+    style="
+      width:min(1100px,94vw);
+      margin:0 auto;
+      padding:1rem 0 3rem
+    "
+  >
+
+    <div
+      class="stats"
+      id="stats"
+    ></div>
+
+
+    <div
+      style="
+        display:flex;
+        gap:.5rem;
+        margin-bottom:.5rem
+      "
+    >
+
+      <button
+        class="btn"
+        style="width:auto"
+        id="refresh"
+      >
+        Rafraîchir
+      </button>
+
+    </div>
+
+
+    <div class="tabs">
+
+      <div
+        class="tab active"
+        data-t="visits"
+      >
+        Visites
+      </div>
+
+      <div
+        class="tab"
+        data-t="intrusions"
+      >
+        Intrusions (hackers)
+      </div>
+
+      <div
+        class="tab"
+        data-t="guestbook"
+      >
+        Livre d'or
+      </div>
+
+      <div
+        class="tab"
+        data-t="countries"
+      >
+        Pays
+      </div>
+
+      <div
+        class="tab"
+        data-t="team"
+      >
+        Équipe
+      </div>
+
+    </div>
+
+
     <div id="content"></div>
+
   </div>
+
 </div>
+
+
 <script>
-const API_LOGIN='/api/admin-login', API_STATS='/api/admin-stats', API_GB='/api/guestbook', API_TEAM='/api/team';
-let token=localStorage.getItem('furioz_token');
-function showLogin(){ document.getElementById('login').style.display='grid'; document.getElementById('dash').style.display='none'; }
-function showDash(){ document.getElementById('login').style.display='none'; document.getElementById('dash').style.display='block'; loadStats(); }
-if(token) showDash(); else showLogin();
 
-document.getElementById('loginBtn').onclick=async()=>{
-  const user=document.getElementById('user').value, pass=document.getElementById('pass').value;
-  const msg=document.getElementById('loginMsg');
-  msg.textContent='Connexion...';
-  try{
-    const r=await fetch(API_LOGIN,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({user:user,pass:pass})});
-    const j=await r.json();
-    if(!r.ok){ msg.textContent=j.error||'Erreur'; msg.style.color='red'; return; }
-    token=j.token; localStorage.setItem('furioz_token',token); localStorage.setItem('furioz_user',j.user);
-    showDash();
-  }catch{ msg.textContent='Erreur réseau'; }
-};
-document.getElementById('logout').onclick=()=>{ localStorage.removeItem('furioz_token'); token=null; showLogin(); };
+/* =========================================================
+   API
+   ========================================================= */
 
-let currentTab='visits', cache=null;
-document.querySelectorAll('.tab').forEach(t=>t.onclick=()=>{ document.querySelectorAll('.tab').forEach(x=>x.classList.remove('active')); t.classList.add('active'); currentTab=t.dataset.t; render(); });
-document.getElementById('refresh').onclick=loadStats;
+const API_LOGIN =
+  '/api/admin-login';
 
-async function loadStats(){
-  try{
-    const r=await fetch(API_STATS,{headers:{Authorization:`Bearer ${token}`}});
-    if(r.status===401){ localStorage.removeItem('furioz_token'); showLogin(); return; }
-    const data=await r.json();
-    cache=data;
-    document.getElementById('userInfo').textContent=localStorage.getItem('furioz_user')||'admin';
-    document.getElementById('serverTime').textContent=new Date(data.serverTime).toLocaleString('fr-FR');
-    document.getElementById('stats').innerHTML=`
-      <div class="stat"><span class="muted" style="font-size:.7rem">TOTAL VISITES</span><b>${data.stats.totalVisits}</b><span class="muted" style="font-size:.7rem">Logs en mémoire (max 1000)</span></div>
-      <div class="stat"><span class="muted" style="font-size:.7rem">VISITES 24H</span><b>${data.stats.visits24h}</b></div>
-      <div class="stat"><span class="muted" style="font-size:.7rem">VISITEURS UNIQUES</span><b>${data.stats.uniqueVisitors}</b></div>
-      <div class="stat"><span class="muted" style="font-size:.7rem">INTRUSIONS TOTAL</span><b style="color:#DC2626">${data.stats.totalIntrusions}</b></div>
-      <div class="stat"><span class="muted" style="font-size:.7rem">BLOQUÉS (IP)</span><b>${data.stats.blockedIPs}</b></div>
-      <div class="stat"><span class="muted" style="font-size:.7rem">INTRUSIONS 24H</span><b style="color:#DC2626">${data.stats.intrusionLast24h}</b></div>
-    `;
-    render();
-  }catch(e){ console.error(e); }
-}
-function render(){
-  if(!cache) return;
-  const c=document.getElementById('content');
-  if(currentTab==='visits'){
-    c.innerHTML=`<div class="table-wrap"><table><tr><th>Heure</th><th>IP</th><th>Pays</th><th>Page</th><th>UA</th></tr>${cache.recentVisits.map(v=>`<tr><td>${new Date(v.time).toLocaleString('fr-FR')}</td><td>${v.ip.substring(0,12)}...</td><td>${v.country} ${v.city||''}</td><td style="max-width:180px; overflow:hidden; text-overflow:ellipsis">${(v.page||'').substring(0,60)}</td><td style="max-width:150px; overflow:hidden; text-overflow:ellipsis">${v.ua.substring(0,50)}</td></tr>`).join('')}</table></div>`;
-  }else if(currentTab==='intrusions'){
-    c.innerHTML=`<div class="table-wrap"><table><tr><th>Heure</th><th>IP</th><th>Type</th><th>Détails</th></tr>${cache.recentIntrusions.map(i=>`<tr><td>${new Date(i.time).toLocaleString('fr-FR')}</td><td>${i.ip}</td><td><span class="badge badge-red">${i.type}</span></td><td style="max-width:280px; word-break:break-all">${i.details}</td></tr>`).join('')}</table></div>`;
-  }else if(currentTab==='guestbook'){
-    c.innerHTML=`<div style="display:grid; gap:.6rem" id="gbList">Chargement...</div>`;
-    fetch(API_GB).then(r=>r.json()).then(list=>{
-      document.getElementById('gbList').innerHTML=list.map(g=>`
-        <div style="background:#fff; border:1px solid #E2E8F0; border-radius:12px; padding:.9rem; display:flex; justify-content:space-between; gap:.8rem">
-          <div><strong>${g.name}</strong> <span class="badge ${g.verified?'badge-green':'badge-blue'}">${g.verified?'vérifié':'en attente'}</span> ${'⭐'.repeat(g.rating)} • ${g.date}<br><span style="font-size:.85rem; color:#334155">${g.message.replace(/</g,'&lt;')}</span></div>
-          <button onclick="del('${g.id}')" style="height:fit-content; padding:.3rem .6rem; border-radius:8px; border:1px solid #FECACA; background:#FEF2F2; color:#991B1B; cursor:pointer; font-weight:600">Supprimer</button>
-        </div>
-      `).join('');
-    });
-  }else if(currentTab==='team'){
-    renderTeamAdmin();
-  }else if(currentTab==='countries'){
-    c.innerHTML=`<div class="table-wrap"><table><tr><th>Pays</th><th>Visites</th></tr>${cache.topCountries.map(([k,v])=>`<tr><td>${k}</td><td>${v}</td></tr>`).join('')}</table></div>`;
-  }
-}
-async function del(id){
-  if(!confirm('Supprimer cet avis ?')) return;
-  const r=await fetch(`${API_GB}?id=${id}`,{method:'DELETE', headers:{Authorization:`Bearer ${token}`}});
-  if(r.ok){ loadStats(); render(); } else alert('Erreur suppression');
+const API_STATS =
+  '/api/admin-stats';
+
+const API_GB =
+  '/api/guestbook';
+
+const API_TEAM =
+  '/api/team';
+
+
+let token =
+  localStorage.getItem(
+    'furioz_token'
+  );
+
+
+/* =========================================================
+   CONNEXION
+   ========================================================= */
+
+function showLogin(){
+
+  document
+    .getElementById('login')
+    .style.display =
+      'grid';
+
+  document
+    .getElementById('dash')
+    .style.display =
+      'none';
 }
 
-let teamAdminCache=[];
 
-async function fetchTeamAdmin(){
-  const r=await fetch(API_TEAM,{cache:'no-store'});
-  const contentType=(r.headers.get('content-type')||'').toLowerCase();
+function showDash(){
 
-  if(!r.ok){
-    let message=`Erreur API équipe (${r.status})`;
+  document
+    .getElementById('login')
+    .style.display =
+      'none';
 
-    if(contentType.includes('application/json')){
-      try{
-        const err=await r.json();
-        if(err && err.error) message=err.error;
-      }catch{}
+  document
+    .getElementById('dash')
+    .style.display =
+      'block';
+
+  loadStats();
+}
+
+
+if(token){
+
+  showDash();
+
+}
+else{
+
+  showLogin();
+
+}
+
+
+document
+  .getElementById(
+    'loginBtn'
+  )
+  .onclick =
+  async()=>{
+
+    const user =
+      document
+        .getElementById(
+          'user'
+        )
+        .value
+        .trim();
+
+    const pass =
+      document
+        .getElementById(
+          'pass'
+        )
+        .value;
+
+
+    const msg =
+      document
+        .getElementById(
+          'loginMsg'
+        );
+
+
+    if(
+      !user ||
+      !pass
+    ){
+
+      msg.textContent =
+        'Entrez votre utilisateur et votre mot de passe.';
+
+      msg.style.color =
+        '#DC2626';
+
+      return;
     }
 
-    throw new Error(message);
-  }
 
-  if(!contentType.includes('application/json')){
-    throw new Error("L’API équipe ne renvoie pas du JSON.");
-  }
+    msg.textContent =
+      'Connexion...';
 
-  const data=await r.json();
+    msg.style.color =
+      '#334155';
 
-  if(!Array.isArray(data)){
-    throw new Error("Réponse équipe invalide.");
-  }
 
-  teamAdminCache=data;
-  return data;
-}
-function teamEsc(v){
-  return String(v??'').replaceAll('&','&amp;').replaceAll('<','&lt;').replaceAll('>','&gt;').replaceAll('"','&quot;').replaceAll("'","&#039;");
-}
-async function renderTeamAdmin(){
-  const c=document.getElementById('content');
-  c.innerHTML='<div class="team-admin-box">Chargement de l’équipe...</div>';
-  try{
-    await fetchTeamAdmin();
-  }catch(e){
-    c.innerHTML=`<div class="team-admin-box" style="color:#991B1B">${teamEsc(e.message)}</div>`;
-    return;
-  }
-  c.innerHTML=`
-    <div class="team-admin-box">
-      <h3 style="margin-top:0">Ajouter / modifier un membre</h3>
-      <input type="hidden" id="tm-id">
-      <div class="team-form-grid">
-        <label>Nom / pseudo<input id="tm-name" placeholder="Zafkiel / LePetoChard"></label>
-        <label>Statut<select id="tm-status"><option>MEMBRE</option><option>FONDATEUR</option><option>MODO / WEBMASTER</option><option>STAFF</option></select></label>
-        <label>Pays<input id="tm-country" placeholder="France"></label>
-        <label>Drapeau<input id="tm-flag" placeholder="🇫🇷"></label>
-        <label>Date d’arrivée<input id="tm-joined" type="date"></label>
-        <label>Stream depuis<input id="tm-stream" type="date"></label>
-        <label>Rôle<input id="tm-role" placeholder="Streamer"></label>
-        <label>Catégorie<input id="tm-category" placeholder="Gaming • Events"></label>
-        <label>Initiale<input id="tm-initial" maxlength="3" placeholder="Z"></label>
-        <label>Couleur avatar<input id="tm-color" type="color" value="#151519"></label>
-        <label class="team-form-full">Description<textarea id="tm-description" placeholder="Présentation du membre..."></textarea></label>
-        <label class="team-form-full">Tags (séparés par des virgules)<input id="tm-tags" placeholder="Gaming, Events, France"></label>
-        <label>Twitch<input id="tm-twitch" type="url" placeholder="https://twitch.tv/..."></label>
-        <label>YouTube<input id="tm-youtube" type="url" placeholder="https://youtube.com/..."></label>
-        <label class="team-form-full">Discord personnel (optionnel)<input id="tm-discord" type="url" placeholder="https://discord.gg/..."></label>
-        <label class="team-form-full" style="display:flex;align-items:center;gap:.5rem"><input id="tm-visible" type="checkbox" checked style="width:auto;margin:0"> Afficher ce membre sur le site</label>
-      </div>
-      <div style="display:flex;gap:.5rem;flex-wrap:wrap;margin-top:.8rem">
-        <button class="btn" style="width:auto" onclick="saveTeamMember()">Sauvegarder</button>
-        <button class="mini-btn" onclick="resetTeamForm()">Nouveau / Réinitialiser</button>
-      </div>
-      <div id="team-admin-msg" style="margin-top:.5rem;font-size:.8rem"></div>
-    </div>
-    <div class="team-admin-list">
-      ${teamAdminCache.map(m=>`
-        <div class="team-admin-row">
-          <div><strong>${teamEsc(m.name)}</strong><br><span class="muted">${teamEsc(m.status)} • ${teamEsc(m.role)} • ${teamEsc(m.countryFlag)} ${teamEsc(m.country)}</span></div>
-          <div class="team-admin-actions">
-            <button class="mini-btn" onclick="editTeamMember('${teamEsc(m.id)}')">Modifier</button>
-            <button class="mini-btn danger" onclick="deleteTeamMember('${teamEsc(m.id)}')">Supprimer</button>
-          </div>
-        </div>`).join('')}
-    </div>`;
-}
-function resetTeamForm(){
-  ['id','name','country','flag','joined','stream','role','category','initial','description','tags','twitch','youtube','discord'].forEach(k=>{
-    const e=document.getElementById('tm-'+k); if(e)e.value='';
-  });
-  const status=document.getElementById('tm-status'); if(status)status.value='MEMBRE';
-  const color=document.getElementById('tm-color'); if(color)color.value='#151519';
-  const visible=document.getElementById('tm-visible'); if(visible)visible.checked=true;
-}
-function editTeamMember(id){
-  const m=teamAdminCache.find(x=>x.id===id); if(!m)return;
-  document.getElementById('tm-id').value=m.id||'';
-  document.getElementById('tm-name').value=m.name||'';
-  document.getElementById('tm-status').value=m.status||'MEMBRE';
-  document.getElementById('tm-country').value=m.country||'';
-  document.getElementById('tm-flag').value=m.countryFlag||'';
-  document.getElementById('tm-joined').value=m.joined||'';
-  document.getElementById('tm-stream').value=m.streamSince||'';
-  document.getElementById('tm-role').value=m.role||'';
-  document.getElementById('tm-category').value=m.category||'';
-  document.getElementById('tm-initial').value=m.initial||'';
-  document.getElementById('tm-color').value=m.color||'#151519';
-  document.getElementById('tm-description').value=m.description||'';
-  document.getElementById('tm-tags').value=(m.tags||[]).join(', ');
-  document.getElementById('tm-twitch').value=m.twitch||'';
-  document.getElementById('tm-youtube').value=m.youtube||'';
-  document.getElementById('tm-discord').value=m.discord||'';
-  document.getElementById('tm-visible').checked=m.visible!==false;
-  window.scrollTo({top:document.getElementById('content').offsetTop-80,behavior:'smooth'});
-}
-async function saveTeamMember(){
-  const id=document.getElementById('tm-id').value.trim();
-  const body={
-    id,
-    name:document.getElementById('tm-name').value.trim(),
-    status:document.getElementById('tm-status').value,
-    country:document.getElementById('tm-country').value.trim(),
-    countryFlag:document.getElementById('tm-flag').value.trim(),
-    joined:document.getElementById('tm-joined').value,
-    streamSince:document.getElementById('tm-stream').value,
-    role:document.getElementById('tm-role').value.trim(),
-    category:document.getElementById('tm-category').value.trim(),
-    initial:document.getElementById('tm-initial').value.trim(),
-    color:document.getElementById('tm-color').value,
-    description:document.getElementById('tm-description').value.trim(),
-    tags:document.getElementById('tm-tags').value.split(',').map(x=>x.trim()).filter(Boolean),
-    twitch:document.getElementById('tm-twitch').value.trim(),
-    youtube:document.getElementById('tm-youtube').value.trim(),
-    discord:document.getElementById('tm-discord').value.trim(),
-    visible:document.getElementById('tm-visible').checked
+    try{
+
+      const r =
+        await fetch(
+          API_LOGIN,
+          {
+            method:'POST',
+
+            headers:{
+              'Content-Type':
+                'application/json'
+            },
+
+            body:
+              JSON.stringify({
+                username:user,
+                password:pass,
+                user:user,
+                pass:pass
+              })
+          }
+        );
+
+
+      const contentType =
+        r.headers.get(
+          'content-type'
+        ) || '';
+
+
+      let j = {};
+
+
+      if(
+        contentType.includes(
+          'application/json'
+        )
+      ){
+
+        j =
+          await r.json();
+
+      }
+
+
+      if(!r.ok){
+
+        msg.textContent =
+          j.error ||
+          `Erreur connexion (${r.status})`;
+
+        msg.style.color =
+          '#DC2626';
+
+        return;
+      }
+
+
+      token =
+        j.token;
+
+
+      localStorage.setItem(
+        'furioz_token',
+        token
+      );
+
+
+      localStorage.setItem(
+        'furioz_user',
+        j.user ||
+        user
+      );
+
+
+      showDash();
+
+    }
+
+    catch(error){
+
+      console.error(
+        error
+      );
+
+
+      msg.textContent =
+        'Erreur réseau';
+
+      msg.style.color =
+        '#DC2626';
+
+    }
+
   };
-  const msg=document.getElementById('team-admin-msg');
-  if(!body.name){msg.style.color='#991B1B';msg.textContent='Nom obligatoire.';return;}
-  const r=await fetch(API_TEAM,{
-    method:id?'PUT':'POST',
-    headers:{
-      'Content-Type':'application/json',
-      Authorization:`Bearer ${token}`
-    },
-    body:JSON.stringify(body)
-  });
 
-  const contentType=(r.headers.get('content-type')||'').toLowerCase();
-  let data={};
 
-  if(contentType.includes('application/json')){
-    try{ data=await r.json(); }catch{}
+document
+  .getElementById(
+    'pass'
+  )
+  .addEventListener(
+    'keydown',
+    event=>{
+
+      if(
+        event.key ===
+        'Enter'
+      ){
+
+        document
+          .getElementById(
+            'loginBtn'
+          )
+          .click();
+
+      }
+
+    }
+  );
+
+
+document
+  .getElementById(
+    'logout'
+  )
+  .onclick =
+  ()=>{
+
+    localStorage
+      .removeItem(
+        'furioz_token'
+      );
+
+
+    token =
+      null;
+
+
+    showLogin();
+
+  };
+
+
+/* =========================================================
+   ONGLETS
+   ========================================================= */
+
+let currentTab =
+  'visits';
+
+
+let cache =
+  null;
+
+
+document
+  .querySelectorAll(
+    '.tab'
+  )
+  .forEach(
+    tab=>{
+
+      tab.onclick =
+        ()=>{
+
+          document
+            .querySelectorAll(
+              '.tab'
+            )
+            .forEach(
+              x=>
+                x.classList.remove(
+                  'active'
+                )
+            );
+
+
+          tab.classList.add(
+            'active'
+          );
+
+
+          currentTab =
+            tab.dataset.t;
+
+
+          render();
+
+        };
+
+    }
+  );
+
+
+document
+  .getElementById(
+    'refresh'
+  )
+  .onclick =
+    loadStats;
+
+
+/* =========================================================
+   STATS
+   ========================================================= */
+
+async function loadStats(){
+
+  try{
+
+    const r =
+      await fetch(
+        API_STATS,
+        {
+          headers:{
+            Authorization:
+              `Bearer ${token}`
+          }
+        }
+      );
+
+
+    if(
+      r.status ===
+      401
+    ){
+
+      localStorage
+        .removeItem(
+          'furioz_token'
+        );
+
+      showLogin();
+
+      return;
+    }
+
+
+    const data =
+      await r.json();
+
+
+    cache =
+      data;
+
+
+    document
+      .getElementById(
+        'userInfo'
+      )
+      .textContent =
+        localStorage
+          .getItem(
+            'furioz_user'
+          ) ||
+        'admin';
+
+
+    document
+      .getElementById(
+        'serverTime'
+      )
+      .textContent =
+        new Date(
+          data.serverTime
+        )
+          .toLocaleString(
+            'fr-FR'
+          );
+
+
+    document
+      .getElementById(
+        'stats'
+      )
+      .innerHTML = `
+
+        <div class="stat">
+
+          <span
+            class="muted"
+            style="font-size:.7rem"
+          >
+            TOTAL VISITES
+          </span>
+
+          <b>
+            ${data.stats.totalVisits}
+          </b>
+
+          <span
+            class="muted"
+            style="font-size:.7rem"
+          >
+            Logs en mémoire
+            (max 1000)
+          </span>
+
+        </div>
+
+
+        <div class="stat">
+
+          <span
+            class="muted"
+            style="font-size:.7rem"
+          >
+            VISITES 24H
+          </span>
+
+          <b>
+            ${data.stats.visits24h}
+          </b>
+
+        </div>
+
+
+        <div class="stat">
+
+          <span
+            class="muted"
+            style="font-size:.7rem"
+          >
+            VISITEURS UNIQUES
+          </span>
+
+          <b>
+            ${data.stats.uniqueVisitors}
+          </b>
+
+        </div>
+
+
+        <div class="stat">
+
+          <span
+            class="muted"
+            style="font-size:.7rem"
+          >
+            INTRUSIONS TOTAL
+          </span>
+
+          <b
+            style="color:#DC2626"
+          >
+            ${data.stats.totalIntrusions}
+          </b>
+
+        </div>
+
+
+        <div class="stat">
+
+          <span
+            class="muted"
+            style="font-size:.7rem"
+          >
+            BLOQUÉS (IP)
+          </span>
+
+          <b>
+            ${data.stats.blockedIPs}
+          </b>
+
+        </div>
+
+
+        <div class="stat">
+
+          <span
+            class="muted"
+            style="font-size:.7rem"
+          >
+            INTRUSIONS 24H
+          </span>
+
+          <b
+            style="color:#DC2626"
+          >
+            ${data.stats.intrusionLast24h}
+          </b>
+
+        </div>
+      `;
+
+
+    render();
+
   }
 
-  if(!r.ok){
-    msg.style.color='#991B1B';
-    msg.textContent=data.error || `Erreur API équipe (${r.status})`;
-    return;
+  catch(error){
+
+    console.error(
+      error
+    );
+
   }
 
-  msg.style.color='#166534';
-  msg.textContent=id?'Membre modifié.':'Membre ajouté.';
-  await renderTeamAdmin();
 }
-async function deleteTeamMember(id){
-  const m=teamAdminCache.find(x=>x.id===id);
-  if(!confirm(`Supprimer ${m?.name||id} ?`))return;
-  const r=await fetch(`${API_TEAM}?id=${encodeURIComponent(id)}`,{
-    method:'DELETE',
-    headers:{Authorization:`Bearer ${token}`}
-  });
 
-  const contentType=(r.headers.get('content-type')||'').toLowerCase();
-  let data={};
 
-  if(contentType.includes('application/json')){
-    try{ data=await r.json(); }catch{}
-  }
+/* =========================================================
+   RENDER
+   ========================================================= */
 
-  if(!r.ok){
-    alert(data.error || `Erreur API équipe (${r.status})`);
+function render(){
+
+  if(!cache){
     return;
   }
 
-  await renderTeamAdmin();
+
+  const c =
+    document
+      .getElementById(
+        'content'
+      );
+
+
+  if(
+    currentTab ===
+    'visits'
+  ){
+
+    c.innerHTML = `
+
+      <div class="table-wrap">
+
+        <table>
+
+          <tr>
+            <th>Heure</th>
+            <th>IP</th>
+            <th>Pays</th>
+            <th>Page</th>
+            <th>UA</th>
+          </tr>
+
+          ${cache.recentVisits
+            .map(
+              v=>`
+
+                <tr>
+
+                  <td>
+                    ${
+                      new Date(
+                        v.time
+                      )
+                        .toLocaleString(
+                          'fr-FR'
+                        )
+                    }
+                  </td>
+
+                  <td>
+                    ${
+                      String(
+                        v.ip ||
+                        ''
+                      )
+                        .substring(
+                          0,
+                          12
+                        )
+                    }...
+                  </td>
+
+                  <td>
+                    ${v.country || ''}
+                    ${v.city || ''}
+                  </td>
+
+                  <td
+                    style="
+                      max-width:180px;
+                      overflow:hidden;
+                      text-overflow:ellipsis
+                    "
+                  >
+                    ${
+                      String(
+                        v.page ||
+                        ''
+                      )
+                        .substring(
+                          0,
+                          60
+                        )
+                    }
+                  </td>
+
+                  <td
+                    style="
+                      max-width:150px;
+                      overflow:hidden;
+                      text-overflow:ellipsis
+                    "
+                  >
+                    ${
+                      String(
+                        v.ua ||
+                        ''
+                      )
+                        .substring(
+                          0,
+                          50
+                        )
+                    }
+                  </td>
+
+                </tr>
+
+              `
+            )
+            .join('')
+          }
+
+        </table>
+
+      </div>
+    `;
+
+  }
+
+
+  else if(
+    currentTab ===
+    'intrusions'
+  ){
+
+    c.innerHTML = `
+
+      <div class="table-wrap">
+
+        <table>
+
+          <tr>
+            <th>Heure</th>
+            <th>IP</th>
+            <th>Type</th>
+            <th>Détails</th>
+          </tr>
+
+          ${cache.recentIntrusions
+            .map(
+              i=>`
+
+                <tr>
+
+                  <td>
+                    ${
+                      new Date(
+                        i.time
+                      )
+                        .toLocaleString(
+                          'fr-FR'
+                        )
+                    }
+                  </td>
+
+                  <td>
+                    ${teamEsc(i.ip)}
+                  </td>
+
+                  <td>
+
+                    <span
+                      class="
+                        badge
+                        badge-red
+                      "
+                    >
+                      ${teamEsc(i.type)}
+                    </span>
+
+                  </td>
+
+                  <td
+                    style="
+                      max-width:280px;
+                      word-break:break-all
+                    "
+                  >
+                    ${teamEsc(i.details)}
+                  </td>
+
+                </tr>
+
+              `
+            )
+            .join('')
+          }
+
+        </table>
+
+      </div>
+    `;
+
+  }
+
+
+  else if(
+    currentTab ===
+    'guestbook'
+  ){
+
+    c.innerHTML =
+      '<div style="display:grid;gap:.6rem" id="gbList">Chargement...</div>';
+
+
+    fetch(
+      API_GB
+    )
+      .then(
+        r=>
+          r.json()
+      )
+      .then(
+        list=>{
+
+          document
+            .getElementById(
+              'gbList'
+            )
+            .innerHTML =
+              list
+                .map(
+                  g=>`
+
+                    <div
+                      style="
+                        background:#fff;
+                        border:1px solid #E2E8F0;
+                        border-radius:12px;
+                        padding:.9rem;
+                        display:flex;
+                        justify-content:space-between;
+                        gap:.8rem
+                      "
+                    >
+
+                      <div>
+
+                        <strong>
+                          ${teamEsc(g.name)}
+                        </strong>
+
+                        <span
+                          class="
+                            badge
+                            ${
+                              g.verified
+                                ?
+                                'badge-green'
+                                :
+                                'badge-blue'
+                            }
+                          "
+                        >
+
+                          ${
+                            g.verified
+                              ?
+                              'vérifié'
+                              :
+                              'en attente'
+                          }
+
+                        </span>
+
+                        ${
+                          '⭐'.repeat(
+                            g.rating ||
+                            0
+                          )
+                        }
+
+                        •
+
+                        ${teamEsc(g.date)}
+
+                        <br>
+
+                        <span
+                          style="
+                            font-size:.85rem;
+                            color:#334155
+                          "
+                        >
+                          ${teamEsc(g.message)}
+                        </span>
+
+                      </div>
+
+
+                      <button
+                        onclick="del('${teamEsc(g.id)}')"
+
+                        style="
+                          height:fit-content;
+                          padding:.3rem .6rem;
+                          border-radius:8px;
+                          border:1px solid #FECACA;
+                          background:#FEF2F2;
+                          color:#991B1B;
+                          cursor:pointer;
+                          font-weight:600
+                        "
+                      >
+                        Supprimer
+                      </button>
+
+                    </div>
+
+                  `
+                )
+                .join('');
+
+        }
+      );
+
+  }
+
+
+  else if(
+    currentTab ===
+    'countries'
+  ){
+
+    c.innerHTML = `
+
+      <div class="table-wrap">
+
+        <table>
+
+          <tr>
+            <th>Pays</th>
+            <th>Visites</th>
+          </tr>
+
+          ${cache.topCountries
+            .map(
+              ([country,value])=>`
+
+                <tr>
+
+                  <td>
+                    ${teamEsc(country)}
+                  </td>
+
+                  <td>
+                    ${value}
+                  </td>
+
+                </tr>
+
+              `
+            )
+            .join('')
+          }
+
+        </table>
+
+      </div>
+    `;
+
+  }
+
+
+  else if(
+    currentTab ===
+    'team'
+  ){
+
+    renderTeamAdmin();
+
+  }
+
+}
+
+
+/* =========================================================
+   LIVRE D'OR
+   ========================================================= */
+
+async function del(id){
+
+  if(
+    !confirm(
+      'Supprimer cet avis ?'
+    )
+  ){
+    return;
+  }
+
+
+  const r =
+    await fetch(
+      `${API_GB}?id=${encodeURIComponent(id)}`,
+      {
+        method:'DELETE',
+
+        headers:{
+          Authorization:
+            `Bearer ${token}`
+        }
+      }
+    );
+
+
+  if(r.ok){
+
+    loadStats();
+
+    render();
+
+  }
+
+  else{
+
+    alert(
+      'Erreur suppression'
+    );
+
+  }
+
+}
+
+
+/* =========================================================
+   ÉQUIPE
+   ========================================================= */
+
+let teamAdminCache =
+  [];
+
+
+/* =========================================================
+   ÉCHAPPEMENT
+   ========================================================= */
+
+function teamEsc(value){
+
+  return String(
+    value ??
+    ''
+  )
+
+    .replaceAll(
+      '&',
+      '&amp;'
+    )
+
+    .replaceAll(
+      '<',
+      '&lt;'
+    )
+
+    .replaceAll(
+      '>',
+      '&gt;'
+    )
+
+    .replaceAll(
+      '"',
+      '&quot;'
+    )
+
+    .replaceAll(
+      "'",
+      '&#039;'
+    );
+
+}
+
+
+/* =========================================================
+   CHARGER TEAM
+   ========================================================= */
+
+async function fetchTeamAdmin(){
+
+  const r =
+    await fetch(
+      API_TEAM,
+      {
+        cache:
+          'no-store'
+      }
+    );
+
+
+  const contentType =
+    r.headers.get(
+      'content-type'
+    ) || '';
+
+
+  if(!r.ok){
+
+    let message =
+      `Erreur API équipe (${r.status})`;
+
+
+    if(
+      contentType.includes(
+        'application/json'
+      )
+    ){
+
+      try{
+
+        const errorData =
+          await r.json();
+
+
+        if(
+          errorData &&
+          errorData.error
+        ){
+
+          message =
+            errorData.error;
+
+        }
+
+      }
+
+      catch{}
+
+    }
+
+
+    throw new Error(
+      message
+    );
+
+  }
+
+
+  if(
+    !contentType.includes(
+      'application/json'
+    )
+  ){
+
+    throw new Error(
+      "L’API équipe ne renvoie pas du JSON."
+    );
+
+  }
+
+
+  const data =
+    await r.json();
+
+
+  if(
+    !Array.isArray(
+      data
+    )
+  ){
+
+    throw new Error(
+      'Réponse équipe invalide.'
+    );
+
+  }
+
+
+  teamAdminCache =
+    data;
+
+
+  return data;
+
+}
+
+
+/* =========================================================
+   FORMULAIRE TEAM
+   ========================================================= */
+
+async function renderTeamAdmin(){
+
+  const c =
+    document
+      .getElementById(
+        'content'
+      );
+
+
+  c.innerHTML = `
+
+    <div
+      class="team-admin-box"
+    >
+      Chargement de l’équipe...
+    </div>
+
+  `;
+
+
+  try{
+
+    await fetchTeamAdmin();
+
+  }
+
+  catch(error){
+
+    c.innerHTML = `
+
+      <div
+        class="team-admin-box"
+
+        style="
+          color:#991B1B
+        "
+      >
+        ${teamEsc(error.message)}
+      </div>
+    `;
+
+    return;
+
+  }
+
+
+  c.innerHTML = `
+
+    <div
+      class="team-admin-box"
+    >
+
+      <h3
+        style="
+          margin-top:0
+        "
+      >
+        Ajouter / modifier un membre
+      </h3>
+
+
+      <input
+        type="hidden"
+        id="tm-id"
+      >
+
+
+      <div
+        class="team-form-grid"
+      >
+
+
+        <label>
+
+          Nom / pseudo
+
+          <input
+            id="tm-name"
+            type="text"
+            placeholder="Zafkiel / LePetoChard"
+          >
+
+        </label>
+
+
+        <label>
+
+          Statut
+
+          <select
+            id="tm-status"
+          >
+
+            <option value="MEMBRE">
+              MEMBRE
+            </option>
+
+            <option value="FONDATEUR">
+              FONDATEUR
+            </option>
+
+            <option value="MODO / WEBMASTER">
+              MODO / WEBMASTER
+            </option>
+
+            <option value="STAFF">
+              STAFF
+            </option>
+
+          </select>
+
+        </label>
+
+
+        <label>
+
+          Pays
+
+          <input
+            id="tm-country"
+            type="text"
+            placeholder="France"
+          >
+
+        </label>
+
+
+        <label>
+
+          Drapeau / code pays
+
+          <input
+            id="tm-flag"
+            type="text"
+            placeholder="🇫🇷 ou FR"
+          >
+
+        </label>
+
+
+        <label>
+
+          Date d’arrivée
+
+          <input
+            id="tm-joined"
+            type="text"
+            placeholder="23 Novembre 2024"
+          >
+
+        </label>
+
+
+        <label>
+
+          Stream depuis
+
+          <input
+            id="tm-stream"
+            type="text"
+            placeholder="2023"
+          >
+
+        </label>
+
+
+        <label>
+
+          Rôle
+
+          <input
+            id="tm-role"
+            type="text"
+            placeholder="Streamer"
+          >
+
+        </label>
+
+
+        <label>
+
+          Catégorie
+
+          <input
+            id="tm-category"
+            type="text"
+            placeholder="Gaming • Events"
+          >
+
+        </label>
+
+
+        <label>
+
+          Initiale
+
+          <input
+            id="tm-initial"
+            type="text"
+            maxlength="3"
+            placeholder="Z"
+          >
+
+        </label>
+
+
+        <label>
+
+          Couleur avatar
+
+          <div
+            class="team-color-row"
+          >
+
+            <input
+              id="tm-color"
+              type="color"
+              value="#151519"
+            >
+
+            <input
+              id="tm-color-text"
+              type="text"
+              value="#151519"
+              maxlength="7"
+              placeholder="#151519"
+            >
+
+          </div>
+
+        </label>
+
+
+        <label
+          class="
+            team-form-full
+          "
+        >
+
+          Description
+
+          <textarea
+            id="tm-description"
+            placeholder="Présentation du membre..."
+          ></textarea>
+
+        </label>
+
+
+        <label
+          class="
+            team-form-full
+          "
+        >
+
+          Tags
+          (séparés par des virgules)
+
+          <input
+            id="tm-tags"
+            type="text"
+            placeholder="Gaming, Events, France"
+          >
+
+        </label>
+
+
+        <label>
+
+          Twitch
+
+          <input
+            id="tm-twitch"
+            type="url"
+            placeholder="https://twitch.tv/..."
+          >
+
+        </label>
+
+
+        <label>
+
+          YouTube
+
+          <input
+            id="tm-youtube"
+            type="url"
+            placeholder="https://youtube.com/..."
+          >
+
+        </label>
+
+
+        <label
+          class="
+            team-form-full
+          "
+        >
+
+          Discord personnel
+          (optionnel)
+
+          <input
+            id="tm-discord"
+            type="url"
+            placeholder="https://discord.gg/..."
+          >
+
+        </label>
+
+
+        <label
+          class="
+            team-form-full
+            team-visible-label
+          "
+        >
+
+          <input
+            id="tm-visible"
+            type="checkbox"
+            checked
+          >
+
+          Afficher ce membre
+          sur le site
+
+        </label>
+
+      </div>
+
+
+      <div
+        style="
+          display:flex;
+          gap:.5rem;
+          flex-wrap:wrap;
+          margin-top:.8rem
+        "
+      >
+
+        <button
+          class="btn"
+          style="width:auto"
+          onclick="saveTeamMember()"
+        >
+          Sauvegarder
+        </button>
+
+
+        <button
+          class="mini-btn"
+          onclick="resetTeamForm()"
+        >
+          Nouveau /
+          Réinitialiser
+        </button>
+
+      </div>
+
+
+      <div
+        id="team-admin-msg"
+
+        style="
+          margin-top:.5rem;
+          font-size:.8rem
+        "
+      ></div>
+
+    </div>
+
+
+    <div
+      class="
+        team-admin-list
+      "
+    >
+
+      ${teamAdminCache
+        .map(
+          member=>`
+
+            <div
+              class="
+                team-admin-row
+              "
+            >
+
+              <div>
+
+                <strong>
+                  ${teamEsc(member.name)}
+                </strong>
+
+                <br>
+
+                <span
+                  class="muted"
+                >
+
+                  ${teamEsc(member.status)}
+
+                  •
+
+                  ${teamEsc(member.role)}
+
+                  •
+
+                  ${teamEsc(member.countryFlag)}
+
+                  ${teamEsc(member.country)}
+
+                </span>
+
+              </div>
+
+
+              <div
+                class="
+                  team-admin-actions
+                "
+              >
+
+                <button
+                  class="mini-btn"
+                  onclick="
+                    editTeamMember(
+                      '${teamEsc(member.id)}'
+                    )
+                  "
+                >
+                  Modifier
+                </button>
+
+
+                <button
+                  class="
+                    mini-btn
+                    danger
+                  "
+                  onclick="
+                    deleteTeamMember(
+                      '${teamEsc(member.id)}'
+                    )
+                  "
+                >
+                  Supprimer
+                </button>
+
+              </div>
+
+            </div>
+
+          `
+        )
+        .join('')
+      }
+
+    </div>
+  `;
+
+
+  initTeamColorControls();
+
+}
+
+
+/* =========================================================
+   COULEUR
+   ========================================================= */
+
+function initTeamColorControls(){
+
+  const picker =
+    document
+      .getElementById(
+        'tm-color'
+      );
+
+
+  const text =
+    document
+      .getElementById(
+        'tm-color-text'
+      );
+
+
+  if(
+    !picker ||
+    !text
+  ){
+    return;
+  }
+
+
+  picker
+    .addEventListener(
+      'input',
+      ()=>{
+
+        text.value =
+          picker.value;
+
+      }
+    );
+
+
+  text
+    .addEventListener(
+      'input',
+      ()=>{
+
+        const value =
+          text.value.trim();
+
+
+        if(
+          /^#[0-9A-Fa-f]{6}$/.test(
+            value
+          )
+        ){
+
+          picker.value =
+            value;
+
+        }
+
+      }
+    );
+
+}
+
+
+/* =========================================================
+   RESET TEAM
+   ========================================================= */
+
+function resetTeamForm(){
+
+  const ids = [
+    'id',
+    'name',
+    'country',
+    'flag',
+    'joined',
+    'stream',
+    'role',
+    'category',
+    'initial',
+    'description',
+    'tags',
+    'twitch',
+    'youtube',
+    'discord'
+  ];
+
+
+  ids.forEach(
+    key=>{
+
+      const element =
+        document
+          .getElementById(
+            'tm-' + key
+          );
+
+
+      if(element){
+
+        element.value =
+          '';
+
+      }
+
+    }
+  );
+
+
+  const status =
+    document
+      .getElementById(
+        'tm-status'
+      );
+
+
+  if(status){
+
+    status.value =
+      'MEMBRE';
+
+  }
+
+
+  const color =
+    document
+      .getElementById(
+        'tm-color'
+      );
+
+
+  if(color){
+
+    color.value =
+      '#151519';
+
+  }
+
+
+  const colorText =
+    document
+      .getElementById(
+        'tm-color-text'
+      );
+
+
+  if(colorText){
+
+    colorText.value =
+      '#151519';
+
+  }
+
+
+  const visible =
+    document
+      .getElementById(
+        'tm-visible'
+      );
+
+
+  if(visible){
+
+    visible.checked =
+      true;
+
+  }
+
+
+  const message =
+    document
+      .getElementById(
+        'team-admin-msg'
+      );
+
+
+  if(message){
+
+    message.textContent =
+      '';
+
+  }
+
+}
+
+
+/* =========================================================
+   MODIFIER TEAM
+   ========================================================= */
+
+function editTeamMember(id){
+
+  const member =
+    teamAdminCache
+      .find(
+        item=>
+          item.id ===
+          id
+      );
+
+
+  if(!member){
+    return;
+  }
+
+
+  document
+    .getElementById(
+      'tm-id'
+    )
+    .value =
+      member.id || '';
+
+
+  document
+    .getElementById(
+      'tm-name'
+    )
+    .value =
+      member.name || '';
+
+
+  const status =
+    document
+      .getElementById(
+        'tm-status'
+      );
+
+
+  if(
+    status &&
+    !Array.from(
+      status.options
+    )
+      .some(
+        option=>
+          option.value ===
+          member.status
+      )
+  ){
+
+    const option =
+      document
+        .createElement(
+          'option'
+        );
+
+
+    option.value =
+      member.status;
+
+
+    option.textContent =
+      member.status;
+
+
+    status.appendChild(
+      option
+    );
+
+  }
+
+
+  status.value =
+    member.status ||
+    'MEMBRE';
+
+
+  document
+    .getElementById(
+      'tm-country'
+    )
+    .value =
+      member.country || '';
+
+
+  document
+    .getElementById(
+      'tm-flag'
+    )
+    .value =
+      member.countryFlag || '';
+
+
+  document
+    .getElementById(
+      'tm-joined'
+    )
+    .value =
+      member.joined || '';
+
+
+  document
+    .getElementById(
+      'tm-stream'
+    )
+    .value =
+      member.streamSince || '';
+
+
+  document
+    .getElementById(
+      'tm-role'
+    )
+    .value =
+      member.role || '';
+
+
+  document
+    .getElementById(
+      'tm-category'
+    )
+    .value =
+      member.category || '';
+
+
+  document
+    .getElementById(
+      'tm-initial'
+    )
+    .value =
+      member.initial || '';
+
+
+  const memberColor =
+    /^#[0-9A-Fa-f]{6}$/.test(
+      member.color ||
+      ''
+    )
+      ?
+      member.color
+      :
+      '#151519';
+
+
+  document
+    .getElementById(
+      'tm-color'
+    )
+    .value =
+      memberColor;
+
+
+  document
+    .getElementById(
+      'tm-color-text'
+    )
+    .value =
+      memberColor;
+
+
+  document
+    .getElementById(
+      'tm-description'
+    )
+    .value =
+      member.description || '';
+
+
+  document
+    .getElementById(
+      'tm-tags'
+    )
+    .value =
+      (
+        member.tags ||
+        []
+      )
+        .join(
+          ', '
+        );
+
+
+  document
+    .getElementById(
+      'tm-twitch'
+    )
+    .value =
+      member.twitch || '';
+
+
+  document
+    .getElementById(
+      'tm-youtube'
+    )
+    .value =
+      member.youtube || '';
+
+
+  document
+    .getElementById(
+      'tm-discord'
+    )
+    .value =
+      member.discord || '';
+
+
+  document
+    .getElementById(
+      'tm-visible'
+    )
+    .checked =
+      member.visible !==
+      false;
+
+
+  window.scrollTo(
+    {
+      top:
+        document
+          .getElementById(
+            'content'
+          )
+          .offsetTop -
+        80,
+
+      behavior:
+        'smooth'
+    }
+  );
+
+}
+
+
+/* =========================================================
+   SAUVEGARDER TEAM
+   ========================================================= */
+
+async function saveTeamMember(){
+
+  const id =
+    document
+      .getElementById(
+        'tm-id'
+      )
+      .value
+      .trim();
+
+
+  let color =
+    document
+      .getElementById(
+        'tm-color-text'
+      )
+      .value
+      .trim();
+
+
+  if(
+    !/^#[0-9A-Fa-f]{6}$/.test(
+      color
+    )
+  ){
+
+    color =
+      document
+        .getElementById(
+          'tm-color'
+        )
+        .value;
+
+  }
+
+
+  const body = {
+
+    id:id,
+
+    name:
+      document
+        .getElementById(
+          'tm-name'
+        )
+        .value
+        .trim(),
+
+    status:
+      document
+        .getElementById(
+          'tm-status'
+        )
+        .value,
+
+    country:
+      document
+        .getElementById(
+          'tm-country'
+        )
+        .value
+        .trim(),
+
+    countryFlag:
+      document
+        .getElementById(
+          'tm-flag'
+        )
+        .value
+        .trim(),
+
+    joined:
+      document
+        .getElementById(
+          'tm-joined'
+        )
+        .value
+        .trim(),
+
+    streamSince:
+      document
+        .getElementById(
+          'tm-stream'
+        )
+        .value
+        .trim(),
+
+    role:
+      document
+        .getElementById(
+          'tm-role'
+        )
+        .value
+        .trim(),
+
+    category:
+      document
+        .getElementById(
+          'tm-category'
+        )
+        .value
+        .trim(),
+
+    initial:
+      document
+        .getElementById(
+          'tm-initial'
+        )
+        .value
+        .trim(),
+
+    color:
+      color,
+
+    description:
+      document
+        .getElementById(
+          'tm-description'
+        )
+        .value
+        .trim(),
+
+    tags:
+      document
+        .getElementById(
+          'tm-tags'
+        )
+        .value
+        .split(',')
+        .map(
+          item=>
+            item.trim()
+        )
+        .filter(
+          Boolean
+        ),
+
+    twitch:
+      document
+        .getElementById(
+          'tm-twitch'
+        )
+        .value
+        .trim(),
+
+    youtube:
+      document
+        .getElementById(
+          'tm-youtube'
+        )
+        .value
+        .trim(),
+
+    discord:
+      document
+        .getElementById(
+          'tm-discord'
+        )
+        .value
+        .trim(),
+
+    visible:
+      document
+        .getElementById(
+          'tm-visible'
+        )
+        .checked
+
+  };
+
+
+  const msg =
+    document
+      .getElementById(
+        'team-admin-msg'
+      );
+
+
+  if(
+    !body.name
+  ){
+
+    msg.style.color =
+      '#991B1B';
+
+    msg.textContent =
+      'Nom obligatoire.';
+
+    return;
+
+  }
+
+
+  msg.style.color =
+    '#334155';
+
+  msg.textContent =
+    'Sauvegarde...';
+
+
+  try{
+
+    const r =
+      await fetch(
+        API_TEAM,
+        {
+          method:
+            id
+              ?
+              'PUT'
+              :
+              'POST',
+
+          headers:{
+            'Content-Type':
+              'application/json',
+
+            Authorization:
+              `Bearer ${token}`
+          },
+
+          body:
+            JSON.stringify(
+              body
+            )
+        }
+      );
+
+
+    const contentType =
+      r.headers.get(
+        'content-type'
+      ) || '';
+
+
+    let data = {};
+
+
+    if(
+      contentType.includes(
+        'application/json'
+      )
+    ){
+
+      try{
+
+        data =
+          await r.json();
+
+      }
+
+      catch{}
+
+    }
+
+
+    if(!r.ok){
+
+      msg.style.color =
+        '#991B1B';
+
+      msg.textContent =
+        data.error ||
+        `Erreur API équipe (${r.status})`;
+
+      return;
+
+    }
+
+
+    msg.style.color =
+      '#166534';
+
+    msg.textContent =
+      id
+        ?
+        'Membre modifié.'
+        :
+        'Membre ajouté.';
+
+
+    await renderTeamAdmin();
+
+  }
+
+  catch(error){
+
+    console.error(
+      error
+    );
+
+
+    msg.style.color =
+      '#991B1B';
+
+    msg.textContent =
+      'Erreur réseau.';
+
+  }
+
+}
+
+
+/* =========================================================
+   SUPPRIMER TEAM
+   ========================================================= */
+
+async function deleteTeamMember(id){
+
+  const member =
+    teamAdminCache
+      .find(
+        item=>
+          item.id ===
+          id
+      );
+
+
+  if(
+    !confirm(
+      `Supprimer ${
+        member?.name ||
+        id
+      } ?`
+    )
+  ){
+
+    return;
+
+  }
+
+
+  try{
+
+    const r =
+      await fetch(
+        `${API_TEAM}?id=${encodeURIComponent(id)}`,
+        {
+          method:
+            'DELETE',
+
+          headers:{
+            Authorization:
+              `Bearer ${token}`
+          }
+        }
+      );
+
+
+    const contentType =
+      r.headers.get(
+        'content-type'
+      ) || '';
+
+
+    let data = {};
+
+
+    if(
+      contentType.includes(
+        'application/json'
+      )
+    ){
+
+      try{
+
+        data =
+          await r.json();
+
+      }
+
+      catch{}
+
+    }
+
+
+    if(!r.ok){
+
+      alert(
+        data.error ||
+        `Erreur suppression (${r.status})`
+      );
+
+      return;
+
+    }
+
+
+    await renderTeamAdmin();
+
+  }
+
+  catch(error){
+
+    console.error(
+      error
+    );
+
+
+    alert(
+      'Erreur réseau pendant la suppression.'
+    );
+
+  }
+
 }
 
 </script>
+
 </body>
 </html>
