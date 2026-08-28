@@ -46,6 +46,7 @@ const fallbackMembers = [
 
     initial: "R",
     color: "#151519",
+    color2: "#7A00B8",
 
     visible: true
   },
@@ -82,6 +83,7 @@ const fallbackMembers = [
 
     initial: "Z",
     color: "#151519",
+    color2: "#0A86B8",
 
     visible: true
   },
@@ -119,6 +121,7 @@ const fallbackMembers = [
 
     initial: "F",
     color: "#151519",
+    color2: "#3F22D8",
 
     visible: true
   },
@@ -157,6 +160,7 @@ const fallbackMembers = [
 
     initial: "Q",
     color: "#16C7B7",
+    color2: "#FF4B00",
 
     visible: true
   }
@@ -824,10 +828,18 @@ function buildCard(member) {
 
           style="
             background:
-              ${escapeHTML(
-                member.color ||
-                "#151519"
-              )}
+              linear-gradient(
+                135deg,
+                ${escapeHTML(
+                  member.color ||
+                  "#151519"
+                )},
+                ${escapeHTML(
+                  member.color2 ||
+                  member.color ||
+                  "#151519"
+                )}
+              )
           "
         >
 
@@ -917,10 +929,18 @@ function buildCard(member) {
 
         style="
           background:
-            ${escapeHTML(
-              member.color ||
-              "#151519"
-            )}
+              linear-gradient(
+                135deg,
+                ${escapeHTML(
+                  member.color ||
+                  "#151519"
+                )},
+                ${escapeHTML(
+                  member.color2 ||
+                  member.color ||
+                  "#151519"
+                )}
+              )
         "
       >
 
