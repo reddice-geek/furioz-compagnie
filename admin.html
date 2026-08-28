@@ -403,41 +403,50 @@ td{
    ========================================================= */
 
 .team-color-row{
-  display:flex;
-
-  align-items:center;
-
-  gap:.6rem;
+  display:grid;
+  grid-template-columns:repeat(2,minmax(0,1fr));
+  gap:.75rem;
 }
 
-#tm-color{
+.team-color-group{
+  display:grid;
+  grid-template-columns:58px 1fr;
+  gap:.5rem;
+  align-items:center;
+}
+
+.team-color-group small{
+  grid-column:1/-1;
+  color:#64748B;
+  font-weight:600;
+}
+
+#tm-color,
+#tm-color2{
   width:58px !important;
   min-width:58px !important;
-
   height:42px;
-
   margin:0;
-
   padding:3px;
-
   border:1px solid #CBD5E1;
-
   border-radius:9px;
-
   background:#fff !important;
-
   cursor:pointer;
 }
 
-#tm-color-text{
-  flex:1;
-
+#tm-color-text,
+#tm-color2-text{
+  width:100%;
   margin:0;
-
   color:#111827 !important;
   -webkit-text-fill-color:#111827 !important;
-
   background:#fff !important;
+}
+
+@media(max-width:700px){
+  .team-color-row{
+    grid-template-columns:1fr;
+  }
 }
 
 
@@ -2299,25 +2308,47 @@ async function renderTeamAdmin(){
 
         <label>
 
-          Couleur avatar
+          Couleurs avatar — dégradé
 
           <div
             class="team-color-row"
           >
 
-            <input
-              id="tm-color"
-              type="color"
-              value="#151519"
-            >
+            <div class="team-color-group">
+              <small>Couleur 1</small>
 
-            <input
-              id="tm-color-text"
-              type="text"
-              value="#151519"
-              maxlength="7"
-              placeholder="#151519"
-            >
+              <input
+                id="tm-color"
+                type="color"
+                value="#151519"
+              >
+
+              <input
+                id="tm-color-text"
+                type="text"
+                value="#151519"
+                maxlength="7"
+                placeholder="#151519"
+              >
+            </div>
+
+            <div class="team-color-group">
+              <small>Couleur 2</small>
+
+              <input
+                id="tm-color2"
+                type="color"
+                value="#2563EB"
+              >
+
+              <input
+                id="tm-color2-text"
+                type="text"
+                value="#2563EB"
+                maxlength="7"
+                placeholder="#2563EB"
+              >
+            </div>
 
           </div>
 
@@ -2565,62 +2596,64 @@ async function renderTeamAdmin(){
 
 function initTeamColorControls(){
 
-  const picker =
-    document
-      .getElementById(
-        'tm-color'
-      );
+  const pairs = [
+    ['tm-color', 'tm-color-text'],
+    ['tm-color2', 'tm-color2-text']
+  ];
 
+  pairs.forEach(
+    ([pickerId, textId])=>{
 
-  const text =
-    document
-      .getElementById(
-        'tm-color-text'
-      );
+      const picker =
+        document.getElementById(
+          pickerId
+        );
 
+      const text =
+        document.getElementById(
+          textId
+        );
 
-  if(
-    !picker ||
-    !text
-  ){
-    return;
-  }
-
-
-  picker
-    .addEventListener(
-      'input',
-      ()=>{
-
-        text.value =
-          picker.value;
-
+      if(
+        !picker ||
+        !text
+      ){
+        return;
       }
-    );
 
+      picker.addEventListener(
+        'input',
+        ()=>{
 
-  text
-    .addEventListener(
-      'input',
-      ()=>{
-
-        const value =
-          text.value.trim();
-
-
-        if(
-          /^#[0-9A-Fa-f]{6}$/.test(
-            value
-          )
-        ){
-
-          picker.value =
-            value;
+          text.value =
+            picker.value;
 
         }
+      );
 
-      }
-    );
+      text.addEventListener(
+        'input',
+        ()=>{
+
+          const value =
+            text.value.trim();
+
+          if(
+            /^#[0-9A-Fa-f]{6}$/.test(
+              value
+            )
+          ){
+
+            picker.value =
+              value;
+
+          }
+
+        }
+      );
+
+    }
+  );
 
 }
 
@@ -2711,6 +2744,33 @@ function resetTeamForm(){
 
     colorText.value =
       '#151519';
+
+  }
+
+
+  const color2 =
+    document
+      .getElementById(
+        'tm-color2'
+      );
+
+  if(color2){
+
+    color2.value =
+      '#2563EB';
+
+  }
+
+  const color2Text =
+    document
+      .getElementById(
+        'tm-color2-text'
+      );
+
+  if(color2Text){
+
+    color2Text.value =
+      '#2563EB';
 
   }
 
@@ -2912,6 +2972,33 @@ function editTeamMember(id){
       memberColor;
 
 
+  const memberColor2 =
+    /^#[0-9A-Fa-f]{6}$/.test(
+      member.color2 ||
+      ''
+    )
+      ?
+      member.color2
+      :
+      memberColor;
+
+
+  document
+    .getElementById(
+      'tm-color2'
+    )
+    .value =
+      memberColor2;
+
+
+  document
+    .getElementById(
+      'tm-color2-text'
+    )
+    .value =
+      memberColor2;
+
+
   document
     .getElementById(
       'tm-description'
@@ -3025,6 +3112,31 @@ async function saveTeamMember(){
   }
 
 
+  let color2 =
+    document
+      .getElementById(
+        'tm-color2-text'
+      )
+      .value
+      .trim();
+
+
+  if(
+    !/^#[0-9A-Fa-f]{6}$/.test(
+      color2
+    )
+  ){
+
+    color2 =
+      document
+        .getElementById(
+          'tm-color2'
+        )
+        .value;
+
+  }
+
+
   const body = {
 
     id:id,
@@ -3102,6 +3214,9 @@ async function saveTeamMember(){
 
     color:
       color,
+
+    color2:
+      color2,
 
     description:
       document
