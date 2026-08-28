@@ -1,98 +1,183 @@
 // =========================================================
 // FURIOZ COMPAGNIE
 // script.js
-// Team locale + Team API Admin
+// Team locale + API Admin + fenêtres membres
+// =========================================================
+
+
+// =========================================================
+// MEMBRES DE SECOURS
+// Ils restent affichés même si /api/team ne fonctionne pas
 // =========================================================
 
 const fallbackMembers = [
+
   {
     id: "reddice",
     name: "RedDice_Geek",
     status: "FONDATEUR",
+
     country: "France",
     countryFlag: "🇫🇷",
+
     joined: "Septembre 2022",
     streamSince: "Aout 2021",
+
     role: "Fondateur",
     category: "Gaming • Cosplay • IRL",
-    description: "Fondateur de la Furioz Compagnie en septembre 2022. Projet pense pour durer : entraide, independance et progression durable.",
-    tags: ["Fondateur", "Gaming", "Cosplay", "IRL", "🇫🇷 France"],
-    twitch: "https://twitch.tv/reddice_geek",
-    youtube: "https://www.youtube.com/channel/UCxjKpjK-3DBR3HgmeRY7UMg",
+
+    description:
+      "Fondateur de la Furioz Compagnie en septembre 2022. Projet pense pour durer : entraide, independance et progression durable.",
+
+    tags: [
+      "Fondateur",
+      "Gaming",
+      "Cosplay",
+      "IRL",
+      "🇫🇷 France"
+    ],
+
+    twitch:
+      "https://twitch.tv/reddice_geek",
+
+    youtube:
+      "https://www.youtube.com/channel/UCxjKpjK-3DBR3HgmeRY7UMg",
+
     discord: "",
+
     initial: "R",
     color: "#151519",
+
     visible: true
   },
+
 
   {
     id: "zafkiel",
     name: "Zafkiel / LePetoChard",
     status: "MEMBRE",
+
     country: "France",
     countryFlag: "🇫🇷",
+
     joined: "23 Novembre 2024",
     streamSince: "2023",
+
     role: "Streamer",
     category: "Gaming • Events",
-    description: "LePetoChard, aussi connu sous Zafkiel. A rejoint la Furioz Compagnie le 23/11/2024 en tant que streameur. Ambiance chill et entraide.",
-    tags: ["Gaming", "Events", "🇫🇷 France"],
-    twitch: "https://www.twitch.tv/le_petochard",
+
+    description:
+      "LePetoChard, aussi connu sous Zafkiel. A rejoint la Furioz Compagnie le 23/11/2024 en tant que streameur. Ambiance chill et entraide.",
+
+    tags: [
+      "Gaming",
+      "Events",
+      "🇫🇷 France"
+    ],
+
+    twitch:
+      "https://www.twitch.tv/le_petochard",
+
     youtube: "",
     discord: "",
+
     initial: "Z",
     color: "#151519",
+
     visible: true
   },
+
 
   {
     id: "foxysword",
     name: "Foxy Sword",
     status: "MEMBRE",
+
     country: "Canada",
     countryFlag: "🇨🇦",
+
     joined: "18 Aout 2026",
     streamSince: "2025",
+
     role: "Streamer / DJ",
     category: "Gaming • DJ",
-    description: "DJ debutant et gamer passionne. A rejoint la Furioz le 18/08/2026.",
-    tags: ["Gaming", "DJ", "Musique", "🇨🇦 Canada"],
-    twitch: "https://www.twitch.tv/foxysword350",
+
+    description:
+      "DJ debutant et gamer passionne. A rejoint la Furioz le 18/08/2026.",
+
+    tags: [
+      "Gaming",
+      "DJ",
+      "Musique",
+      "🇨🇦 Canada"
+    ],
+
+    twitch:
+      "https://www.twitch.tv/foxysword350",
+
     youtube: "",
     discord: "",
+
     initial: "F",
     color: "#151519",
+
     visible: true
   },
+
 
   {
     id: "quentin",
     name: "Quentin Pierrot",
     status: "MODO / WEBMASTER",
+
     country: "France",
     countryFlag: "🇫🇷",
+
     joined: "20 Aout 2026",
     streamSince: "2023",
+
     role: "Modo / Webmaster",
     category: "Avali VRChat",
-    description: "Modo, webmaster du site et gestion du Discord.",
-    tags: ["Modo", "Webmaster", "VRChat", "Avali", "🇫🇷 France"],
-    twitch: "https://twitch.tv/furiozcompagnie",
+
+    description:
+      "Modo, webmaster du site et gestion du Discord.",
+
+    tags: [
+      "Modo",
+      "Webmaster",
+      "VRChat",
+      "Avali",
+      "🇫🇷 France"
+    ],
+
+    twitch:
+      "https://twitch.tv/furiozcompagnie",
+
     youtube: "",
     discord: "",
+
     initial: "Q",
     color: "#16C7B7",
+
     visible: true
   }
+
 ];
 
 
-document.addEventListener("DOMContentLoaded", () => {
-  loadTeam();
-});
+// =========================================================
+// MEMBRES ACTUELLEMENT AFFICHÉS
+// =========================================================
 
+let currentMembers = [...fallbackMembers];
+
+
+// =========================================================
+// SÉCURITÉ HTML
+// =========================================================
 
 function escapeHTML(value) {
+
   return String(value ?? "")
     .replaceAll("&", "&amp;")
     .replaceAll("<", "&lt;")
@@ -102,43 +187,66 @@ function escapeHTML(value) {
 }
 
 
+// =========================================================
+// CHARGEMENT DE LA TEAM
+// =========================================================
+
 async function loadTeam() {
 
   const container =
-    document.querySelector("#team-grid");
+    document.getElementById("team-grid");
+
 
   if (!container) {
     return;
   }
 
-  // Affichage immédiat des membres existants
-  renderTeam(fallbackMembers);
 
+  // Affiche immédiatement les membres existants
+  currentMembers =
+    [...fallbackMembers];
+
+  renderTeam(currentMembers);
+
+
+  // Puis essaie de récupérer les données Admin
   try {
 
     const response =
-      await fetch("/api/team", {
-        method: "GET",
-        headers: {
-          "Accept": "application/json"
-        },
-        cache: "no-store"
-      });
+      await fetch(
+        "/api/team",
+        {
+          method: "GET",
 
+          headers: {
+            "Accept":
+              "application/json"
+          },
+
+          cache:
+            "no-store"
+        }
+      );
+
+
+    // API indisponible :
+    // on garde les membres de secours
     if (!response.ok) {
+
       console.warn(
         "API Team indisponible :",
         response.status
       );
 
-      // On garde fallbackMembers
       return;
     }
+
 
     const contentType =
       response.headers.get(
         "content-type"
       ) || "";
+
 
     if (
       !contentType.includes(
@@ -153,59 +261,67 @@ async function loadTeam() {
       return;
     }
 
+
     const data =
       await response.json();
 
+
     let apiMembers = [];
 
+
     if (Array.isArray(data)) {
-      apiMembers = data;
+
+      apiMembers =
+        data;
+
     }
 
     else if (
-      Array.isArray(data.members)
+      Array.isArray(
+        data.members
+      )
     ) {
-      apiMembers = data.members;
+
+      apiMembers =
+        data.members;
+
     }
 
     else if (
-      Array.isArray(data.team)
+      Array.isArray(
+        data.team
+      )
     ) {
-      apiMembers = data.team;
+
+      apiMembers =
+        data.team;
     }
 
-    if (!apiMembers.length) {
+
+    if (
+      !apiMembers.length
+    ) {
+
       return;
     }
 
 
-    // Fusion :
+    // =====================================================
+    // FUSION
     // même ID = modification
     // nouvel ID = ajout
-    const map =
-      new Map(
-        fallbackMembers.map(
-          member => [
-            member.id,
-            member
-          ]
-        )
-      );
+    // =====================================================
 
-    apiMembers.forEach(
+    const memberMap =
+      new Map();
+
+
+    fallbackMembers.forEach(
       member => {
 
-        if (!member?.id) {
-          return;
-        }
-
-        const old =
-          map.get(member.id) || {};
-
-        map.set(
+        memberMap.set(
           member.id,
           {
-            ...old,
             ...member
           }
         );
@@ -213,12 +329,45 @@ async function loadTeam() {
     );
 
 
-    const finalMembers =
+    apiMembers.forEach(
+      member => {
+
+        if (
+          !member ||
+          !member.id
+        ) {
+
+          return;
+        }
+
+
+        const oldMember =
+          memberMap.get(
+            member.id
+          ) || {};
+
+
+        memberMap.set(
+          member.id,
+          {
+            ...oldMember,
+            ...member
+          }
+        );
+
+      }
+    );
+
+
+    currentMembers =
       Array.from(
-        map.values()
+        memberMap.values()
       );
 
-    renderTeam(finalMembers);
+
+    renderTeam(
+      currentMembers
+    );
 
   }
 
@@ -230,15 +379,22 @@ async function loadTeam() {
     );
 
     // Important :
-    // on garde les membres existants
+    // on garde la Team locale affichée
   }
 }
 
 
+// =========================================================
+// AFFICHAGE TEAM
+// =========================================================
+
 function renderTeam(members) {
 
   const container =
-    document.querySelector("#team-grid");
+    document.getElementById(
+      "team-grid"
+    );
+
 
   if (!container) {
     return;
@@ -252,8 +408,13 @@ function renderTeam(members) {
     );
 
 
-  container.innerHTML = "";
+  container.innerHTML =
+    "";
 
+
+  // =====================================================
+  // CARTES DES MEMBRES
+  // =====================================================
 
   visibleMembers.forEach(
     member => {
@@ -265,7 +426,9 @@ function renderTeam(members) {
 
 
       wrapper.innerHTML =
-        buildCard(member).trim();
+        buildCard(
+          member
+        ).trim();
 
 
       const card =
@@ -277,12 +440,31 @@ function renderTeam(members) {
       }
 
 
+      card.style.cursor =
+        "pointer";
+
+
+      // OUVERTURE DE LA FENÊTRE
       card.addEventListener(
         "click",
-        () => {
+        event => {
+
+          // Évite qu'un lien éventuel
+          // ouvre la fenêtre
+          if (
+            event.target.closest(
+              "a"
+            )
+          ) {
+
+            return;
+          }
+
+
           openMemberModal(
             member
           );
+
         }
       );
 
@@ -290,12 +472,17 @@ function renderTeam(members) {
       container.appendChild(
         card
       );
+
     }
   );
 
 
-  // Maximum 10 membres
+  // =====================================================
+  // PLACES LIBRES
+  // =====================================================
+
   const maximum = 10;
+
 
   const remaining =
     Math.max(
@@ -338,10 +525,12 @@ function renderTeam(members) {
         <a
           href="https://forms.gle/7hA9ac26qJn7AHjc6"
           target="_blank"
+          rel="noopener noreferrer"
         >
           Postuler
         </a>
       `;
+
     }
 
     else {
@@ -356,26 +545,49 @@ function renderTeam(members) {
           Rejoins-nous
         </p>
       `;
+
     }
 
 
     container.appendChild(
       freeCard
     );
+
+  }
+
+
+  // =====================================================
+  // TEXTE DU HAUT
+  // =====================================================
+
+  const kicker =
+    document.getElementById(
+      "team-kicker"
+    );
+
+
+  if (kicker) {
+
+    kicker.textContent =
+      "STREAM TEAM [FZ] • 10 PLACES MAX";
   }
 }
 
 
-function buildCard(m) {
+// =========================================================
+// CONSTRUCTION DES CARTES
+// =========================================================
+
+function buildCard(member) {
 
   const name =
-    m.name ||
-    m.pseudo ||
+    member.name ||
+    member.pseudo ||
     "Membre";
 
 
   const initial =
-    m.initial ||
+    member.initial ||
     name
       .charAt(0)
       .toUpperCase();
@@ -383,66 +595,77 @@ function buildCard(m) {
 
   const status =
     String(
-      m.status ||
-      m.role ||
+      member.status ||
+      member.role ||
       ""
     ).toUpperCase();
 
 
+  // =====================================================
+  // BADGE
+  // =====================================================
+
   const badgeParts = [];
 
 
-  if (m.joined) {
+  if (member.joined) {
 
     badgeParts.push(
-      `Depuis ${m.joined}`
+      `Depuis ${member.joined}`
     );
+
   }
 
 
-  if (m.category) {
+  if (member.category) {
 
     badgeParts.push(
-      m.category
+      member.category
     );
+
   }
 
 
   if (
-    m.role &&
-    String(m.role)
-      .toUpperCase() !==
+    member.role &&
+    String(
+      member.role
+    ).toUpperCase() !==
       "FONDATEUR"
   ) {
 
     badgeParts.push(
-      m.role
+      member.role
     );
+
   }
 
 
-  if (m.country) {
+  if (member.country) {
 
     badgeParts.push(
+
       `${
-        m.countryFlag || ""
+        member.countryFlag || ""
       } ${
-        m.country
+        member.country
       }`.trim()
+
     );
+
   }
 
 
   const badge =
-    m.badge ||
+    member.badge ||
     badgeParts
       .filter(Boolean)
       .join(" • ");
 
 
-  // =========================
-  // FONDATEUR
-  // =========================
+  // =====================================================
+  // CARTE FONDATEUR
+  // =====================================================
 
   if (
     status === "FONDATEUR" ||
@@ -454,7 +677,7 @@ function buildCard(m) {
       <article
         class="team-card founder"
         data-id="${escapeHTML(
-          m.id || ""
+          member.id
         )}"
       >
 
@@ -462,15 +685,18 @@ function buildCard(m) {
           class="avatar"
 
           style="
-            background:${escapeHTML(
-              m.color ||
-              "#151519"
-            )}
+            background:
+              ${escapeHTML(
+                member.color ||
+                "#151519"
+              )}
           "
         >
+
           ${escapeHTML(
             initial
           )}
+
         </div>
 
 
@@ -498,14 +724,16 @@ function buildCard(m) {
           <div
             class="badge"
           >
+
             ${escapeHTML(
               badge
             )}
+
           </div>
 
 
           ${
-            m.description
+            member.description
 
               ? `
 
@@ -514,10 +742,13 @@ function buildCard(m) {
                     member-description
                   "
                 >
+
                   ${escapeHTML(
-                    m.description
+                    member.description
                   )}
+
                 </p>
+
               `
 
               : ""
@@ -530,17 +761,16 @@ function buildCard(m) {
   }
 
 
-  // =========================
-  // MEMBRES NORMAUX
-  // =========================
+  // =====================================================
+  // CARTE NORMALE
+  // =====================================================
 
   return `
 
     <article
       class="team-card"
-
       data-id="${escapeHTML(
-        m.id || ""
+        member.id
       )}"
     >
 
@@ -548,10 +778,11 @@ function buildCard(m) {
         class="avatar"
 
         style="
-          background:${escapeHTML(
-            m.color ||
-            "#151519"
-          )}
+          background:
+            ${escapeHTML(
+              member.color ||
+              "#151519"
+            )}
         "
       >
 
@@ -588,10 +819,65 @@ function buildCard(m) {
 }
 
 
+// =========================================================
+// OUVERTURE DE LA PETITE FENÊTRE
+// =========================================================
+
 function openMemberModal(member) {
 
-  closeMemberModal();
+  // =====================================================
+  // SI TON INDEX.HTML POSSÈDE DÉJÀ :
+  // #member-modal
+  // #modal-content
+  // on les réutilise
+  // =====================================================
 
+  const existingModal =
+    document.getElementById(
+      "member-modal"
+    );
+
+
+  const existingContent =
+    document.getElementById(
+      "modal-content"
+    );
+
+
+  if (
+    existingModal &&
+    existingContent
+  ) {
+
+    fillExistingModal(
+      existingModal,
+      existingContent,
+      member
+    );
+
+    return;
+  }
+
+
+  // =====================================================
+  // SINON ON CRÉE UNE FENÊTRE AUTOMATIQUEMENT
+  // =====================================================
+
+  createMemberModal(
+    member
+  );
+}
+
+
+// =========================================================
+// UTILISER LA FENÊTRE DÉJÀ PRÉSENTE DANS index.html
+// =========================================================
+
+function fillExistingModal(
+  modal,
+  content,
+  member
+) {
 
   const name =
     member.name ||
@@ -604,57 +890,153 @@ function openMemberModal(member) {
     "MEMBRE";
 
 
-  const modal =
-    document.createElement(
-      "div"
-    );
+  const description =
+    member.description ||
+    member.desc ||
+    "";
 
 
-  modal.id =
-    "member-modal";
-
-
-  modal.className =
-    "member-modal-overlay";
-
-
-  modal.innerHTML = `
+  content.innerHTML = `
 
     <div
-      class="member-modal"
+      style="
+        display:flex;
+        justify-content:
+          space-between;
+        align-items:
+          flex-start;
+        gap:1rem;
+      "
     >
 
-      <button
-        type="button"
-        class="member-modal-close"
-      >
-        ×
-      </button>
+      <div>
 
+        <h2
+          style="
+            margin:
+              0 0 .3rem;
+          "
+        >
 
-      <h2>
-
-        ${escapeHTML(
-          name
-        )}
-
-        <small>
-
-          • ${escapeHTML(
-            status
+          ${escapeHTML(
+            name
           )}
 
-        </small>
+          <span
+            style="
+              color:
+                var(--blue);
+              font-size:
+                .85rem;
+              font-weight:
+                500;
+            "
+          >
 
-      </h2>
+            • ${escapeHTML(
+              status
+            )}
+
+            ${
+              member.country
+
+                ? ` • ${escapeHTML(
+                    `${
+                      member.countryFlag ||
+                      ""
+                    } ${
+                      member.country
+                    }`.trim()
+                  )}`
+
+                : ""
+            }
+
+          </span>
+
+        </h2>
 
 
-      ${
-        member.streamSince
+        ${
+          member.joined
 
-          ? `
+            ? `
 
-            <p>
+              <span
+                class="badge"
+              >
+
+                Depuis
+                ${escapeHTML(
+                  member.joined
+                )}
+
+                ${
+                  member.country
+
+                    ? ` • ${escapeHTML(
+                        `${
+                          member.countryFlag ||
+                          ""
+                        } ${
+                          member.country
+                        }`.trim()
+                      )}`
+
+                    : ""
+                }
+
+              </span>
+
+            `
+
+            : ""
+        }
+
+      </div>
+
+
+      <button
+        id="close-member-modal"
+        type="button"
+
+        style="
+          width:38px;
+          height:38px;
+          border:0;
+          border-radius:50%;
+          cursor:pointer;
+          font-size:1.2rem;
+          background:
+            var(--gray);
+        "
+      >
+
+        ✕
+
+      </button>
+
+    </div>
+
+
+    <div
+      style="
+        margin-top:1.3rem;
+        display:grid;
+        gap:.9rem;
+      "
+    >
+
+      <p
+        style="
+          margin:0;
+        "
+      >
+
+        ${
+          member.streamSince
+
+            ? `
 
               <strong>
                 Stream depuis :
@@ -664,19 +1046,18 @@ function openMemberModal(member) {
                 member.streamSince
               )}
 
-            </p>
-          `
+              <br>
 
-          : ""
-      }
+            `
+
+            : ""
+        }
 
 
-      ${
-        member.joined
+        ${
+          member.joined
 
-          ? `
-
-            <p>
+            ? `
 
               <strong>
                 A rejoint la Furioz :
@@ -686,56 +1067,54 @@ function openMemberModal(member) {
                 member.joined
               )}
 
-            </p>
-          `
+            `
 
-          : ""
-      }
+            : ""
+        }
 
 
-      ${
-        member.country
+        ${
+          member.role
 
-          ? `
+            ? `
 
-            <p>
+              <br>
 
               <strong>
-                Pays :
+                Rôle :
               </strong>
 
               ${escapeHTML(
-                `${
-                  member.countryFlag ||
-                  ""
-                } ${
-                  member.country
-                }`.trim()
+                member.role
               )}
 
-            </p>
-          `
+            `
 
-          : ""
-      }
+            : ""
+        }
+
+      </p>
 
 
       ${
-        member.description
+        description
 
           ? `
 
             <p
-              class="
-                member-modal-description
+              style="
+                margin:0;
+                color:#444;
+                line-height:1.6;
               "
             >
 
               ${escapeHTML(
-                member.description
+                description
               )}
 
             </p>
+
           `
 
           : ""
@@ -745,13 +1124,16 @@ function openMemberModal(member) {
       ${
         Array.isArray(
           member.tags
-        )
+        ) &&
+        member.tags.length
 
           ? `
 
             <div
-              class="
-                member-tags
+              style="
+                display:flex;
+                gap:.5rem;
+                flex-wrap:wrap;
               "
             >
 
@@ -759,16 +1141,31 @@ function openMemberModal(member) {
                 .map(
                   tag => `
 
-                    <span>
+                    <span
+                      class="badge"
+
+                      style="
+                        background:
+                          #E8E2D9;
+                        color:
+                          #1E293B;
+                        border-color:
+                          #D1C9B8;
+                      "
+                    >
+
                       ${escapeHTML(
                         tag
                       )}
+
                     </span>
+
                   `
                 )
                 .join("")}
 
             </div>
+
           `
 
           : ""
@@ -776,11 +1173,12 @@ function openMemberModal(member) {
 
 
       <div
-        class="
-          member-links
+        style="
+          display:flex;
+          gap:.6rem;
+          flex-wrap:wrap;
         "
       >
-
 
         ${
           member.twitch
@@ -793,9 +1191,31 @@ function openMemberModal(member) {
                 )}"
 
                 target="_blank"
+                rel="noopener noreferrer"
+
+                class="
+                  btn btn-dark
+                "
+
+                style="
+                  background:
+                    #9146FF;
+                  color:#fff;
+                  padding:
+                    .6rem 1rem;
+                  border-radius:
+                    8px;
+                  text-decoration:
+                    none;
+                  font-weight:
+                    700;
+                "
               >
+
                 Twitch
+
               </a>
+
             `
 
             : ""
@@ -813,9 +1233,32 @@ function openMemberModal(member) {
                 )}"
 
                 target="_blank"
+                rel="noopener noreferrer"
+
+                class="
+                  btn btn-white
+                "
+
+                style="
+                  background:#fff;
+                  color:#111;
+                  padding:
+                    .6rem 1rem;
+                  border-radius:
+                    8px;
+                  border:
+                    1px solid #ddd;
+                  text-decoration:
+                    none;
+                  font-weight:
+                    700;
+                "
               >
+
                 YouTube
+
               </a>
+
             `
 
             : ""
@@ -829,8 +1272,26 @@ function openMemberModal(member) {
           )}"
 
           target="_blank"
+          rel="noopener noreferrer"
+
+          class="
+            btn btn-discord
+          "
+
+          style="
+            padding:
+              .6rem 1rem;
+            border-radius:
+              8px;
+            text-decoration:
+              none;
+            font-weight:
+              700;
+          "
         >
+
           Discord Furioz
+
         </a>
 
       </div>
@@ -839,57 +1300,586 @@ function openMemberModal(member) {
   `;
 
 
-  document.body
-    .appendChild(
-      modal
+  modal.classList.add(
+    "active"
+  );
+
+
+  document.body.style.overflow =
+    "hidden";
+
+
+  const closeButton =
+    document.getElementById(
+      "close-member-modal"
     );
 
 
-  const close =
-    modal.querySelector(
-      ".member-modal-close"
+  if (closeButton) {
+
+    closeButton.onclick =
+      closeMemberModal;
+  }
+}
+
+
+// =========================================================
+// CRÉATION DE SECOURS DE LA FENÊTRE
+// =========================================================
+
+function createMemberModal(
+  member
+) {
+
+  const name =
+    member.name ||
+    "Membre";
+
+
+  const status =
+    member.status ||
+    member.role ||
+    "MEMBRE";
+
+
+  const description =
+    member.description ||
+    member.desc ||
+    "";
+
+
+  const overlay =
+    document.createElement(
+      "div"
     );
 
 
-  if (close) {
+  overlay.id =
+    "generated-member-modal";
 
-    close.addEventListener(
-      "click",
-      closeMemberModal
+
+  // CSS directement dans JS :
+  // fonctionne même si ton CSS
+  // n'a pas les classes modal
+
+  overlay.style.position =
+    "fixed";
+
+  overlay.style.inset =
+    "0";
+
+  overlay.style.background =
+    "rgba(0,0,0,.55)";
+
+  overlay.style.zIndex =
+    "99999";
+
+  overlay.style.display =
+    "flex";
+
+  overlay.style.alignItems =
+    "center";
+
+  overlay.style.justifyContent =
+    "center";
+
+  overlay.style.padding =
+    "20px";
+
+
+  const box =
+    document.createElement(
+      "div"
     );
+
+
+  box.style.width =
+    "min(650px, 95vw)";
+
+  box.style.maxHeight =
+    "90vh";
+
+  box.style.overflowY =
+    "auto";
+
+  box.style.background =
+    "#fff";
+
+  box.style.borderRadius =
+    "18px";
+
+  box.style.padding =
+    "26px";
+
+  box.style.boxShadow =
+    "0 20px 60px rgba(0,0,0,.25)";
+
+
+  box.innerHTML = `
+
+    <div
+      style="
+        display:flex;
+        justify-content:
+          space-between;
+        align-items:
+          flex-start;
+        gap:1rem;
+      "
+    >
+
+      <div>
+
+        <h2
+          style="
+            margin:0;
+          "
+        >
+
+          ${escapeHTML(
+            name
+          )}
+
+        </h2>
+
+        <div
+          style="
+            margin-top:.3rem;
+            color:#2563EB;
+            font-weight:600;
+            font-size:.85rem;
+          "
+        >
+
+          ${escapeHTML(
+            status
+          )}
+
+          ${
+            member.country
+
+              ? ` • ${escapeHTML(
+                  `${
+                    member.countryFlag ||
+                    ""
+                  } ${
+                    member.country
+                  }`.trim()
+                )}`
+
+              : ""
+          }
+
+        </div>
+
+      </div>
+
+
+      <button
+        id="generated-close-modal"
+        type="button"
+
+        style="
+          width:40px;
+          height:40px;
+          border:0;
+          border-radius:50%;
+          font-size:22px;
+          cursor:pointer;
+          background:#F3F0E9;
+        "
+      >
+
+        ✕
+
+      </button>
+
+    </div>
+
+
+    <div
+      style="
+        margin-top:20px;
+      "
+    >
+
+      ${
+        member.streamSince
+
+          ? `
+
+            <p>
+              <strong>
+                Stream depuis :
+              </strong>
+
+              ${escapeHTML(
+                member.streamSince
+              )}
+            </p>
+
+          `
+
+          : ""
+      }
+
+
+      ${
+        member.joined
+
+          ? `
+
+            <p>
+              <strong>
+                A rejoint la Furioz :
+              </strong>
+
+              ${escapeHTML(
+                member.joined
+              )}
+            </p>
+
+          `
+
+          : ""
+      }
+
+
+      ${
+        member.role
+
+          ? `
+
+            <p>
+              <strong>
+                Rôle :
+              </strong>
+
+              ${escapeHTML(
+                member.role
+              )}
+            </p>
+
+          `
+
+          : ""
+      }
+
+
+      ${
+        description
+
+          ? `
+
+            <p
+              style="
+                line-height:1.6;
+                color:#444;
+              "
+            >
+
+              ${escapeHTML(
+                description
+              )}
+
+            </p>
+
+          `
+
+          : ""
+      }
+
+
+      ${
+        Array.isArray(
+          member.tags
+        )
+
+          ? `
+
+            <div
+              style="
+                display:flex;
+                gap:8px;
+                flex-wrap:wrap;
+                margin-top:16px;
+              "
+            >
+
+              ${member.tags
+                .map(
+                  tag => `
+
+                    <span
+                      style="
+                        background:#EEE9E1;
+                        border:
+                          1px solid #DDD5C8;
+                        border-radius:
+                          999px;
+                        padding:
+                          6px 10px;
+                        font-size:
+                          12px;
+                        font-weight:
+                          600;
+                      "
+                    >
+
+                      ${escapeHTML(
+                        tag
+                      )}
+
+                    </span>
+
+                  `
+                )
+                .join("")}
+
+            </div>
+
+          `
+
+          : ""
+      }
+
+
+      <div
+        style="
+          display:flex;
+          gap:10px;
+          flex-wrap:wrap;
+          margin-top:20px;
+        "
+      >
+
+        ${
+          member.twitch
+
+            ? `
+
+              <a
+                href="${escapeHTML(
+                  member.twitch
+                )}"
+
+                target="_blank"
+                rel="noopener noreferrer"
+
+                style="
+                  background:#9146FF;
+                  color:white;
+                  padding:
+                    10px 16px;
+                  border-radius:
+                    8px;
+                  text-decoration:
+                    none;
+                  font-weight:
+                    700;
+                "
+              >
+
+                Twitch
+
+              </a>
+
+            `
+
+            : ""
+        }
+
+
+        ${
+          member.youtube
+
+            ? `
+
+              <a
+                href="${escapeHTML(
+                  member.youtube
+                )}"
+
+                target="_blank"
+                rel="noopener noreferrer"
+
+                style="
+                  background:#111;
+                  color:white;
+                  padding:
+                    10px 16px;
+                  border-radius:
+                    8px;
+                  text-decoration:
+                    none;
+                  font-weight:
+                    700;
+                "
+              >
+
+                YouTube
+
+              </a>
+
+            `
+
+            : ""
+        }
+
+
+        <a
+          href="${escapeHTML(
+            member.discord ||
+            "https://discord.gg/nKj9NFDyxj"
+          )}"
+
+          target="_blank"
+          rel="noopener noreferrer"
+
+          style="
+            background:#5865F2;
+            color:white;
+            padding:
+              10px 16px;
+            border-radius:
+              8px;
+            text-decoration:
+              none;
+            font-weight:
+              700;
+          "
+        >
+
+          Discord Furioz
+
+        </a>
+
+      </div>
+
+    </div>
+  `;
+
+
+  overlay.appendChild(
+    box
+  );
+
+
+  document.body.appendChild(
+    overlay
+  );
+
+
+  document.body.style.overflow =
+    "hidden";
+
+
+  const closeButton =
+    document.getElementById(
+      "generated-close-modal"
+    );
+
+
+  if (closeButton) {
+
+    closeButton.onclick =
+      closeMemberModal;
   }
 
 
-  modal.addEventListener(
+  overlay.addEventListener(
     "click",
     event => {
 
       if (
         event.target ===
-        modal
+        overlay
       ) {
 
         closeMemberModal();
       }
+
     }
   );
 }
 
 
+// =========================================================
+// FERMER FENÊTRE
+// =========================================================
+
 function closeMemberModal() {
 
+  // Fenêtre existante du site
+
   const modal =
-    document.querySelector(
-      "#member-modal"
+    document.getElementById(
+      "member-modal"
     );
 
 
   if (modal) {
 
-    modal.remove();
+    modal.classList.remove(
+      "active"
+    );
+
   }
+
+
+  // Fenêtre créée par le JS
+
+  const generated =
+    document.getElementById(
+      "generated-member-modal"
+    );
+
+
+  if (generated) {
+
+    generated.remove();
+
+  }
+
+
+  document.body.style.overflow =
+    "";
 }
 
+
+// =========================================================
+// FERMER EN CLIQUANT SUR LE FOND
+// =========================================================
+
+document.addEventListener(
+  "click",
+  event => {
+
+    const modal =
+      document.getElementById(
+        "member-modal"
+      );
+
+
+    if (
+      modal &&
+      modal.classList.contains(
+        "active"
+      ) &&
+      event.target === modal
+    ) {
+
+      closeMemberModal();
+
+    }
+
+  }
+);
+
+
+// =========================================================
+// ÉCHAP
+// =========================================================
 
 document.addEventListener(
   "keydown",
@@ -901,6 +1891,323 @@ document.addEventListener(
     ) {
 
       closeMemberModal();
+
     }
+
+  }
+);
+
+
+// =========================================================
+// TWITCH
+// =========================================================
+
+function initTwitch() {
+
+  const player =
+    document.getElementById(
+      "twitch-player"
+    );
+
+
+  const chat =
+    document.getElementById(
+      "twitch-chat"
+    );
+
+
+  const badge =
+    document.getElementById(
+      "live-badge"
+    );
+
+
+  if (!player) {
+    return;
+  }
+
+
+  const channel =
+    "furiozcompagnie";
+
+
+  const domain =
+    window.location.hostname ||
+    "localhost";
+
+
+  const parents =
+    `&parent=localhost` +
+    `&parent=${domain}` +
+    `&parent=vercel.app` +
+    `&parent=www.furiozcompagnie.fr` +
+    `&parent=furioz.fr`;
+
+
+  player.src =
+    `https://player.twitch.tv/` +
+    `?channel=${channel}` +
+    `${parents}` +
+    `&muted=true`;
+
+
+  if (chat) {
+
+    chat.src =
+      `https://www.twitch.tv/embed/` +
+      `${channel}/chat` +
+      `?darkpopout` +
+      `${parents}`;
+
+  }
+
+
+  if (badge) {
+
+    badge.textContent =
+      "OFFLINE - Player charge";
+
+    badge.className =
+      "live-badge offline";
+
+  }
+}
+
+
+// =========================================================
+// NAVIGATION
+// =========================================================
+
+function initNav() {
+
+  const nav =
+    document.getElementById(
+      "main-nav"
+    );
+
+
+  const links =
+    document.querySelectorAll(
+      "nav .links a[href^='#']"
+    );
+
+
+  const logo =
+    document.getElementById(
+      "logo-link"
+    );
+
+
+  if (!nav) {
+    return;
+  }
+
+
+  window.addEventListener(
+    "scroll",
+    () => {
+
+      if (
+        window.scrollY >
+        20
+      ) {
+
+        nav.classList.add(
+          "scrolled"
+        );
+
+      }
+
+      else {
+
+        nav.classList.remove(
+          "scrolled"
+        );
+
+      }
+
+
+      let current =
+        "";
+
+
+      document
+        .querySelectorAll(
+          "section[id]"
+        )
+        .forEach(
+          section => {
+
+            if (
+              window.scrollY >=
+              section.offsetTop -
+              120
+            ) {
+
+              current =
+                section.id;
+
+            }
+
+          }
+        );
+
+
+      links.forEach(
+        link => {
+
+          link.classList.remove(
+            "active"
+          );
+
+
+          if (
+            link.getAttribute(
+              "href"
+            ) ===
+            "#" + current
+          ) {
+
+            link.classList.add(
+              "active"
+            );
+
+          }
+
+        }
+      );
+
+    },
+
+    {
+      passive:
+        true
+    }
+  );
+
+
+  links.forEach(
+    link => {
+
+      link.addEventListener(
+        "click",
+        event => {
+
+          const href =
+            link.getAttribute(
+              "href"
+            );
+
+
+          if (
+            !href ||
+            !href.startsWith(
+              "#"
+            )
+          ) {
+
+            return;
+
+          }
+
+
+          event.preventDefault();
+
+
+          const target =
+            document.querySelector(
+              href
+            );
+
+
+          if (target) {
+
+            window.scrollTo(
+              {
+
+                top:
+                  target.offsetTop -
+                  72,
+
+                behavior:
+                  "smooth"
+
+              }
+            );
+
+          }
+
+        }
+      );
+
+    }
+  );
+
+
+  if (logo) {
+
+    logo.addEventListener(
+      "click",
+      event => {
+
+        event.preventDefault();
+
+
+        window.scrollTo(
+          {
+
+            top: 0,
+
+            behavior:
+              "smooth"
+
+          }
+        );
+
+      }
+    );
+
+  }
+}
+
+
+// =========================================================
+// COPYRIGHT
+// =========================================================
+
+function initCopyright() {
+
+  const year =
+    document.getElementById(
+      "current-year"
+    );
+
+
+  if (year) {
+
+    year.textContent =
+      new Date()
+        .getFullYear();
+
+  }
+}
+
+
+// =========================================================
+// DÉMARRAGE
+// =========================================================
+
+document.addEventListener(
+  "DOMContentLoaded",
+  async () => {
+
+    initTwitch();
+
+    initNav();
+
+    initCopyright();
+
+    await loadTeam();
+
   }
 );
