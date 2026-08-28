@@ -1,1 +1,0 @@
-export default function handler(req,res){ return res.status(200).json({ ok:true, time:new Date().toISOString(), env: { hasAdminUser: !!process.env.ADMIN_USER, hasAdminPass: !!process.env.ADMIN_PASS, hasToken: !!process.env.ADMIN_TOKEN } }); }
