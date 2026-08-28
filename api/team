@@ -14,7 +14,7 @@ let members = [
     description: 'Fondateur de la Furioz Compagnie en septembre 2022.',
     tags: ['Fondateur', 'Gaming', 'Cosplay', 'IRL', 'France'],
     twitch: 'https://twitch.tv/reddice_geek',
-    youtube: '',
+    youtube: 'https://www.youtube.com/channel/UCxjKpjK-3DBR3HgmeRY7UMg',
     discord: '',
     initial: 'R',
     color: '#151519',
@@ -31,7 +31,7 @@ let members = [
     streamSince: '2023-01-01',
     role: 'Streamer',
     category: 'Gaming • Events',
-    description: 'LePetoChard, aussi connu sous Zafkiel.',
+    description: 'LePetoChard, aussi connu sous Zafkiel. A rejoint la Furioz Compagnie le 23/11/2024 en tant que streameur. Ambiance chill et entraide.',
     tags: ['Gaming', 'Events', 'France'],
     twitch: 'https://www.twitch.tv/le_petochard',
     youtube: '',
@@ -51,7 +51,7 @@ let members = [
     streamSince: '2025-01-01',
     role: 'Streamer / DJ',
     category: 'Gaming • DJ',
-    description: 'DJ débutant et gamer passionné.',
+    description: 'DJ débutant et gamer passionné. A rejoint la Furioz le 18/08/2026.',
     tags: ['Gaming', 'DJ', 'Musique', 'Canada'],
     twitch: 'https://www.twitch.tv/foxysword350',
     youtube: '',
@@ -85,93 +85,221 @@ let members = [
 function isAdmin(req) {
   const token = process.env.ADMIN_TOKEN;
 
-  return (
+  return Boolean(
     token &&
     req.headers.authorization === `Bearer ${token}`
   );
 }
 
+function cleanText(value, max = 500) {
+  return String(value ?? '')
+    .trim()
+    .slice(0, max);
+}
+
+function makeId(value) {
+  return cleanText(value, 80)
+    .toLowerCase()
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .replace(/[^a-z0-9_-]+/g, '-')
+    .replace(/^-+|-+$/g, '');
+}
+
 export default function handler(req, res) {
+
+  // =========================
+  // LIRE LES MEMBRES
+  // =========================
 
   if (req.method === 'GET') {
     return res.status(200).json(members);
   }
 
+  // Les actions suivantes nécessitent l'Admin
+
   if (!isAdmin(req)) {
-    logIntrusion(
-      getIP(req),
-      'unauth_team',
-      'Accès équipe non autorisé'
-    );
+    try {
+      logIntrusion(
+        getIP(req),
+        'unauth_team',
+        'Accès équipe non autorisé'
+      );
+    } catch {}
 
     return res.status(401).json({
       error: 'Non autorisé'
     });
   }
 
+  // =========================
+  // AJOUTER UN MEMBRE
+  // =========================
+
   if (req.method === 'POST') {
 
     const body = req.body || {};
 
-    if (!body.name) {
+    const name = cleanText(
+      body.name,
+      80
+    );
+
+    if (!name) {
       return res.status(400).json({
         error: 'Nom obligatoire'
       });
     }
 
-    const id =
-      String(body.id || body.name)
-        .toLowerCase()
-        .normalize('NFD')
-        .replace(/[\u0300-\u036f]/g, '')
-        .replace(/[^a-z0-9_-]+/g, '-')
-        .replace(/^-+|-+$/g, '');
+    const id = makeId(
+      body.id || name
+    );
 
-    if (members.some(m => m.id === id)) {
+    if (!id) {
+      return res.status(400).json({
+        error: 'Identifiant invalide'
+      });
+    }
+
+    if (
+      members.some(
+        member => member.id === id
+      )
+    ) {
       return res.status(409).json({
         error: 'Ce membre existe déjà'
       });
     }
 
     const member = {
-      id,
-      name: body.name || '',
-      status: body.status || 'MEMBRE',
-      country: body.country || '',
-      countryFlag: body.countryFlag || '',
-      joined: body.joined || '',
-      streamSince: body.streamSince || '',
-      role: body.role || '',
-      category: body.category || '',
-      description: body.description || '',
-      tags: Array.isArray(body.tags)
-        ? body.tags
-        : [],
-      twitch: body.twitch || '',
-      youtube: body.youtube || '',
-      discord: body.discord || '',
+      id: id,
+
+      name: name,
+
+      status:
+        cleanText(
+          body.status,
+          50
+        ) || 'MEMBRE',
+
+      country:
+        cleanText(
+          body.country,
+          50
+        ),
+
+      countryFlag:
+        cleanText(
+          body.countryFlag,
+          8
+        ),
+
+      joined:
+        cleanText(
+          body.joined,
+          10
+        ),
+
+      streamSince:
+        cleanText(
+          body.streamSince,
+          10
+        ),
+
+      role:
+        cleanText(
+          body.role,
+          80
+        ),
+
+      category:
+        cleanText(
+          body.category,
+          120
+        ),
+
+      description:
+        cleanText(
+          body.description,
+          800
+        ),
+
+      tags:
+        Array.isArray(body.tags)
+          ? body.tags
+              .map(tag =>
+                cleanText(tag, 40)
+              )
+              .filter(Boolean)
+              .slice(0, 12)
+          : [],
+
+      twitch:
+        cleanText(
+          body.twitch,
+          300
+        ),
+
+      youtube:
+        cleanText(
+          body.youtube,
+          300
+        ),
+
+      discord:
+        cleanText(
+          body.discord,
+          300
+        ),
+
       initial:
-        body.initial ||
-        String(body.name || '?').charAt(0).toUpperCase(),
-      color: body.color || '#151519',
-      visible: body.visible !== false
+        (
+          cleanText(
+            body.initial,
+            3
+          ) ||
+          name.charAt(0)
+        ).toUpperCase(),
+
+      color:
+        /^#[0-9a-f]{6}$/i.test(
+          cleanText(body.color, 7)
+        )
+          ? cleanText(
+              body.color,
+              7
+            )
+          : '#151519',
+
+      visible:
+        body.visible !== false
     };
 
     members.push(member);
 
     return res.status(201).json({
       ok: true,
-      member
+      member: member
     });
   }
+
+  // =========================
+  // MODIFIER UN MEMBRE
+  // =========================
 
   if (req.method === 'PUT') {
 
     const body = req.body || {};
 
+    const id = cleanText(
+      body.id,
+      80
+    );
+
     const index =
       members.findIndex(
-        member => member.id === body.id
+        member =>
+          member.id === id
       );
 
     if (index === -1) {
@@ -183,7 +311,7 @@ export default function handler(req, res) {
     members[index] = {
       ...members[index],
       ...body,
-      id: members[index].id
+      id: id
     };
 
     return res.status(200).json({
@@ -192,25 +320,41 @@ export default function handler(req, res) {
     });
   }
 
+  // =========================
+  // SUPPRIMER UN MEMBRE
+  // =========================
+
   if (req.method === 'DELETE') {
 
-    const id = req.query?.id;
+    const id = cleanText(
+      req.query?.id,
+      80
+    );
 
-    const before = members.length;
+    const before =
+      members.length;
 
     members =
       members.filter(
-        member => member.id !== id
+        member =>
+          member.id !== id
       );
 
     return res.status(200).json({
       ok: true,
+
       deleted:
-        before - members.length
+        before -
+        members.length
     });
   }
 
+  // =========================
+  // MÉTHODE INCONNUE
+  // =========================
+
   return res.status(405).json({
-    error: 'Méthode non autorisée'
+    error:
+      'Méthode non autorisée'
   });
 }
