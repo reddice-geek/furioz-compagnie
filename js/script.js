@@ -1,13 +1,12 @@
 // =========================================================
 // FURIOZ COMPAGNIE
-// script.js
+// js/script.js
 // Team locale + API Admin + fenêtres membres
 // =========================================================
 
 
 // =========================================================
 // MEMBRES DE SECOURS
-// Ils restent affichés même si /api/team ne fonctionne pas
 // =========================================================
 
 const fallbackMembers = [
@@ -166,7 +165,7 @@ const fallbackMembers = [
 
 
 // =========================================================
-// MEMBRES ACTUELLEMENT AFFICHÉS
+// TEAM ACTUELLE
 // =========================================================
 
 let currentMembers = [...fallbackMembers];
@@ -188,13 +187,153 @@ function escapeHTML(value) {
 
 
 // =========================================================
+// DRAPEAU
+// Transforme FR / CA en emoji si nécessaire
+// =========================================================
+
+function normalizeFlag(flag, country) {
+
+  const value =
+    String(flag || "")
+      .trim()
+      .toUpperCase();
+
+
+  if (value === "FR") {
+    return "🇫🇷";
+  }
+
+  if (value === "CA") {
+    return "🇨🇦";
+  }
+
+  if (value === "BE") {
+    return "🇧🇪";
+  }
+
+  if (value === "CH") {
+    return "🇨🇭";
+  }
+
+  if (value === "US") {
+    return "🇺🇸";
+  }
+
+  if (value === "GB") {
+    return "🇬🇧";
+  }
+
+
+  if (flag) {
+    return flag;
+  }
+
+
+  const c =
+    String(country || "")
+      .toLowerCase();
+
+
+  if (c === "france") {
+    return "🇫🇷";
+  }
+
+  if (c === "canada") {
+    return "🇨🇦";
+  }
+
+
+  return "";
+}
+
+
+// =========================================================
+// FUSION MEMBRE
+// IMPORTANT : une valeur vide venant de l'API
+// n'efface plus une valeur locale existante
+// =========================================================
+
+function mergeMember(oldMember, apiMember) {
+
+  const merged = {
+    ...oldMember
+  };
+
+
+  Object.entries(
+    apiMember || {}
+  )
+    .forEach(
+      ([key, value]) => {
+
+        // null / undefined
+        if (
+          value === null ||
+          value === undefined
+        ) {
+          return;
+        }
+
+
+        // chaîne vide
+        if (
+          typeof value === "string" &&
+          value.trim() === ""
+        ) {
+          return;
+        }
+
+
+        // tableau vide
+        if (
+          Array.isArray(value) &&
+          value.length === 0
+        ) {
+          return;
+        }
+
+
+        merged[key] =
+          value;
+
+      }
+    );
+
+
+  merged.countryFlag =
+    normalizeFlag(
+      merged.countryFlag,
+      merged.country
+    );
+
+
+  if (
+    !merged.initial &&
+    merged.name
+  ) {
+
+    merged.initial =
+      merged.name
+        .charAt(0)
+        .toUpperCase();
+
+  }
+
+
+  return merged;
+}
+
+
+// =========================================================
 // CHARGEMENT DE LA TEAM
 // =========================================================
 
 async function loadTeam() {
 
   const container =
-    document.getElementById("team-grid");
+    document.getElementById(
+      "team-grid"
+    );
 
 
   if (!container) {
@@ -202,14 +341,20 @@ async function loadTeam() {
   }
 
 
-  // Affiche immédiatement les membres existants
+  // Affichage immédiat
   currentMembers =
-    [...fallbackMembers];
+    fallbackMembers.map(
+      member => ({
+        ...member
+      })
+    );
 
-  renderTeam(currentMembers);
+
+  renderTeam(
+    currentMembers
+  );
 
 
-  // Puis essaie de récupérer les données Admin
   try {
 
     const response =
@@ -230,7 +375,7 @@ async function loadTeam() {
 
 
     // API indisponible :
-    // on garde les membres de secours
+    // on garde les membres locaux
     if (!response.ok) {
 
       console.warn(
@@ -269,7 +414,9 @@ async function loadTeam() {
     let apiMembers = [];
 
 
-    if (Array.isArray(data)) {
+    if (
+      Array.isArray(data)
+    ) {
 
       apiMembers =
         data;
@@ -295,6 +442,7 @@ async function loadTeam() {
 
       apiMembers =
         data.team;
+
     }
 
 
@@ -308,8 +456,6 @@ async function loadTeam() {
 
     // =====================================================
     // FUSION
-    // même ID = modification
-    // nouvel ID = ajout
     // =====================================================
 
     const memberMap =
@@ -325,34 +471,38 @@ async function loadTeam() {
             ...member
           }
         );
+
       }
     );
 
 
     apiMembers.forEach(
-      member => {
+      apiMember => {
 
         if (
-          !member ||
-          !member.id
+          !apiMember ||
+          !apiMember.id
         ) {
-
           return;
         }
 
 
         const oldMember =
           memberMap.get(
-            member.id
+            apiMember.id
           ) || {};
 
 
+        const merged =
+          mergeMember(
+            oldMember,
+            apiMember
+          );
+
+
         memberMap.set(
-          member.id,
-          {
-            ...oldMember,
-            ...member
-          }
+          apiMember.id,
+          merged
         );
 
       }
@@ -378,8 +528,7 @@ async function loadTeam() {
       error
     );
 
-    // Important :
-    // on garde la Team locale affichée
+    // Les membres locaux restent affichés
   }
 }
 
@@ -413,7 +562,7 @@ function renderTeam(members) {
 
 
   // =====================================================
-  // CARTES DES MEMBRES
+  // MEMBRES
   // =====================================================
 
   visibleMembers.forEach(
@@ -444,19 +593,17 @@ function renderTeam(members) {
         "pointer";
 
 
-      // OUVERTURE DE LA FENÊTRE
       card.addEventListener(
         "click",
         event => {
 
-          // Évite qu'un lien éventuel
-          // ouvre la fenêtre
+          // Ne pas ouvrir la fenêtre
+          // lorsqu'on clique sur un lien
           if (
             event.target.closest(
               "a"
             )
           ) {
-
             return;
           }
 
@@ -481,7 +628,8 @@ function renderTeam(members) {
   // PLACES LIBRES
   // =====================================================
 
-  const maximum = 10;
+  const maximum =
+    10;
 
 
   const remaining =
@@ -554,28 +702,11 @@ function renderTeam(members) {
     );
 
   }
-
-
-  // =====================================================
-  // TEXTE DU HAUT
-  // =====================================================
-
-  const kicker =
-    document.getElementById(
-      "team-kicker"
-    );
-
-
-  if (kicker) {
-
-    kicker.textContent =
-      "STREAM TEAM [FZ] • 10 PLACES MAX";
-  }
 }
 
 
 // =========================================================
-// CONSTRUCTION DES CARTES
+// CONSTRUCTION CARTE
 // =========================================================
 
 function buildCard(member) {
@@ -601,6 +732,13 @@ function buildCard(member) {
     ).toUpperCase();
 
 
+  const countryFlag =
+    normalizeFlag(
+      member.countryFlag,
+      member.country
+    );
+
+
   // =====================================================
   // BADGE
   // =====================================================
@@ -608,7 +746,9 @@ function buildCard(member) {
   const badgeParts = [];
 
 
-  if (member.joined) {
+  if (
+    member.joined
+  ) {
 
     badgeParts.push(
       `Depuis ${member.joined}`
@@ -617,7 +757,9 @@ function buildCard(member) {
   }
 
 
-  if (member.category) {
+  if (
+    member.category
+  ) {
 
     badgeParts.push(
       member.category
@@ -641,16 +783,12 @@ function buildCard(member) {
   }
 
 
-  if (member.country) {
+  if (
+    member.country
+  ) {
 
     badgeParts.push(
-
-      `${
-        member.countryFlag || ""
-      } ${
-        member.country
-      }`.trim()
-
+      `${countryFlag} ${member.country}`.trim()
     );
 
   }
@@ -664,7 +802,7 @@ function buildCard(member) {
 
 
   // =====================================================
-  // CARTE FONDATEUR
+  // FONDATEUR
   // =====================================================
 
   if (
@@ -762,7 +900,7 @@ function buildCard(member) {
 
 
   // =====================================================
-  // CARTE NORMALE
+  // MEMBRE NORMAL
   // =====================================================
 
   return `
@@ -820,16 +958,41 @@ function buildCard(member) {
 
 
 // =========================================================
-// OUVERTURE DE LA PETITE FENÊTRE
+// PETITE FENÊTRE MEMBRE
 // =========================================================
 
 function openMemberModal(member) {
 
+  closeMemberModal();
+
+
+  const name =
+    member.name ||
+    "Membre";
+
+
+  const status =
+    member.status ||
+    member.role ||
+    "MEMBRE";
+
+
+  const description =
+    member.description ||
+    member.desc ||
+    "";
+
+
+  const countryFlag =
+    normalizeFlag(
+      member.countryFlag,
+      member.country
+    );
+
+
   // =====================================================
-  // SI TON INDEX.HTML POSSÈDE DÉJÀ :
-  // #member-modal
-  // #modal-content
-  // on les réutilise
+  // SI TON HTML CONTIENT DÉJÀ
+  // #member-modal ET #modal-content
   // =====================================================
 
   const existingModal =
@@ -849,62 +1012,461 @@ function openMemberModal(member) {
     existingContent
   ) {
 
-    fillExistingModal(
-      existingModal,
-      existingContent,
-      member
-    );
+    existingContent.innerHTML = `
+
+      <div
+        style="
+          display:flex;
+          justify-content:space-between;
+          align-items:flex-start;
+          gap:1rem;
+        "
+      >
+
+        <div>
+
+          <h2
+            style="
+              margin:0 0 .4rem;
+            "
+          >
+
+            ${escapeHTML(name)}
+
+            <span
+              style="
+                color:var(--blue);
+                font-size:.85rem;
+                font-weight:500;
+              "
+            >
+
+              • ${escapeHTML(status)}
+
+              ${
+                member.country
+
+                  ? ` • ${escapeHTML(
+                      `${countryFlag} ${member.country}`.trim()
+                    )}`
+
+                  : ""
+              }
+
+            </span>
+
+          </h2>
+
+
+          ${
+            member.joined
+
+              ? `
+
+                <span
+                  class="badge"
+                >
+                  Depuis
+                  ${escapeHTML(
+                    member.joined
+                  )}
+
+                  ${
+                    member.country
+
+                      ? ` • ${escapeHTML(
+                          `${countryFlag} ${member.country}`.trim()
+                        )}`
+
+                      : ""
+                  }
+
+                </span>
+
+              `
+
+              : ""
+          }
+
+        </div>
+
+
+        <button
+          id="close-member-modal"
+          type="button"
+
+          style="
+            width:40px;
+            height:40px;
+            border:0;
+            border-radius:50%;
+            cursor:pointer;
+            font-size:1.3rem;
+            background:#F3F0E9;
+          "
+        >
+          ✕
+        </button>
+
+      </div>
+
+
+      <div
+        style="
+          margin-top:1.6rem;
+          display:grid;
+          gap:.9rem;
+        "
+      >
+
+        <p
+          style="
+            margin:0;
+          "
+        >
+
+          ${
+            member.streamSince
+
+              ? `
+
+                <strong>
+                  Stream depuis :
+                </strong>
+
+                ${escapeHTML(
+                  member.streamSince
+                )}
+
+                <br>
+
+              `
+
+              : ""
+          }
+
+
+          ${
+            member.joined
+
+              ? `
+
+                <strong>
+                  A rejoint la Furioz :
+                </strong>
+
+                ${escapeHTML(
+                  member.joined
+                )}
+
+                <br>
+
+              `
+
+              : ""
+          }
+
+
+          ${
+            member.role
+
+              ? `
+
+                <strong>
+                  Rôle :
+                </strong>
+
+                ${escapeHTML(
+                  member.role
+                )}
+
+              `
+
+              : ""
+          }
+
+        </p>
+
+
+        ${
+          description
+
+            ? `
+
+              <p
+                style="
+                  margin:0;
+                  color:#444;
+                  line-height:1.6;
+                "
+              >
+
+                ${escapeHTML(
+                  description
+                )}
+
+              </p>
+
+            `
+
+            : ""
+        }
+
+
+        ${
+          Array.isArray(
+            member.tags
+          ) &&
+          member.tags.length
+
+            ? `
+
+              <div
+                style="
+                  display:flex;
+                  flex-wrap:wrap;
+                  gap:.5rem;
+                "
+              >
+
+                ${member.tags
+                  .map(
+                    tag => `
+
+                      <span
+                        class="badge"
+
+                        style="
+                          background:#EEE9E1;
+                          color:#1E293B;
+                          border-color:#D1C9B8;
+                        "
+                      >
+
+                        ${escapeHTML(
+                          tag
+                        )}
+
+                      </span>
+
+                    `
+                  )
+                  .join("")}
+
+              </div>
+
+            `
+
+            : ""
+        }
+
+
+        <div
+          style="
+            display:flex;
+            flex-wrap:wrap;
+            gap:.6rem;
+          "
+        >
+
+          ${
+            member.twitch
+
+              ? `
+
+                <a
+                  href="${escapeHTML(
+                    member.twitch
+                  )}"
+
+                  target="_blank"
+                  rel="noopener noreferrer"
+
+                  style="
+                    background:#9146FF;
+                    color:#fff;
+                    padding:.65rem 1rem;
+                    border-radius:9px;
+                    text-decoration:none;
+                    font-weight:700;
+                  "
+                >
+
+                  Twitch
+
+                </a>
+
+              `
+
+              : ""
+          }
+
+
+          ${
+            member.youtube
+
+              ? `
+
+                <a
+                  href="${escapeHTML(
+                    member.youtube
+                  )}"
+
+                  target="_blank"
+                  rel="noopener noreferrer"
+
+                  style="
+                    background:#fff;
+                    color:#111;
+                    border:1px solid #ddd;
+                    padding:.65rem 1rem;
+                    border-radius:9px;
+                    text-decoration:none;
+                    font-weight:700;
+                  "
+                >
+
+                  YouTube
+
+                </a>
+
+              `
+
+              : ""
+          }
+
+
+          <a
+            href="${escapeHTML(
+              member.discord ||
+              "https://discord.gg/nKj9NFDyxj"
+            )}"
+
+            target="_blank"
+            rel="noopener noreferrer"
+
+            style="
+              background:#5865F2;
+              color:#fff;
+              padding:.65rem 1rem;
+              border-radius:9px;
+              text-decoration:none;
+              font-weight:700;
+            "
+          >
+
+            Discord Furioz
+
+          </a>
+
+        </div>
+
+      </div>
+    `;
+
+
+    existingModal
+      .classList
+      .add(
+        "active"
+      );
+
+
+    document.body.style.overflow =
+      "hidden";
+
+
+    const closeButton =
+      document.getElementById(
+        "close-member-modal"
+      );
+
+
+    if (closeButton) {
+
+      closeButton.onclick =
+        closeMemberModal;
+
+    }
+
 
     return;
   }
 
 
   // =====================================================
-  // SINON ON CRÉE UNE FENÊTRE AUTOMATIQUEMENT
+  // FENÊTRE AUTOMATIQUE DE SECOURS
   // =====================================================
 
-  createMemberModal(
-    member
-  );
-}
+  const overlay =
+    document.createElement(
+      "div"
+    );
 
 
-// =========================================================
-// UTILISER LA FENÊTRE DÉJÀ PRÉSENTE DANS index.html
-// =========================================================
-
-function fillExistingModal(
-  modal,
-  content,
-  member
-) {
-
-  const name =
-    member.name ||
-    "Membre";
+  overlay.id =
+    "generated-member-modal";
 
 
-  const status =
-    member.status ||
-    member.role ||
-    "MEMBRE";
+  overlay.style.position =
+    "fixed";
+
+  overlay.style.inset =
+    "0";
+
+  overlay.style.zIndex =
+    "99999";
+
+  overlay.style.background =
+    "rgba(0,0,0,.55)";
+
+  overlay.style.display =
+    "flex";
+
+  overlay.style.alignItems =
+    "center";
+
+  overlay.style.justifyContent =
+    "center";
+
+  overlay.style.padding =
+    "20px";
 
 
-  const description =
-    member.description ||
-    member.desc ||
-    "";
+  const box =
+    document.createElement(
+      "div"
+    );
 
 
-  content.innerHTML = `
+  box.style.width =
+    "min(700px,95vw)";
+
+  box.style.maxHeight =
+    "90vh";
+
+  box.style.overflowY =
+    "auto";
+
+  box.style.background =
+    "#fff";
+
+  box.style.borderRadius =
+    "20px";
+
+  box.style.padding =
+    "30px";
+
+  box.style.boxShadow =
+    "0 20px 60px rgba(0,0,0,.3)";
+
+
+  box.innerHTML = `
 
     <div
       style="
         display:flex;
-        justify-content:
-          space-between;
-        align-items:
-          flex-start;
+        justify-content:space-between;
         gap:1rem;
       "
     >
@@ -913,40 +1475,27 @@ function fillExistingModal(
 
         <h2
           style="
-            margin:
-              0 0 .3rem;
+            margin:0;
           "
         >
 
-          ${escapeHTML(
-            name
-          )}
+          ${escapeHTML(name)}
 
           <span
             style="
-              color:
-                var(--blue);
-              font-size:
-                .85rem;
-              font-weight:
-                500;
+              color:#2563EB;
+              font-size:.85rem;
+              font-weight:500;
             "
           >
 
-            • ${escapeHTML(
-              status
-            )}
+            • ${escapeHTML(status)}
 
             ${
               member.country
 
                 ? ` • ${escapeHTML(
-                    `${
-                      member.countryFlag ||
-                      ""
-                    } ${
-                      member.country
-                    }`.trim()
+                    `${countryFlag} ${member.country}`.trim()
                   )}`
 
                 : ""
@@ -956,64 +1505,24 @@ function fillExistingModal(
 
         </h2>
 
-
-        ${
-          member.joined
-
-            ? `
-
-              <span
-                class="badge"
-              >
-
-                Depuis
-                ${escapeHTML(
-                  member.joined
-                )}
-
-                ${
-                  member.country
-
-                    ? ` • ${escapeHTML(
-                        `${
-                          member.countryFlag ||
-                          ""
-                        } ${
-                          member.country
-                        }`.trim()
-                      )}`
-
-                    : ""
-                }
-
-              </span>
-
-            `
-
-            : ""
-        }
-
       </div>
 
 
       <button
-        id="close-member-modal"
+        id="generated-close-modal"
         type="button"
 
         style="
-          width:38px;
-          height:38px;
+          width:42px;
+          height:42px;
           border:0;
           border-radius:50%;
+          background:#F3F0E9;
+          font-size:22px;
           cursor:pointer;
-          font-size:1.2rem;
-          background:
-            var(--gray);
         "
       >
-
         ✕
-
       </button>
 
     </div>
@@ -1021,22 +1530,16 @@ function fillExistingModal(
 
     <div
       style="
-        margin-top:1.3rem;
-        display:grid;
-        gap:.9rem;
+        margin-top:24px;
       "
     >
 
-      <p
-        style="
-          margin:0;
-        "
-      >
+      ${
+        member.streamSince
 
-        ${
-          member.streamSince
+          ? `
 
-            ? `
+            <p>
 
               <strong>
                 Stream depuis :
@@ -1046,18 +1549,20 @@ function fillExistingModal(
                 member.streamSince
               )}
 
-              <br>
+            </p>
 
-            `
+          `
 
-            : ""
-        }
+          : ""
+      }
 
 
-        ${
-          member.joined
+      ${
+        member.joined
 
-            ? `
+          ? `
+
+            <p>
 
               <strong>
                 A rejoint la Furioz :
@@ -1067,18 +1572,20 @@ function fillExistingModal(
                 member.joined
               )}
 
-            `
+            </p>
 
-            : ""
-        }
+          `
+
+          : ""
+      }
 
 
-        ${
-          member.role
+      ${
+        member.role
 
-            ? `
+          ? `
 
-              <br>
+            <p>
 
               <strong>
                 Rôle :
@@ -1088,12 +1595,12 @@ function fillExistingModal(
                 member.role
               )}
 
-            `
+            </p>
 
-            : ""
-        }
+          `
 
-      </p>
+          : ""
+      }
 
 
       ${
@@ -1103,9 +1610,8 @@ function fillExistingModal(
 
             <p
               style="
-                margin:0;
-                color:#444;
                 line-height:1.6;
+                color:#444;
               "
             >
 
@@ -1132,476 +1638,8 @@ function fillExistingModal(
             <div
               style="
                 display:flex;
-                gap:.5rem;
                 flex-wrap:wrap;
-              "
-            >
-
-              ${member.tags
-                .map(
-                  tag => `
-
-                    <span
-                      class="badge"
-
-                      style="
-                        background:
-                          #E8E2D9;
-                        color:
-                          #1E293B;
-                        border-color:
-                          #D1C9B8;
-                      "
-                    >
-
-                      ${escapeHTML(
-                        tag
-                      )}
-
-                    </span>
-
-                  `
-                )
-                .join("")}
-
-            </div>
-
-          `
-
-          : ""
-      }
-
-
-      <div
-        style="
-          display:flex;
-          gap:.6rem;
-          flex-wrap:wrap;
-        "
-      >
-
-        ${
-          member.twitch
-
-            ? `
-
-              <a
-                href="${escapeHTML(
-                  member.twitch
-                )}"
-
-                target="_blank"
-                rel="noopener noreferrer"
-
-                class="
-                  btn btn-dark
-                "
-
-                style="
-                  background:
-                    #9146FF;
-                  color:#fff;
-                  padding:
-                    .6rem 1rem;
-                  border-radius:
-                    8px;
-                  text-decoration:
-                    none;
-                  font-weight:
-                    700;
-                "
-              >
-
-                Twitch
-
-              </a>
-
-            `
-
-            : ""
-        }
-
-
-        ${
-          member.youtube
-
-            ? `
-
-              <a
-                href="${escapeHTML(
-                  member.youtube
-                )}"
-
-                target="_blank"
-                rel="noopener noreferrer"
-
-                class="
-                  btn btn-white
-                "
-
-                style="
-                  background:#fff;
-                  color:#111;
-                  padding:
-                    .6rem 1rem;
-                  border-radius:
-                    8px;
-                  border:
-                    1px solid #ddd;
-                  text-decoration:
-                    none;
-                  font-weight:
-                    700;
-                "
-              >
-
-                YouTube
-
-              </a>
-
-            `
-
-            : ""
-        }
-
-
-        <a
-          href="${escapeHTML(
-            member.discord ||
-            "https://discord.gg/nKj9NFDyxj"
-          )}"
-
-          target="_blank"
-          rel="noopener noreferrer"
-
-          class="
-            btn btn-discord
-          "
-
-          style="
-            padding:
-              .6rem 1rem;
-            border-radius:
-              8px;
-            text-decoration:
-              none;
-            font-weight:
-              700;
-          "
-        >
-
-          Discord Furioz
-
-        </a>
-
-      </div>
-
-    </div>
-  `;
-
-
-  modal.classList.add(
-    "active"
-  );
-
-
-  document.body.style.overflow =
-    "hidden";
-
-
-  const closeButton =
-    document.getElementById(
-      "close-member-modal"
-    );
-
-
-  if (closeButton) {
-
-    closeButton.onclick =
-      closeMemberModal;
-  }
-}
-
-
-// =========================================================
-// CRÉATION DE SECOURS DE LA FENÊTRE
-// =========================================================
-
-function createMemberModal(
-  member
-) {
-
-  const name =
-    member.name ||
-    "Membre";
-
-
-  const status =
-    member.status ||
-    member.role ||
-    "MEMBRE";
-
-
-  const description =
-    member.description ||
-    member.desc ||
-    "";
-
-
-  const overlay =
-    document.createElement(
-      "div"
-    );
-
-
-  overlay.id =
-    "generated-member-modal";
-
-
-  // CSS directement dans JS :
-  // fonctionne même si ton CSS
-  // n'a pas les classes modal
-
-  overlay.style.position =
-    "fixed";
-
-  overlay.style.inset =
-    "0";
-
-  overlay.style.background =
-    "rgba(0,0,0,.55)";
-
-  overlay.style.zIndex =
-    "99999";
-
-  overlay.style.display =
-    "flex";
-
-  overlay.style.alignItems =
-    "center";
-
-  overlay.style.justifyContent =
-    "center";
-
-  overlay.style.padding =
-    "20px";
-
-
-  const box =
-    document.createElement(
-      "div"
-    );
-
-
-  box.style.width =
-    "min(650px, 95vw)";
-
-  box.style.maxHeight =
-    "90vh";
-
-  box.style.overflowY =
-    "auto";
-
-  box.style.background =
-    "#fff";
-
-  box.style.borderRadius =
-    "18px";
-
-  box.style.padding =
-    "26px";
-
-  box.style.boxShadow =
-    "0 20px 60px rgba(0,0,0,.25)";
-
-
-  box.innerHTML = `
-
-    <div
-      style="
-        display:flex;
-        justify-content:
-          space-between;
-        align-items:
-          flex-start;
-        gap:1rem;
-      "
-    >
-
-      <div>
-
-        <h2
-          style="
-            margin:0;
-          "
-        >
-
-          ${escapeHTML(
-            name
-          )}
-
-        </h2>
-
-        <div
-          style="
-            margin-top:.3rem;
-            color:#2563EB;
-            font-weight:600;
-            font-size:.85rem;
-          "
-        >
-
-          ${escapeHTML(
-            status
-          )}
-
-          ${
-            member.country
-
-              ? ` • ${escapeHTML(
-                  `${
-                    member.countryFlag ||
-                    ""
-                  } ${
-                    member.country
-                  }`.trim()
-                )}`
-
-              : ""
-          }
-
-        </div>
-
-      </div>
-
-
-      <button
-        id="generated-close-modal"
-        type="button"
-
-        style="
-          width:40px;
-          height:40px;
-          border:0;
-          border-radius:50%;
-          font-size:22px;
-          cursor:pointer;
-          background:#F3F0E9;
-        "
-      >
-
-        ✕
-
-      </button>
-
-    </div>
-
-
-    <div
-      style="
-        margin-top:20px;
-      "
-    >
-
-      ${
-        member.streamSince
-
-          ? `
-
-            <p>
-              <strong>
-                Stream depuis :
-              </strong>
-
-              ${escapeHTML(
-                member.streamSince
-              )}
-            </p>
-
-          `
-
-          : ""
-      }
-
-
-      ${
-        member.joined
-
-          ? `
-
-            <p>
-              <strong>
-                A rejoint la Furioz :
-              </strong>
-
-              ${escapeHTML(
-                member.joined
-              )}
-            </p>
-
-          `
-
-          : ""
-      }
-
-
-      ${
-        member.role
-
-          ? `
-
-            <p>
-              <strong>
-                Rôle :
-              </strong>
-
-              ${escapeHTML(
-                member.role
-              )}
-            </p>
-
-          `
-
-          : ""
-      }
-
-
-      ${
-        description
-
-          ? `
-
-            <p
-              style="
-                line-height:1.6;
-                color:#444;
-              "
-            >
-
-              ${escapeHTML(
-                description
-              )}
-
-            </p>
-
-          `
-
-          : ""
-      }
-
-
-      ${
-        Array.isArray(
-          member.tags
-        )
-
-          ? `
-
-            <div
-              style="
-                display:flex;
                 gap:8px;
-                flex-wrap:wrap;
                 margin-top:16px;
               "
             >
@@ -1612,17 +1650,12 @@ function createMemberModal(
 
                     <span
                       style="
+                        padding:6px 10px;
+                        border-radius:999px;
                         background:#EEE9E1;
-                        border:
-                          1px solid #DDD5C8;
-                        border-radius:
-                          999px;
-                        padding:
-                          6px 10px;
-                        font-size:
-                          12px;
-                        font-weight:
-                          600;
+                        border:1px solid #DDD5C8;
+                        font-size:12px;
+                        font-weight:600;
                       "
                     >
 
@@ -1667,21 +1700,15 @@ function createMemberModal(
                 rel="noopener noreferrer"
 
                 style="
+                  padding:10px 16px;
+                  border-radius:8px;
                   background:#9146FF;
-                  color:white;
-                  padding:
-                    10px 16px;
-                  border-radius:
-                    8px;
-                  text-decoration:
-                    none;
-                  font-weight:
-                    700;
+                  color:#fff;
+                  text-decoration:none;
+                  font-weight:700;
                 "
               >
-
                 Twitch
-
               </a>
 
             `
@@ -1704,21 +1731,15 @@ function createMemberModal(
                 rel="noopener noreferrer"
 
                 style="
+                  padding:10px 16px;
+                  border-radius:8px;
                   background:#111;
-                  color:white;
-                  padding:
-                    10px 16px;
-                  border-radius:
-                    8px;
-                  text-decoration:
-                    none;
-                  font-weight:
-                    700;
+                  color:#fff;
+                  text-decoration:none;
+                  font-weight:700;
                 "
               >
-
                 YouTube
-
               </a>
 
             `
@@ -1737,21 +1758,15 @@ function createMemberModal(
           rel="noopener noreferrer"
 
           style="
+            padding:10px 16px;
+            border-radius:8px;
             background:#5865F2;
-            color:white;
-            padding:
-              10px 16px;
-            border-radius:
-              8px;
-            text-decoration:
-              none;
-            font-weight:
-              700;
+            color:#fff;
+            text-decoration:none;
+            font-weight:700;
           "
         >
-
           Discord Furioz
-
         </a>
 
       </div>
@@ -1774,17 +1789,12 @@ function createMemberModal(
     "hidden";
 
 
-  const closeButton =
-    document.getElementById(
+  document
+    .getElementById(
       "generated-close-modal"
-    );
-
-
-  if (closeButton) {
-
-    closeButton.onclick =
+    )
+    .onclick =
       closeMemberModal;
-  }
 
 
   overlay.addEventListener(
@@ -1797,6 +1807,7 @@ function createMemberModal(
       ) {
 
         closeMemberModal();
+
       }
 
     }
@@ -1805,12 +1816,10 @@ function createMemberModal(
 
 
 // =========================================================
-// FERMER FENÊTRE
+// FERMER MODALE
 // =========================================================
 
 function closeMemberModal() {
-
-  // Fenêtre existante du site
 
   const modal =
     document.getElementById(
@@ -1826,8 +1835,6 @@ function closeMemberModal() {
 
   }
 
-
-  // Fenêtre créée par le JS
 
   const generated =
     document.getElementById(
@@ -1848,7 +1855,7 @@ function closeMemberModal() {
 
 
 // =========================================================
-// FERMER EN CLIQUANT SUR LE FOND
+// CLIC SUR LE FOND
 // =========================================================
 
 document.addEventListener(
@@ -1866,7 +1873,8 @@ document.addEventListener(
       modal.classList.contains(
         "active"
       ) &&
-      event.target === modal
+      event.target ===
+        modal
     ) {
 
       closeMemberModal();
@@ -1986,21 +1994,15 @@ function initNav() {
     );
 
 
+  if (!nav) {
+    return;
+  }
+
+
   const links =
     document.querySelectorAll(
       "nav .links a[href^='#']"
     );
-
-
-  const logo =
-    document.getElementById(
-      "logo-link"
-    );
-
-
-  if (!nav) {
-    return;
-  }
 
 
   window.addEventListener(
@@ -2078,96 +2080,11 @@ function initNav() {
       );
 
     },
-
     {
       passive:
         true
     }
   );
-
-
-  links.forEach(
-    link => {
-
-      link.addEventListener(
-        "click",
-        event => {
-
-          const href =
-            link.getAttribute(
-              "href"
-            );
-
-
-          if (
-            !href ||
-            !href.startsWith(
-              "#"
-            )
-          ) {
-
-            return;
-
-          }
-
-
-          event.preventDefault();
-
-
-          const target =
-            document.querySelector(
-              href
-            );
-
-
-          if (target) {
-
-            window.scrollTo(
-              {
-
-                top:
-                  target.offsetTop -
-                  72,
-
-                behavior:
-                  "smooth"
-
-              }
-            );
-
-          }
-
-        }
-      );
-
-    }
-  );
-
-
-  if (logo) {
-
-    logo.addEventListener(
-      "click",
-      event => {
-
-        event.preventDefault();
-
-
-        window.scrollTo(
-          {
-
-            top: 0,
-
-            behavior:
-              "smooth"
-
-          }
-        );
-
-      }
-    );
-
-  }
 }
 
 
