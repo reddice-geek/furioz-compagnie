@@ -1,7 +1,10 @@
 // ============================================================
 // FURIOZ COMPAGNIE - api/_utils.js
-// Sécurité + statistiques persistantes Vercel / Upstash Redis
+// Sécurité + statistiques persistantes avec REDIS_URL
+// Compatible Redis Cloud / Vercel Integration
 // ============================================================
+
+import { createClient } from "redis";
 
 const RATE_LIMITS = {
   guestbook: { window: 60 * 1000, max: 3 },
@@ -9,54 +12,54 @@ const RATE_LIMITS = {
   api: { window: 60 * 1000, max: 60 }
 };
 
-// Rate-limit local rapide (protection immédiate par instance)
 const ipStore = new Map();
 
-// Fallback mémoire si Redis n'est pas configuré
 const fallbackVisits = [];
 const fallbackIntrusions = [];
 
 const REDIS_URL =
-  process.env.UPSTASH_REDIS_REST_URL ||
-  process.env.KV_REST_API_URL ||
+  process.env.REDIS_URL ||
+  process.env.UPSTASH_REDIS_REST_REDIS_URL ||
   "";
 
-const REDIS_TOKEN =
-  process.env.UPSTASH_REDIS_REST_TOKEN ||
-  process.env.KV_REST_API_TOKEN ||
-  "";
+let redisClientPromise = null;
 
 export function redisConfigured() {
-  return Boolean(REDIS_URL && REDIS_TOKEN);
+  return Boolean(REDIS_URL);
 }
 
-async function redis(command) {
+export async function getRedisClient() {
   if (!redisConfigured()) {
     return null;
   }
 
-  try {
-    const response = await fetch(REDIS_URL, {
-      method: "POST",
-      headers: {
-        Authorization: `Bearer ${REDIS_TOKEN}`,
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify(command)
-    });
+  if (!redisClientPromise) {
+    redisClientPromise = (async () => {
+      const client = createClient({
+        url: REDIS_URL,
+        socket: {
+          reconnectStrategy: retries =>
+            Math.min(retries * 100, 3000)
+        }
+      });
 
-    if (!response.ok) {
-      const text = await response.text().catch(() => "");
-      console.error("[REDIS]", response.status, text.slice(0, 300));
+      client.on("error", error => {
+        console.error("[REDIS]", error);
+      });
+
+      if (!client.isOpen) {
+        await client.connect();
+      }
+
+      return client;
+    })().catch(error => {
+      redisClientPromise = null;
+      console.error("[REDIS CONNECT]", error);
       return null;
-    }
-
-    const data = await response.json();
-    return data?.result ?? null;
-  } catch (error) {
-    console.error("[REDIS]", error);
-    return null;
+    });
   }
+
+  return redisClientPromise;
 }
 
 export function getIP(req) {
@@ -80,9 +83,18 @@ export function getVisitData(req, pageOverride = "") {
     time: new Date().toISOString(),
     ip: getIP(req),
     ua: String(req.headers["user-agent"] || "").slice(0, 200),
-    country: cleanGeoHeader(req.headers["x-vercel-ip-country"], "??"),
-    city: cleanGeoHeader(req.headers["x-vercel-ip-city"], ""),
-    region: cleanGeoHeader(req.headers["x-vercel-ip-country-region"], ""),
+    country: cleanGeoHeader(
+      req.headers["x-vercel-ip-country"],
+      "??"
+    ),
+    city: cleanGeoHeader(
+      req.headers["x-vercel-ip-city"],
+      ""
+    ),
+    region: cleanGeoHeader(
+      req.headers["x-vercel-ip-country-region"],
+      ""
+    ),
     page: String(
       pageOverride ||
       req.headers.referer ||
@@ -117,7 +129,9 @@ export function rateLimit(ip, type = "api") {
   if (data.blockedUntil && now < data.blockedUntil) {
     return {
       allowed: false,
-      retryAfter: Math.ceil((data.blockedUntil - now) / 1000),
+      retryAfter: Math.ceil(
+        (data.blockedUntil - now) / 1000
+      ),
       reason: "blocked"
     };
   }
@@ -125,11 +139,16 @@ export function rateLimit(ip, type = "api") {
   data.count++;
 
   if (data.count > cfg.max) {
-    data.blockedUntil = now + 15 * 60 * 1000;
+    data.blockedUntil =
+      now + 15 * 60 * 1000;
+
     ipStore.set(key, data);
 
-    // Persistance du blocage + intrusion sans bloquer la requête
-    void persistBlockedIP(ip, data.blockedUntil);
+    void persistBlockedIP(
+      ip,
+      data.blockedUntil
+    );
+
     void logIntrusion(
       ip,
       type,
@@ -152,26 +171,48 @@ export function rateLimit(ip, type = "api") {
 }
 
 async function persistBlockedIP(ip, blockedUntil) {
-  if (!redisConfigured()) {
+  const redis = await getRedisClient();
+
+  if (!redis) {
     return;
   }
 
-  await redis([
-    "ZADD",
-    "furioz:blocked",
-    String(blockedUntil),
-    ip
-  ]);
+  try {
+    await redis.zAdd(
+      "furioz:blocked",
+      [
+        {
+          score: blockedUntil,
+          value: ip
+        }
+      ]
+    );
+  } catch (error) {
+    console.error(
+      "[REDIS blocked]",
+      error
+    );
+  }
 }
 
 // ------------------------------------------------------------
 // VISITES
 // ------------------------------------------------------------
 
-export async function logVisit(req, pageOverride = "") {
-  const visit = getVisitData(req, pageOverride);
+export async function logVisit(
+  req,
+  pageOverride = ""
+) {
+  const visit =
+    getVisitData(
+      req,
+      pageOverride
+    );
 
-  if (!redisConfigured()) {
+  const redis =
+    await getRedisClient();
+
+  if (!redis) {
     fallbackVisits.push(visit);
 
     if (fallbackVisits.length > 1000) {
@@ -182,50 +223,65 @@ export async function logVisit(req, pageOverride = "") {
   }
 
   const now = Date.now();
-  const id =
-    `${now}:${Math.random().toString(36).slice(2)}:${visit.ip}`;
 
-  await Promise.all([
-    redis([
-      "LPUSH",
+  const id =
+    `${now}:${Math.random()
+      .toString(36)
+      .slice(2)}:${visit.ip}`;
+
+  try {
+    const multi = redis.multi();
+
+    multi.lPush(
       "furioz:visits",
       JSON.stringify(visit)
-    ]),
-    redis([
-      "LTRIM",
+    );
+
+    multi.lTrim(
       "furioz:visits",
-      "0",
-      "999"
-    ]),
-    redis([
-      "INCR",
+      0,
+      999
+    );
+
+    multi.incr(
       "furioz:stats:totalVisits"
-    ]),
-    redis([
-      "SADD",
+    );
+
+    multi.sAdd(
       "furioz:stats:uniqueIPs",
       visit.ip
-    ]),
-    redis([
-      "HINCRBY",
+    );
+
+    multi.hIncrBy(
       "furioz:stats:countries",
       visit.country || "??",
-      "1"
-    ]),
-    redis([
-      "ZADD",
-      "furioz:visits24h",
-      String(now),
-      id
-    ])
-  ]);
+      1
+    );
 
-  await redis([
-    "ZREMRANGEBYSCORE",
-    "furioz:visits24h",
-    "0",
-    String(now - 86400000)
-  ]);
+    multi.zAdd(
+      "furioz:visits24h",
+      [
+        {
+          score: now,
+          value: id
+        }
+      ]
+    );
+
+    await multi.exec();
+
+    await redis.zRemRangeByScore(
+      "furioz:visits24h",
+      0,
+      now - 86400000
+    );
+
+  } catch (error) {
+    console.error(
+      "[REDIS visit]",
+      error
+    );
+  }
 
   return visit;
 }
@@ -234,7 +290,11 @@ export async function logVisit(req, pageOverride = "") {
 // INTRUSIONS
 // ------------------------------------------------------------
 
-export async function logIntrusion(ip, type, details) {
+export async function logIntrusion(
+  ip,
+  type,
+  details
+) {
   const intrusion = {
     time: new Date().toISOString(),
     ip: String(ip || "unknown"),
@@ -249,10 +309,18 @@ export async function logIntrusion(ip, type, details) {
     intrusion.details
   );
 
-  if (!redisConfigured()) {
-    fallbackIntrusions.push(intrusion);
+  const redis =
+    await getRedisClient();
 
-    if (fallbackIntrusions.length > 1000) {
+  if (!redis) {
+    fallbackIntrusions.push(
+      intrusion
+    );
+
+    if (
+      fallbackIntrusions.length >
+      1000
+    ) {
       fallbackIntrusions.shift();
     }
 
@@ -260,39 +328,54 @@ export async function logIntrusion(ip, type, details) {
   }
 
   const now = Date.now();
-  const id =
-    `${now}:${Math.random().toString(36).slice(2)}:${intrusion.ip}`;
 
-  await Promise.all([
-    redis([
-      "LPUSH",
+  const id =
+    `${now}:${Math.random()
+      .toString(36)
+      .slice(2)}:${intrusion.ip}`;
+
+  try {
+    const multi = redis.multi();
+
+    multi.lPush(
       "furioz:intrusions",
       JSON.stringify(intrusion)
-    ]),
-    redis([
-      "LTRIM",
-      "furioz:intrusions",
-      "0",
-      "999"
-    ]),
-    redis([
-      "INCR",
-      "furioz:stats:totalIntrusions"
-    ]),
-    redis([
-      "ZADD",
-      "furioz:intrusions24h",
-      String(now),
-      id
-    ])
-  ]);
+    );
 
-  await redis([
-    "ZREMRANGEBYSCORE",
-    "furioz:intrusions24h",
-    "0",
-    String(now - 86400000)
-  ]);
+    multi.lTrim(
+      "furioz:intrusions",
+      0,
+      999
+    );
+
+    multi.incr(
+      "furioz:stats:totalIntrusions"
+    );
+
+    multi.zAdd(
+      "furioz:intrusions24h",
+      [
+        {
+          score: now,
+          value: id
+        }
+      ]
+    );
+
+    await multi.exec();
+
+    await redis.zRemRangeByScore(
+      "furioz:intrusions24h",
+      0,
+      now - 86400000
+    );
+
+  } catch (error) {
+    console.error(
+      "[REDIS intrusion]",
+      error
+    );
+  }
 
   return intrusion;
 }
@@ -319,35 +402,13 @@ function safeJSONList(list) {
     .filter(Boolean);
 }
 
-function pairsToEntries(raw) {
-  if (!Array.isArray(raw)) {
-    return [];
-  }
-
-  // Upstash peut renvoyer ["FR","10","CA","3"]
-  if (raw.length && !Array.isArray(raw[0])) {
-    const entries = [];
-
-    for (let i = 0; i < raw.length; i += 2) {
-      entries.push([
-        String(raw[i] ?? "??"),
-        Number(raw[i + 1] || 0)
-      ]);
-    }
-
-    return entries;
-  }
-
-  return raw.map(([key, value]) => [
-    String(key ?? "??"),
-    Number(value || 0)
-  ]);
-}
-
 export async function getAdminStatsData() {
   const now = Date.now();
 
-  if (!redisConfigured()) {
+  const redis =
+    await getRedisClient();
+
+  if (!redis) {
     const last24Visits =
       fallbackVisits.filter(
         v =>
@@ -366,110 +427,195 @@ export async function getAdminStatsData() {
 
     const countries = {};
 
-    fallbackVisits.forEach(v => {
-      const country = v.country || "??";
-      countries[country] =
-        (countries[country] || 0) + 1;
-    });
+    fallbackVisits.forEach(
+      v => {
+        const country =
+          v.country || "??";
+
+        countries[country] =
+          (countries[country] || 0) +
+          1;
+      }
+    );
 
     return {
       storage: "memory",
       configured: false,
       stats: {
-        totalVisits: fallbackVisits.length,
-        visits24h: last24Visits.length,
-        uniqueVisitors: new Set(
-          fallbackVisits.map(v => v.ip)
-        ).size,
+        totalVisits:
+          fallbackVisits.length,
+        visits24h:
+          last24Visits.length,
+        uniqueVisitors:
+          new Set(
+            fallbackVisits.map(
+              v => v.ip
+            )
+          ).size,
         totalIntrusions:
           fallbackIntrusions.length,
-        blockedIPs: Array.from(
-          ipStore.values()
-        ).filter(
-          v =>
-            v.blockedUntil &&
-            v.blockedUntil > now
-        ).length,
+        blockedIPs:
+          Array.from(
+            ipStore.values()
+          ).filter(
+            v =>
+              v.blockedUntil &&
+              v.blockedUntil > now
+          ).length,
         intrusionLast24h:
           last24Intrusions.length
       },
       recentVisits:
-        fallbackVisits.slice(-50).reverse(),
+        fallbackVisits
+          .slice(-50)
+          .reverse(),
       recentIntrusions:
-        fallbackIntrusions.slice(-50).reverse(),
+        fallbackIntrusions
+          .slice(-50)
+          .reverse(),
       topCountries:
         Object.entries(countries)
-          .sort((a, b) => b[1] - a[1])
+          .sort(
+            (a, b) =>
+              b[1] - a[1]
+          )
           .slice(0, 10)
     };
   }
 
-  await Promise.all([
-    redis([
-      "ZREMRANGEBYSCORE",
-      "furioz:visits24h",
-      "0",
-      String(now - 86400000)
-    ]),
-    redis([
-      "ZREMRANGEBYSCORE",
-      "furioz:intrusions24h",
-      "0",
-      String(now - 86400000)
-    ]),
-    redis([
-      "ZREMRANGEBYSCORE",
-      "furioz:blocked",
-      "0",
-      String(now)
-    ])
-  ]);
+  try {
+    await Promise.all([
+      redis.zRemRangeByScore(
+        "furioz:visits24h",
+        0,
+        now - 86400000
+      ),
+      redis.zRemRangeByScore(
+        "furioz:intrusions24h",
+        0,
+        now - 86400000
+      ),
+      redis.zRemRangeByScore(
+        "furioz:blocked",
+        0,
+        now
+      )
+    ]);
 
-  const [
-    totalVisits,
-    visits24h,
-    uniqueVisitors,
-    totalIntrusions,
-    intrusionLast24h,
-    blockedIPs,
-    recentVisitsRaw,
-    recentIntrusionsRaw,
-    countriesRaw
-  ] = await Promise.all([
-    redis(["GET", "furioz:stats:totalVisits"]),
-    redis(["ZCARD", "furioz:visits24h"]),
-    redis(["SCARD", "furioz:stats:uniqueIPs"]),
-    redis(["GET", "furioz:stats:totalIntrusions"]),
-    redis(["ZCARD", "furioz:intrusions24h"]),
-    redis(["ZCARD", "furioz:blocked"]),
-    redis(["LRANGE", "furioz:visits", "0", "49"]),
-    redis(["LRANGE", "furioz:intrusions", "0", "49"]),
-    redis(["HGETALL", "furioz:stats:countries"])
-  ]);
+    const [
+      totalVisits,
+      visits24h,
+      uniqueVisitors,
+      totalIntrusions,
+      intrusionLast24h,
+      blockedIPs,
+      recentVisitsRaw,
+      recentIntrusionsRaw,
+      countriesObject
+    ] = await Promise.all([
+      redis.get(
+        "furioz:stats:totalVisits"
+      ),
+      redis.zCard(
+        "furioz:visits24h"
+      ),
+      redis.sCard(
+        "furioz:stats:uniqueIPs"
+      ),
+      redis.get(
+        "furioz:stats:totalIntrusions"
+      ),
+      redis.zCard(
+        "furioz:intrusions24h"
+      ),
+      redis.zCard(
+        "furioz:blocked"
+      ),
+      redis.lRange(
+        "furioz:visits",
+        0,
+        49
+      ),
+      redis.lRange(
+        "furioz:intrusions",
+        0,
+        49
+      ),
+      redis.hGetAll(
+        "furioz:stats:countries"
+      )
+    ]);
 
-  const topCountries =
-    pairsToEntries(countriesRaw)
-      .sort((a, b) => b[1] - a[1])
-      .slice(0, 10);
+    const topCountries =
+      Object.entries(
+        countriesObject || {}
+      )
+        .map(
+          ([country, count]) => [
+            country,
+            Number(count || 0)
+          ]
+        )
+        .sort(
+          (a, b) =>
+            b[1] - a[1]
+        )
+        .slice(0, 10);
 
-  return {
-    storage: "redis",
-    configured: true,
-    stats: {
-      totalVisits: Number(totalVisits || 0),
-      visits24h: Number(visits24h || 0),
-      uniqueVisitors:
-        Number(uniqueVisitors || 0),
-      totalIntrusions:
-        Number(totalIntrusions || 0),
-      blockedIPs: Number(blockedIPs || 0),
-      intrusionLast24h:
-        Number(intrusionLast24h || 0)
-    },
-    recentVisits:
-      safeJSONList(recentVisitsRaw),
-    recentIntrusions:
-      safeJSONList(recentIntrusionsRaw),
-    topCountries
-  };
+    return {
+      storage: "redis",
+      configured: true,
+      stats: {
+        totalVisits:
+          Number(totalVisits || 0),
+        visits24h:
+          Number(visits24h || 0),
+        uniqueVisitors:
+          Number(
+            uniqueVisitors || 0
+          ),
+        totalIntrusions:
+          Number(
+            totalIntrusions || 0
+          ),
+        blockedIPs:
+          Number(blockedIPs || 0),
+        intrusionLast24h:
+          Number(
+            intrusionLast24h || 0
+          )
+      },
+      recentVisits:
+        safeJSONList(
+          recentVisitsRaw
+        ),
+      recentIntrusions:
+        safeJSONList(
+          recentIntrusionsRaw
+        ),
+      topCountries
+    };
+
+  } catch (error) {
+    console.error(
+      "[REDIS stats]",
+      error
+    );
+
+    return {
+      storage: "redis-error",
+      configured: true,
+      stats: {
+        totalVisits: 0,
+        visits24h: 0,
+        uniqueVisitors: 0,
+        totalIntrusions: 0,
+        blockedIPs: 0,
+        intrusionLast24h: 0
+      },
+      recentVisits: [],
+      recentIntrusions: [],
+      topCountries: []
+    };
+  }
 }
