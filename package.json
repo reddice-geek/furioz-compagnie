@@ -1,5 +1,8 @@
 {
   "name": "furioz-compagnie",
   "private": true,
-  "type": "module"
+  "type": "module",
+  "dependencies": {
+    "redis": "^4.7.0"
+  }
 }
