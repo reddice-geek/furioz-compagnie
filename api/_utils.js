@@ -62,6 +62,66 @@ export async function getRedisClient() {
   return redisClientPromise;
 }
 
+
+export async function getRedisStatus() {
+  const urlPresent = Boolean(REDIS_URL);
+
+  if (!urlPresent) {
+    return {
+      configured: false,
+      connected: false,
+      source: "memory",
+      variable: null,
+      message: "Aucune variable REDIS_URL compatible trouvée."
+    };
+  }
+
+  try {
+    const client = await getRedisClient();
+
+    if (!client) {
+      return {
+        configured: true,
+        connected: false,
+        source: "redis",
+        variable:
+          process.env.REDIS_URL
+            ? "REDIS_URL"
+            : "UPSTASH_REDIS_REST_REDIS_URL",
+        message: "Client Redis non disponible."
+      };
+    }
+
+    const pong = await client.ping();
+
+    return {
+      configured: true,
+      connected: pong === "PONG",
+      source: "redis",
+      variable:
+        process.env.REDIS_URL
+          ? "REDIS_URL"
+          : "UPSTASH_REDIS_REST_REDIS_URL",
+      message:
+        pong === "PONG"
+          ? "Redis connecté."
+          : `Réponse Redis inattendue: ${String(pong)}`
+    };
+  } catch (error) {
+    return {
+      configured: true,
+      connected: false,
+      source: "redis",
+      variable:
+        process.env.REDIS_URL
+          ? "REDIS_URL"
+          : "UPSTASH_REDIS_REST_REDIS_URL",
+      message: String(error?.message || error || "Erreur Redis")
+    };
+  }
+}
+
+
 export function getIP(req) {
   return (
     req.headers["x-forwarded-for"]?.split(",")[0]?.trim() ||
@@ -441,6 +501,7 @@ export async function getAdminStatsData() {
     return {
       storage: "memory",
       configured: false,
+      redisStatus: await getRedisStatus(),
       stats: {
         totalVisits:
           fallbackVisits.length,
@@ -565,6 +626,7 @@ export async function getAdminStatsData() {
     return {
       storage: "redis",
       configured: true,
+      redisStatus: await getRedisStatus(),
       stats: {
         totalVisits:
           Number(totalVisits || 0),
@@ -605,6 +667,7 @@ export async function getAdminStatsData() {
     return {
       storage: "redis-error",
       configured: true,
+      redisStatus: await getRedisStatus(),
       stats: {
         totalVisits: 0,
         visits24h: 0,
