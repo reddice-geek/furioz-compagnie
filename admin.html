@@ -927,6 +927,18 @@ td{
       id="stats"
     ></div>
 
+    <div
+      id="redis-status"
+      style="
+        margin:.65rem 0 1rem;
+        padding:.7rem .9rem;
+        border-radius:10px;
+        font-size:.8rem;
+        font-weight:700;
+        display:none
+      "
+    ></div>
+
 
     <div
       style="
@@ -1364,6 +1376,80 @@ async function loadStats(){
       data;
 
 
+    const redisBox =
+      document.getElementById(
+        'redis-status'
+      );
+
+    if(redisBox){
+
+      const rs =
+        data.redisStatus ||
+        {};
+
+      redisBox.style.display =
+        'block';
+
+      if(
+        data.storage === 'redis' &&
+        rs.connected
+      ){
+
+        redisBox.style.background =
+          '#DCFCE7';
+
+        redisBox.style.color =
+          '#166534';
+
+        redisBox.style.border =
+          '1px solid #86EFAC';
+
+        redisBox.textContent =
+          `Stockage : Redis connecté ✅ (${rs.variable || 'REDIS_URL'})`;
+
+      }
+
+      else if(
+        data.storage === 'redis-error' ||
+        (
+          rs.configured &&
+          !rs.connected
+        )
+      ){
+
+        redisBox.style.background =
+          '#FEE2E2';
+
+        redisBox.style.color =
+          '#991B1B';
+
+        redisBox.style.border =
+          '1px solid #FCA5A5';
+
+        redisBox.textContent =
+          `Stockage : Redis en erreur ❌ — ${rs.message || 'Connexion impossible'}`;
+
+      }
+
+      else{
+
+        redisBox.style.background =
+          '#FEF3C7';
+
+        redisBox.style.color =
+          '#92400E';
+
+        redisBox.style.border =
+          '1px solid #FCD34D';
+
+        redisBox.textContent =
+          'Stockage : Mémoire temporaire ⚠️ Redis non connecté';
+
+      }
+
+    }
+
+
     document
       .getElementById(
         'userInfo'
@@ -1412,8 +1498,9 @@ async function loadStats(){
             class="muted"
             style="font-size:.7rem"
           >
-            Logs en mémoire
-            (max 1000)
+            ${data.storage === 'redis'
+              ? 'Données persistantes Redis'
+              : 'Logs en mémoire (max 1000)'}
           </span>
 
         </div>
