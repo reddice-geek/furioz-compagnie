@@ -173,6 +173,7 @@ const fallbackMembers = [
 // =========================================================
 
 let currentMembers = [...fallbackMembers];
+let revealObserver = null;
 
 
 // =========================================================
@@ -544,456 +545,172 @@ async function loadTeam() {
 function renderTeam(members) {
 
   const container =
-    document.getElementById(
-      "team-grid"
-    );
+    document.getElementById("team-grid");
 
-
-  if (!container) {
-    return;
-  }
-
+  if (!container) return;
 
   const visibleMembers =
-    members.filter(
-      member =>
-        member.visible !== false
-    );
+    members.filter(member => member.visible !== false);
 
+  container.innerHTML = "";
+  updateTeamMetrics(visibleMembers.length);
 
-  container.innerHTML =
-    "";
+  // Les profils sont générés depuis les données API ou les profils de secours.
+  visibleMembers.forEach((member, index) => {
+    const wrapper = document.createElement("div");
+    wrapper.innerHTML = buildCard(member).trim();
 
+    const card = wrapper.firstElementChild;
+    if (!card) return;
 
-  // =====================================================
-  // MEMBRES
-  // =====================================================
+    card.addEventListener("click", event => {
+      if (event.target.closest("a")) return;
+      openMemberModal(member);
+    });
 
-  visibleMembers.forEach(
-    member => {
-
-      const wrapper =
-        document.createElement(
-          "div"
-        );
-
-
-      wrapper.innerHTML =
-        buildCard(
-          member
-        ).trim();
-
-
-      const card =
-        wrapper.firstElementChild;
-
-
-      if (!card) {
-        return;
+    card.addEventListener("keydown", event => {
+      if (event.target !== card) return;
+      if (event.key === "Enter" || event.key === " ") {
+        event.preventDefault();
+        openMemberModal(member);
       }
+    });
 
+    card.addEventListener("pointermove", event => {
+      if (event.pointerType !== "mouse") return;
+      const rect = card.getBoundingClientRect();
+      card.style.setProperty("--pointer-x", `${event.clientX - rect.left}px`);
+      card.style.setProperty("--pointer-y", `${event.clientY - rect.top}px`);
+    });
 
-      card.style.cursor =
-        "pointer";
+    container.appendChild(card);
+    observeRevealElement(card, index);
+  });
 
+  // La capacité reste fixée à 10 places : les emplacements libres sont visuels
+  // et renvoient vers le même formulaire de candidature.
+  const maximum = 10;
+  const remaining = Math.max(0, maximum - visibleMembers.length);
 
-      card.addEventListener(
-        "click",
-        event => {
-
-          // Ne pas ouvrir la fenêtre
-          // lorsqu'on clique sur un lien
-          if (
-            event.target.closest(
-              "a"
-            )
-          ) {
-            return;
-          }
-
-
-          openMemberModal(
-            member
-          );
-
-        }
-      );
-
-
-      container.appendChild(
-        card
-      );
-
-    }
-  );
-
-
-  // =====================================================
-  // PLACES LIBRES
-  // =====================================================
-
-  const maximum =
-    10;
-
-
-  const remaining =
-    Math.max(
-      0,
-      maximum -
-      visibleMembers.length
-    );
-
-
-  for (
-    let i = 0;
-    i < remaining;
-    i++
-  ) {
-
-    const freeCard =
-      document.createElement(
-        "div"
-      );
-
-
-    freeCard.className =
-      "team-card free-place";
-
-
-    if (i === 0) {
-
-      freeCard.innerHTML = `
-
-        <h3>
-          Place libre
-        </h3>
-
-        <p>
-          ${remaining}
-          place${remaining > 1 ? "s" : ""}
-          restante${remaining > 1 ? "s" : ""}
-        </p>
-
-        <a
-          href="https://forms.gle/7hA9ac26qJn7AHjc6"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Postuler
+  for (let i = 0; i < remaining; i++) {
+    const freeCard = document.createElement("article");
+    freeCard.className = "team-card free-place";
+    freeCard.innerHTML = `
+      <div class="free-plus" aria-hidden="true">+</div>
+      <span class="free-label">RECRUTEMENT OUVERT</span>
+      <h3>${i === 0 ? `${remaining} places disponibles` : "Une place pour vous ?"}</h3>
+      <p>${i === 0 ? "Fais partie de la prochaine aventure Furioz." : "Apporte ton univers et ton énergie au collectif."}</p>
+      ${i === 0 ? `
+        <a href="https://forms.gle/7hA9ac26qJn7AHjc6" target="_blank" rel="noopener noreferrer">
+          Proposer ma candidature <span aria-hidden="true">↗</span>
         </a>
-      `;
-
-    }
-
-    else {
-
-      freeCard.innerHTML = `
-
-        <h3>
-          Place libre
-        </h3>
-
-        <p>
-          Rejoins-nous
-        </p>
-      `;
-
-    }
-
-
-    container.appendChild(
-      freeCard
-    );
-
+      ` : ""}
+    `;
+    freeCard.addEventListener("pointermove", event => {
+      if (event.pointerType !== "mouse") return;
+      const rect = freeCard.getBoundingClientRect();
+      freeCard.style.setProperty("--pointer-x", `${event.clientX - rect.left}px`);
+      freeCard.style.setProperty("--pointer-y", `${event.clientY - rect.top}px`);
+    });
+    container.appendChild(freeCard);
+    observeRevealElement(freeCard, visibleMembers.length + i);
   }
 }
 
+
+function updateTeamMetrics(memberCount) {
+  const maximum = 10;
+  const remaining = Math.max(0, maximum - memberCount);
+  const count = document.getElementById("team-count");
+  const places = document.getElementById("team-places");
+
+  if (count) count.textContent = String(memberCount).padStart(2, "0");
+  if (places) places.textContent = String(remaining).padStart(2, "0");
+
+  const heroCount = document.getElementById("hero-member-count");
+  if (heroCount) heroCount.textContent = `${memberCount} membre${memberCount > 1 ? "s" : ""}`;
+
+  document.querySelectorAll(".cta-current-members").forEach(element => {
+    element.textContent = `${memberCount} membre${memberCount > 1 ? "s" : ""}`;
+  });
+  document.querySelectorAll(".cta-open-spots").forEach(element => {
+    element.textContent = `${remaining} place${remaining > 1 ? "s" : ""} disponible${remaining > 1 ? "s" : ""}`;
+  });
+}
+
+
+function observeRevealElement(element, order = 0) {
+  if (!element || !revealObserver) return;
+  element.classList.add("will-reveal");
+  element.style.transitionDelay = `${Math.min(order, 5) * 65}ms`;
+  revealObserver.observe(element);
+}
+
+
+function initScrollAnimations() {
+  if (!("IntersectionObserver" in window)) return;
+  if (window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+
+  revealObserver = new IntersectionObserver(entries => {
+    entries.forEach(entry => {
+      if (!entry.isIntersecting) return;
+      entry.target.classList.add("is-visible");
+      revealObserver.unobserve(entry.target);
+    });
+  }, {
+    threshold: 0.12,
+    rootMargin: "0px 0px -35px 0px"
+  });
+
+  document.querySelectorAll(".hero, .section, .site-footer").forEach((element, index) => {
+    observeRevealElement(element, index);
+  });
+}
 
 // =========================================================
 // CONSTRUCTION CARTE
 // =========================================================
 
 function buildCard(member) {
-
-  const name =
-    member.name ||
-    member.pseudo ||
-    "Membre";
-
-
-  const initial =
-    member.initial ||
-    name
-      .charAt(0)
-      .toUpperCase();
-
-
-  const status =
-    String(
-      member.status ||
-      member.role ||
-      ""
-    ).toUpperCase();
-
-
-  const countryFlag =
-    normalizeFlag(
-      member.countryFlag,
-      member.country
-    );
-
-
-  // =====================================================
-  // BADGE
-  // =====================================================
+  const name = member.name || member.pseudo || "Membre";
+  const initial = member.initial || name.charAt(0).toUpperCase();
+  const status = String(member.status || member.role || "MEMBRE").toUpperCase();
+  const isFounder = status === "FONDATEUR" || status === "FOUNDER";
+  const countryFlag = normalizeFlag(member.countryFlag, member.country);
+  const color = member.color || "#151519";
+  const color2 = member.color2 || color;
 
   const badgeParts = [];
+  if (member.joined) badgeParts.push(`Depuis ${member.joined}`);
+  if (member.category) badgeParts.push(member.category);
+  if (member.role && String(member.role).toUpperCase() !== "FONDATEUR") badgeParts.push(member.role);
+  if (member.country) badgeParts.push(`${countryFlag} ${member.country}`.trim());
+  const badge = member.badge || badgeParts.filter(Boolean).join(" • ");
 
-
-  if (
-    member.joined
-  ) {
-
-    badgeParts.push(
-      `Depuis ${member.joined}`
-    );
-
-  }
-
-
-  if (
-    member.category
-  ) {
-
-    badgeParts.push(
-      member.category
-    );
-
-  }
-
-
-  if (
-    member.role &&
-    String(
-      member.role
-    ).toUpperCase() !==
-      "FONDATEUR"
-  ) {
-
-    badgeParts.push(
-      member.role
-    );
-
-  }
-
-
-  if (
-    member.country
-  ) {
-
-    badgeParts.push(
-      `${countryFlag} ${member.country}`.trim()
-    );
-
-  }
-
-
-  const badge =
-    member.badge ||
-    badgeParts
-      .filter(Boolean)
-      .join(" • ");
-
-
-  // =====================================================
-  // FONDATEUR
-  // =====================================================
-
-  if (
-    status === "FONDATEUR" ||
-    status === "FOUNDER"
-  ) {
-
-    return `
-
-      <article
-        class="team-card founder"
-        data-id="${escapeHTML(
-          member.id
-        )}"
-      >
-
-        <div
-          class="avatar"
-
-          style="
-            background:
-              linear-gradient(
-                135deg,
-                ${escapeHTML(
-                  member.color ||
-                  "#151519"
-                )} 0%,
-                ${escapeHTML(
-                  member.color ||
-                  "#151519"
-                )} 32%,
-                ${escapeHTML(
-                  member.color2 ||
-                  member.color ||
-                  "#151519"
-                )} 68%,
-                ${escapeHTML(
-                  member.color2 ||
-                  member.color ||
-                  "#151519"
-                )} 100%
-              )
-          "
-        >
-
-          ${escapeHTML(
-            initial
-          )}
-
-        </div>
-
-
-        <div
-          class="member-info"
-        >
-
-          <h3
-            class="member-name"
-          >
-
-            ${escapeHTML(
-              name
-            )}
-
-            <span
-              class="member-status"
-            >
-              • FONDATEUR
-            </span>
-
-          </h3>
-
-
-          <div
-            class="badge"
-          >
-
-            ${escapeHTML(
-              badge
-            )}
-
-          </div>
-
-
-          ${
-            member.description
-
-              ? `
-
-                <p
-                  class="
-                    member-description
-                  "
-                >
-
-                  ${escapeHTML(
-                    member.description
-                  )}
-
-                </p>
-
-              `
-
-              : ""
-          }
-
-        </div>
-
-      </article>
-    `;
-  }
-
-
-  // =====================================================
-  // MEMBRE NORMAL
-  // =====================================================
+  const profileStatus = isFounder ? "FONDATEUR" : (member.status || "MEMBRE");
+  const cardClass = isFounder ? "team-card founder member-card" : "team-card member-card";
+  const nameHTML = escapeHTML(name);
+  const avatarStyle = `background:linear-gradient(135deg,${escapeHTML(color)} 0%,${escapeHTML(color)} 32%,${escapeHTML(color2)} 68%,${escapeHTML(color2)} 100%)`;
 
   return `
-
-    <article
-      class="team-card"
-      data-id="${escapeHTML(
-        member.id
-      )}"
-    >
-
-      <div
-        class="avatar"
-
-        style="
-          background:
-              linear-gradient(
-                135deg,
-                ${escapeHTML(
-                  member.color ||
-                  "#151519"
-                )} 0%,
-                ${escapeHTML(
-                  member.color ||
-                  "#151519"
-                )} 32%,
-                ${escapeHTML(
-                  member.color2 ||
-                  member.color ||
-                  "#151519"
-                )} 68%,
-                ${escapeHTML(
-                  member.color2 ||
-                  member.color ||
-                  "#151519"
-                )} 100%
-              )
-        "
-      >
-
-        ${escapeHTML(
-          initial
-        )}
-
+    <article class="${cardClass}" data-id="${escapeHTML(member.id)}" role="button" tabindex="0" aria-label="Découvrir le profil de ${nameHTML}">
+      <div class="card-topline">
+        <span class="member-type"><i class="member-type-dot"></i>${escapeHTML(profileStatus)}</span>
+        <span class="member-index">FZ // MEMBER</span>
       </div>
-
-
-      <h3
-        class="member-name"
-      >
-
-        ${escapeHTML(
-          name
-        )}
-
-      </h3>
-
-
-      <div
-        class="badge"
-      >
-
-        ${escapeHTML(
-          badge
-        )}
-
+      <div class="avatar" style="${avatarStyle}">${escapeHTML(initial)}</div>
+      <div class="member-info">
+        <h3 class="member-name">
+          ${nameHTML}
+          ${isFounder ? '<span class="member-status">FONDATEUR</span>' : ''}
+        </h3>
+        ${badge ? `<div class="badge member-badge">${escapeHTML(badge)}</div>` : ''}
+        ${isFounder && member.description ? `<p class="member-description">${escapeHTML(member.description)}</p>` : ''}
       </div>
-
+      <div class="card-hint">Voir le profil <span aria-hidden="true">↗</span></div>
     </article>
   `;
 }
-
 
 // =========================================================
 // PETITE FENÊTRE MEMBRE
@@ -1050,359 +767,50 @@ function openMemberModal(member) {
     existingContent
   ) {
 
+    const initial = member.initial || name.charAt(0).toUpperCase();
+    const avatarColor = member.color || "#ff7624";
+    const avatarColor2 = member.color2 || avatarColor;
+    const countryLabel = member.country ? `${countryFlag} ${member.country}`.trim() : "";
+    const details = [
+      member.streamSince ? `<div class="modal-detail"><span>Stream depuis</span><strong>${escapeHTML(member.streamSince)}</strong></div>` : "",
+      member.joined ? `<div class="modal-detail"><span>A rejoint la Furioz</span><strong>${escapeHTML(member.joined)}</strong></div>` : "",
+      member.role ? `<div class="modal-detail"><span>Rôle dans le collectif</span><strong>${escapeHTML(member.role)}</strong></div>` : "",
+      member.category ? `<div class="modal-detail"><span>Univers</span><strong>${escapeHTML(member.category)}</strong></div>` : ""
+    ].filter(Boolean).join("");
+
     existingContent.innerHTML = `
-
-      <div
-        style="
-          display:flex;
-          justify-content:space-between;
-          align-items:flex-start;
-          gap:1rem;
-        "
-      >
-
-        <div>
-
-          <h2
-            style="
-              margin:0 0 .4rem;
-            "
-          >
-
-            ${escapeHTML(name)}
-
-            <span
-              style="
-                color:var(--blue);
-                font-size:.85rem;
-                font-weight:500;
-              "
-            >
-
-              • ${escapeHTML(status)}
-
-              ${
-                member.country
-
-                  ? ` • ${escapeHTML(
-                      `${countryFlag} ${member.country}`.trim()
-                    )}`
-
-                  : ""
-              }
-
-            </span>
-
-          </h2>
-
-
-          ${
-            member.joined
-
-              ? `
-
-                <span
-                  class="badge"
-                >
-                  Depuis
-                  ${escapeHTML(
-                    member.joined
-                  )}
-
-                  ${
-                    member.country
-
-                      ? ` • ${escapeHTML(
-                          `${countryFlag} ${member.country}`.trim()
-                        )}`
-
-                      : ""
-                  }
-
-                </span>
-
-              `
-
-              : ""
-          }
-
+      <div class="member-modal-header">
+        <div class="modal-profile">
+          <div class="modal-avatar" style="background:linear-gradient(135deg,${escapeHTML(avatarColor)},${escapeHTML(avatarColor2)})">${escapeHTML(initial)}</div>
+          <div>
+            <span class="modal-kicker">DOSSIER MEMBRE // FURIOZ</span>
+            <h2 class="modal-title" id="member-modal-title">${escapeHTML(name)}</h2>
+            <span class="modal-status">${escapeHTML(status)}</span>
+            ${countryLabel ? `<span class="modal-country">${escapeHTML(countryLabel)}</span>` : ""}
+          </div>
         </div>
-
-
-        <button
-          id="close-member-modal"
-          type="button"
-
-          style="
-            width:40px;
-            height:40px;
-            border:0;
-            border-radius:50%;
-            cursor:pointer;
-            font-size:1.3rem;
-            background:#F3F0E9;
-          "
-        >
-          ✕
-        </button>
-
+        <button class="member-modal-close" id="close-member-modal" type="button" aria-label="Fermer le profil">✕</button>
       </div>
 
-
-      <div
-        style="
-          margin-top:1.6rem;
-          display:grid;
-          gap:.9rem;
-        "
-      >
-
-        <p
-          style="
-            margin:0;
-          "
-        >
-
-          ${
-            member.streamSince
-
-              ? `
-
-                <strong>
-                  Stream depuis :
-                </strong>
-
-                ${escapeHTML(
-                  member.streamSince
-                )}
-
-                <br>
-
-              `
-
-              : ""
-          }
-
-
-          ${
-            member.joined
-
-              ? `
-
-                <strong>
-                  A rejoint la Furioz :
-                </strong>
-
-                ${escapeHTML(
-                  member.joined
-                )}
-
-                <br>
-
-              `
-
-              : ""
-          }
-
-
-          ${
-            member.role
-
-              ? `
-
-                <strong>
-                  Rôle :
-                </strong>
-
-                ${escapeHTML(
-                  member.role
-                )}
-
-              `
-
-              : ""
-          }
-
-        </p>
-
-
-        ${
-          description
-
-            ? `
-
-              <p
-                style="
-                  margin:0;
-                  color:#444;
-                  line-height:1.6;
-                "
-              >
-
-                ${escapeHTML(
-                  description
-                )}
-
-              </p>
-
-            `
-
-            : ""
-        }
-
-
-        ${
-          Array.isArray(
-            member.tags
-          ) &&
-          member.tags.length
-
-            ? `
-
-              <div
-                style="
-                  display:flex;
-                  flex-wrap:wrap;
-                  gap:.5rem;
-                "
-              >
-
-                ${member.tags
-                  .map(
-                    tag => `
-
-                      <span
-                        class="badge"
-
-                        style="
-                          background:#EEE9E1;
-                          color:#1E293B;
-                          border-color:#D1C9B8;
-                        "
-                      >
-
-                        ${escapeHTML(
-                          tag
-                        )}
-
-                      </span>
-
-                    `
-                  )
-                  .join("")}
-
-              </div>
-
-            `
-
-            : ""
-        }
-
-
-        <div
-          style="
-            display:flex;
-            flex-wrap:wrap;
-            gap:.6rem;
-          "
-        >
-
-          ${
-            member.twitch
-
-              ? `
-
-                <a
-                  href="${escapeHTML(
-                    member.twitch
-                  )}"
-
-                  target="_blank"
-                  rel="noopener noreferrer"
-
-                  style="
-                    background:#9146FF;
-                    color:#fff;
-                    padding:.65rem 1rem;
-                    border-radius:9px;
-                    text-decoration:none;
-                    font-weight:700;
-                  "
-                >
-
-                  Twitch
-
-                </a>
-
-              `
-
-              : ""
-          }
-
-
-          ${
-            member.youtube
-
-              ? `
-
-                <a
-                  href="${escapeHTML(
-                    member.youtube
-                  )}"
-
-                  target="_blank"
-                  rel="noopener noreferrer"
-
-                  style="
-                    background:#fff;
-                    color:#111;
-                    border:1px solid #ddd;
-                    padding:.65rem 1rem;
-                    border-radius:9px;
-                    text-decoration:none;
-                    font-weight:700;
-                  "
-                >
-
-                  YouTube
-
-                </a>
-
-              `
-
-              : ""
-          }
-
-
-          <a
-            href="${escapeHTML(
-              member.discord ||
-              "https://discord.gg/nKj9NFDyxj"
-            )}"
-
-            target="_blank"
-            rel="noopener noreferrer"
-
-            style="
-              background:#5865F2;
-              color:#fff;
-              padding:.65rem 1rem;
-              border-radius:9px;
-              text-decoration:none;
-              font-weight:700;
-            "
-          >
-
-            Discord Furioz
-
-          </a>
-
+      ${details ? `<div class="modal-detail-grid">${details}</div>` : ""}
+      ${description ? `<p class="modal-description">${escapeHTML(description)}</p>` : ""}
+
+      ${Array.isArray(member.tags) && member.tags.length ? `
+        <div class="modal-tags">
+          ${member.tags.map(tag => `<span class="badge">${escapeHTML(tag)}</span>`).join("")}
         </div>
+      ` : ""}
 
+      <div class="member-modal-actions">
+        ${member.twitch ? `<a class="twitch" href="${escapeHTML(member.twitch)}" target="_blank" rel="noopener noreferrer">Twitch <span aria-hidden="true">↗</span></a>` : ""}
+        ${member.youtube ? `<a class="youtube" href="${escapeHTML(member.youtube)}" target="_blank" rel="noopener noreferrer">YouTube <span aria-hidden="true">↗</span></a>` : ""}
+        <a class="discord" href="${escapeHTML(member.discord || "https://discord.gg/nKj9NFDyxj")}" target="_blank" rel="noopener noreferrer">Discord Furioz <span aria-hidden="true">↗</span></a>
       </div>
     `;
 
 
+
+    existingModal.setAttribute("aria-labelledby", "member-modal-title");
     existingModal
       .classList
       .add(
@@ -2010,8 +1418,8 @@ function initTwitch() {
 
   if (badge) {
 
-    badge.textContent =
-      "OFFLINE - Player charge";
+    badge.innerHTML =
+      '<span class="live-dot"></span> HORS LIGNE — LECTEUR PRÊT';
 
     badge.className =
       "live-badge offline";
@@ -2127,6 +1535,42 @@ function initNav() {
 
 
 // =========================================================
+// MENU MOBILE
+// =========================================================
+
+function initMobileNav() {
+  const toggle = document.getElementById("mobile-menu-toggle");
+  const links = document.getElementById("main-nav-links");
+  if (!toggle || !links) return;
+
+  const closeMenu = () => {
+    toggle.setAttribute("aria-expanded", "false");
+    toggle.setAttribute("aria-label", "Ouvrir le menu");
+    links.classList.remove("open");
+  };
+
+  toggle.addEventListener("click", () => {
+    const isOpen = toggle.getAttribute("aria-expanded") === "true";
+    toggle.setAttribute("aria-expanded", String(!isOpen));
+    toggle.setAttribute("aria-label", isOpen ? "Ouvrir le menu" : "Fermer le menu");
+    links.classList.toggle("open", !isOpen);
+  });
+
+  links.querySelectorAll("a").forEach(link => {
+    link.addEventListener("click", closeMenu);
+  });
+
+  document.addEventListener("keydown", event => {
+    if (event.key === "Escape") closeMenu();
+  });
+
+  window.addEventListener("resize", () => {
+    if (window.innerWidth > 900) closeMenu();
+  });
+}
+
+
+// =========================================================
 // COPYRIGHT
 // =========================================================
 
@@ -2159,6 +1603,10 @@ document.addEventListener(
     initTwitch();
 
     initNav();
+
+    initMobileNav();
+
+    initScrollAnimations();
 
     initCopyright();
 
